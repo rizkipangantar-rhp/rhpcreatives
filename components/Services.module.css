@@ -1,0 +1,157 @@
+.services {
+  padding: 6rem 4rem;
+  background: var(--ink);
+  color: var(--cream);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  margin-bottom: 0.75rem;
+}
+
+.title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--cream);
+  margin-bottom: 0.75rem;
+}
+
+.sub {
+  font-size: 1rem;
+  color: rgba(250, 247, 242, 0.55);
+  line-height: 1.7;
+  max-width: 420px;
+}
+
+.headerCta {
+  background: var(--gold);
+  color: var(--ink);
+  padding: 0.9rem 1.75rem;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.headerCta:hover { background: var(--gold-light); }
+
+.categoryLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(201,168,76,0.6);
+  margin-bottom: 1.25rem;
+}
+
+.gridDigital {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5px;
+}
+
+.gridDesign {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5px;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: background 0.25s;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.card:hover { background: rgba(255, 255, 255, 0.07); }
+.card:hover::before { opacity: 1; }
+
+.num {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: rgba(201, 168, 76, 0.18);
+  line-height: 1;
+  margin-bottom: 1.5rem;
+}
+
+.icon {
+  margin-bottom: 1rem;
+  color: var(--gold);
+}
+
+.icon svg { width: 28px; height: 28px; }
+
+.name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  margin-bottom: 0.6rem;
+  color: var(--cream);
+}
+
+.desc {
+  font-size: 0.84rem;
+  color: rgba(250, 247, 242, 0.5);
+  line-height: 1.65;
+  margin-bottom: 1.25rem;
+}
+
+.features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.features li {
+  font-size: 0.79rem;
+  color: rgba(250, 247, 242, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.features li::before {
+  content: '—';
+  color: var(--gold);
+  opacity: 0.6;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 900px) {
+  .services { padding: 4rem 1.5rem; }
+  .gridDigital, .gridDesign { grid-template-columns: 1fr; }
+  .header { flex-direction: column; }
+}

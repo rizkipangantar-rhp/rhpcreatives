@@ -1,0 +1,116 @@
+.section {
+  background: var(--ink);
+  padding: 7rem 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.section::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px; height: 400px;
+  background: radial-gradient(ellipse, rgba(201,168,76,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  margin-bottom: 0.75rem;
+}
+
+.title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--cream);
+  max-width: 640px;
+  margin: 0 auto 1rem;
+}
+
+.sub {
+  font-size: 1rem;
+  color: rgba(250, 247, 242, 0.45);
+  line-height: 1.7;
+  max-width: 460px;
+  margin: 0 auto 2.5rem;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.primary {
+  background: var(--gold);
+  color: var(--ink);
+  padding: 1rem 2.5rem;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.primary:hover {
+  background: var(--gold-light);
+  transform: translateY(-2px);
+}
+
+.secondary {
+  color: rgba(250, 247, 242, 0.55);
+  font-size: 0.88rem;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.secondary:hover { color: var(--gold-light); }
+
+.trust {
+  display: flex;
+  gap: 2.5rem;
+  margin-top: 4rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.trustItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: rgba(250, 247, 242, 0.35);
+  letter-spacing: 0.04em;
+}
+
+.trustItem svg {
+  width: 16px;
+  height: 16px;
+  color: var(--gold);
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+@media (max-width: 900px) {
+  .section { padding: 4rem 1.5rem; }
+  .trust { gap: 1.5rem; }
+}
