@@ -1,11 +1,16 @@
+'use client'
+import { useLanguage } from '@/context/LanguageContext'
 import styles from './Footer.module.css'
 
 export default function Footer() {
+  const { tr } = useLanguage()
+  const f = tr.footer
+
   return (
     <footer className={styles.footer}>
       <div className={styles.left}>
         <div className={styles.logo}>RHP<span>Creatives</span></div>
-        <p className={styles.tagline}>Jasa Digital & Desain Kreatif Profesional</p>
+        <p className={styles.tagline}>{f.tagline}</p>
       </div>
       <div className={styles.right}>
         <a href="https://wa.me/6285179992598" target="_blank" rel="noopener noreferrer" className={styles.contact}>
@@ -15,7 +20,7 @@ export default function Footer() {
           rhpcreatives@gmail.com
         </a>
       </div>
-      <p className={styles.copy}>© 2026 RHP Creatives. All rights reserved.</p>
+      <p className={styles.copy}>{f.copy}</p>
     </footer>
   )
 }

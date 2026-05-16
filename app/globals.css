@@ -1,25 +1,66 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --gold: #C9A84C;
-  --gold-light: #F0D98C;
-  --gold-dark: #8B6914;
-  --ink: #0D0C0A;
-  --ink-soft: #2A2720;
-  --cream: #FAF7F2;
-  --cream-warm: #F2EDE3;
-  --muted: #7A7060;
-  --border: rgba(201, 168, 76, 0.25);
-  --radius: 4px;
+  /* base */
+  --bg:        #06060f;
+  --surface:   #0d0d1e;
+  --surface2:  #131326;
+  --surface3:  #1a1a33;
+  --border:    rgba(255,255,255,0.06);
+  --border-hi: rgba(139,92,246,0.3);
+
+  /* text */
+  --text:  #f0f0fa;
+  --muted: #7070a0;
+  --dim:   #4a4a70;
+
+  /* accents */
+  --purple:       #8b5cf6;
+  --purple-light: #a78bfa;
+  --pink:         #ec4899;
+  --pink-light:   #f472b6;
+  --cyan:         #22d3ee;
+
+  /* gradients */
+  --grad:        linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+  --grad-r:      linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+  --grad-subtle: linear-gradient(135deg, rgba(139,92,246,0.12) 0%, rgba(236,72,153,0.12) 100%);
+  --grad-glow:   linear-gradient(135deg, rgba(139,92,246,0.25) 0%, rgba(236,72,153,0.25) 100%);
+
+  /* shape */
+  --r-sm: 8px;
+  --r:    14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+
+  /* fonts */
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body:    'Plus Jakarta Sans', sans-serif;
+
+  /* transitions */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--cream);
-  color: var(--ink);
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+::selection {
+  background: rgba(139,92,246,0.35);
+  color: #fff;
+}
+
+/* scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--purple); }

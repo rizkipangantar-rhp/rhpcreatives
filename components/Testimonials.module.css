@@ -1,61 +1,117 @@
 .section {
-  padding: 6rem 4rem;
-  background: var(--cream);
+  padding: 7rem 4rem;
+  background: var(--surface);
+  position: relative;
+  overflow: hidden;
+}
+
+/* subtle gradient line at top */
+.section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--purple), var(--pink), transparent);
+  opacity: 0.35;
+}
+
+/* ambient right-side glow */
+.section::after {
+  content: '';
+  position: absolute;
+  right: -200px; top: 50%;
+  transform: translateY(-50%);
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(236,72,153,0.07) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .label {
   display: inline-block;
-  font-size: 0.75rem;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--gold-dark);
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 0.75rem;
+  position: relative;
+  z-index: 1;
 }
 
 .title {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 3.5vw, 2.9rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  color: var(--text);
   margin-bottom: 0.75rem;
+  position: relative;
+  z-index: 1;
 }
 
 .sub {
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: var(--muted);
-  line-height: 1.7;
-  max-width: 480px;
+  line-height: 1.75;
+  max-width: 440px;
   margin-bottom: 3rem;
+  position: relative;
+  z-index: 1;
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
+  gap: 12px;
+  max-width: 1200px;
+  /* stagger card heights for bento feel */
+  align-items: start;
+  position: relative;
+  z-index: 1;
+}
+
+/* alternating vertical offset for stagger effect */
+.grid .card:nth-child(even) {
+  margin-top: 1.5rem;
 }
 
 .card {
-  background: white;
-  border: 1px solid rgba(201,168,76,0.15);
-  border-radius: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
   padding: 1.75rem;
+  transition: border-color 0.3s var(--ease), transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+
+.card:hover {
+  border-color: rgba(139,92,246,0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(139,92,246,0.1);
 }
 
 .quote {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
-  color: var(--gold-light);
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 800;
   line-height: 0.8;
   margin-bottom: 0.75rem;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  opacity: 0.7;
 }
 
 .text {
   font-size: 0.88rem;
   color: var(--muted);
-  line-height: 1.7;
+  line-height: 1.75;
   margin-bottom: 1.5rem;
 }
 
@@ -66,37 +122,53 @@
 }
 
 .avatar {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: var(--ink);
+  background: var(--grad);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--gold);
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fff;
   flex-shrink: 0;
 }
 
 .name {
+  font-family: var(--font-display);
   font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--ink);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 1px;
 }
 
 .role {
-  font-size: 0.75rem;
-  color: var(--muted);
+  font-size: 0.74rem;
+  color: var(--dim);
 }
 
 .stars {
-  color: var(--gold);
-  font-size: 0.8rem;
-  margin-top: 4px;
+  color: #f59e0b;
+  font-size: 0.78rem;
+  margin-top: 3px;
+  letter-spacing: 1px;
 }
 
+/* ── Responsive ── */
+
 @media (max-width: 900px) {
-  .section { padding: 4rem 1.5rem; }
-  .grid { grid-template-columns: 1fr; }
+  .section { padding: 5rem 1.5rem; }
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .grid .card:nth-child(even) { margin-top: 1.25rem; }
+}
+
+@media (max-width: 540px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .grid .card:nth-child(even) { margin-top: 0; }
 }

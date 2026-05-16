@@ -1,158 +1,121 @@
+'use client'
 import Link from 'next/link'
+import { useLanguage } from '@/context/LanguageContext'
 import styles from './Pricing.module.css'
 
-const digitalPlans = [
-  {
-    name: 'Undangan Online',
-    price: 'Rp 150 Rb',
-    period: 'per undangan',
-    featured: false,
-    features: [
-      { text: 'Desain custom', included: true },
-      { text: 'Countdown timer', included: true },
-      { text: 'Form RSVP', included: true },
-      { text: 'Link custom', included: true },
-      { text: 'Musik latar', included: false },
-    ],
-    cta: 'Pesan Sekarang →',
-  },
-  {
-    name: 'Landing Page',
-    price: 'Rp 300 Rb',
-    period: 'per halaman',
-    featured: true,
-    badge: 'Terlaris',
-    features: [
-      { text: 'Desain modern custom', included: true },
-      { text: 'Mobile-first', included: true },
-      { text: 'Tombol WA / CTA', included: true },
-      { text: 'Domain gratis 1 tahun', included: true },
-      { text: 'Revisi 2x', included: true },
-    ],
-    cta: 'Pesan Sekarang →',
-  },
-  {
-    name: 'Website',
-    price: 'Rp 750 Rb',
-    period: 'mulai dari',
-    featured: false,
-    features: [
-      { text: 'Multi-halaman', included: true },
-      { text: 'SEO dasar', included: true },
-      { text: 'Mobile responsive', included: true },
-      { text: 'CMS / dashboard', included: true },
-      { text: 'Revisi 3x', included: true },
-    ],
-    cta: 'Konsultasi Dulu →',
-  },
-]
+interface PricingProps {
+  filter?: 'digital' | 'design' | 'all'
+  showHeader?: boolean
+}
 
-const designPlans = [
-  {
-    name: 'Desain Instagram',
-    price: 'Rp 25 Rb',
-    period: 'per konten',
-    features: [
-      { text: 'Feed / story / highlight', included: true },
-      { text: 'Revisi 1x', included: true },
-      { text: 'File PNG / JPG', included: true },
-    ],
-    cta: 'Pesan →',
-  },
-  {
-    name: 'Flyer & Banner',
-    price: 'Rp 50 Rb',
-    period: 'per desain',
-    features: [
-      { text: 'Format digital & cetak', included: true },
-      { text: 'Revisi 1x', included: true },
-      { text: 'File siap cetak', included: true },
-    ],
-    cta: 'Pesan →',
-  },
-  {
-    name: 'Brosur',
-    price: 'Rp 75 Rb',
-    period: 'per desain',
-    features: [
-      { text: 'Lipat 2 atau lipat 3', included: true },
-      { text: 'CMYK siap cetak', included: true },
-      { text: 'Revisi 1x', included: true },
-    ],
-    cta: 'Pesan →',
-  },
-  {
-    name: 'Edit Foto',
-    price: 'Rp 20 Rb',
-    period: 'per foto',
-    features: [
-      { text: 'Retouch & color grading', included: true },
-      { text: 'Remove background', included: true },
-      { text: 'Resolusi tinggi', included: true },
-    ],
-    cta: 'Pesan →',
-  },
-]
+export default function Pricing({ filter = 'all', showHeader = true }: PricingProps) {
+  const { tr } = useLanguage()
+  const p = tr.pricing
 
-export default function Pricing() {
+  const showDigital = filter === 'all' || filter === 'digital'
+  const showDesign = filter === 'all' || filter === 'design'
+
   return (
-    <section id="harga" className={styles.pricing}>
-      <div className={styles.header}>
-        <div className={styles.label}>Harga Transparan</div>
-        <h2 className={styles.title}>Paket & Harga Layanan</h2>
-        <p className={styles.sub}>
-          Harga dapat berubah sesuai kebutuhan proyek. Hubungi kami untuk penawaran terbaik.
-        </p>
-      </div>
+    <section className={styles.pricing}>
+      {showHeader && (
+        <div className={styles.header}>
+          <div className={styles.label}>{p.label}</div>
+          <h2 className={styles.title}>{p.title}</h2>
+          <p className={styles.sub}>{p.sub}</p>
+        </div>
+      )}
 
-      <div className={styles.categoryLabel}>✦ Layanan Digital</div>
-      <div className={styles.gridDigital}>
-        {digitalPlans.map((plan) => (
-          <div key={plan.name} className={`${styles.card} ${plan.featured ? styles.featured : ''}`}>
-            {plan.badge && <div className={styles.badge}>{plan.badge}</div>}
-            <div className={styles.plan}>{plan.name}</div>
-            <div className={styles.price}>{plan.price}</div>
-            <div className={styles.period}>{plan.period}</div>
-            <div className={styles.divider} />
-            <ul className={styles.list}>
-              {plan.features.map((f) => (
-                <li key={f.text}>
-                  <span className={f.included ? styles.check : styles.no}>
-                    {f.included ? '✓' : '✕'}
-                  </span>
-                  {f.text}
-                </li>
-              ))}
-            </ul>
-            <Link href="#order" className={styles.btn}>{plan.cta}</Link>
-          </div>
-        ))}
-      </div>
+      {showDigital && (
+        <div className={styles.category}>
+          <div className={styles.categoryLabel}>{p.digitalLabel}</div>
+          {p.digital.map((group) => (
+            <div key={group.name} className={styles.serviceGroup}>
+              <h3 className={styles.serviceGroupTitle}>{group.name}</h3>
+              <div className={styles.tiersGrid}>
+                {group.tiers.map((tier) => (
+                  <div
+                    key={tier.name}
+                    className={`${styles.card} ${tier.highlighted ? styles.featured : ''} ${tier.isCustom ? styles.customCard : ''}`}
+                  >
+                    {tier.highlighted && <div className={styles.badge}>{p.popularBadge}</div>}
+                    {tier.save && <div className={styles.saveBadge}>{tier.save}</div>}
+                    <div className={styles.plan}>{tier.name}</div>
+                    {tier.isCustom ? (
+                      <div className={styles.priceCustom}>{tier.price}</div>
+                    ) : (
+                      <div className={styles.price}>{tier.price}</div>
+                    )}
+                    <div className={styles.period}>{tier.period}</div>
+                    <div className={styles.delivery}>⏱ {tier.delivery}</div>
+                    <div className={styles.divider} />
+                    <ul className={styles.list}>
+                      {tier.features.map((f) => (
+                        <li key={f}>
+                          <span className={styles.check}>✓</span>
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                    {tier.isCustom ? (
+                      <a
+                        href="https://wa.me/6285179992598"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`${styles.btn} ${styles.btnConsult}`}
+                      >
+                        {p.consultCta}
+                      </a>
+                    ) : (
+                      <Link href="#order" className={styles.btn}>{p.orderCta}</Link>
+                    )}
+                  </div>
+                ))}
+              </div>
+              {group.consultNote && <p className={styles.consultNote}>{group.consultNote}</p>}
+              {group.revisiNote && <p className={styles.revisiNote}>{group.revisiNote}</p>}
+            </div>
+          ))}
+        </div>
+      )}
 
-      <div className={styles.categoryLabel} style={{ marginTop: '3rem' }}>✦ Layanan Desain</div>
-      <div className={styles.gridDesign}>
-        {designPlans.map((plan) => (
-          <div key={plan.name} className={styles.card}>
-            <div className={styles.plan}>{plan.name}</div>
-            <div className={styles.price}>{plan.price}</div>
-            <div className={styles.period}>{plan.period}</div>
-            <div className={styles.divider} />
-            <ul className={styles.list}>
-              {plan.features.map((f) => (
-                <li key={f.text}>
-                  <span className={styles.check}>✓</span>
-                  {f.text}
-                </li>
-              ))}
-            </ul>
-            <Link href="#order" className={styles.btn}>{plan.cta}</Link>
-          </div>
-        ))}
-      </div>
+      {showDesign && (
+        <div className={styles.category}>
+          <div className={styles.categoryLabel}>{p.designLabel}</div>
+          {p.design.map((group) => (
+            <div key={group.name} className={styles.serviceGroup}>
+              <h3 className={styles.serviceGroupTitle}>{group.name}</h3>
+              <div className={styles.tiersGrid}>
+                {group.tiers.map((tier) => (
+                  <div
+                    key={tier.name}
+                    className={`${styles.card} ${tier.highlighted ? styles.featured : ''}`}
+                  >
+                    {tier.highlighted && <div className={styles.badge}>{p.popularBadge}</div>}
+                    {tier.save && <div className={styles.saveBadge}>{tier.save}</div>}
+                    <div className={styles.plan}>{tier.name}</div>
+                    <div className={styles.price}>{tier.price}</div>
+                    <div className={styles.period}>{tier.period}</div>
+                    <div className={styles.delivery}>⏱ {tier.delivery}</div>
+                    <div className={styles.divider} />
+                    <ul className={styles.list}>
+                      {tier.features.map((f) => (
+                        <li key={f}>
+                          <span className={styles.check}>✓</span>
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                    <Link href="#order" className={styles.btn}>{p.orderCta}</Link>
+                  </div>
+                ))}
+              </div>
+              {group.revisiNote && <p className={styles.revisiNote}>{group.revisiNote}</p>}
+            </div>
+          ))}
+        </div>
+      )}
 
-      <div className={styles.note}>
-        * Harga bersifat sementara dan dapat disesuaikan. Hubungi kami untuk diskusi lebih lanjut.
-      </div>
+      <div className={styles.note}>{p.note}</div>
     </section>
   )
 }

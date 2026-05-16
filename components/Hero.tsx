@@ -1,34 +1,37 @@
+'use client'
 import Link from 'next/link'
+import { useLanguage } from '@/context/LanguageContext'
 import styles from './Hero.module.css'
 
 export default function Hero() {
+  const { tr } = useLanguage()
+  const h = tr.hero
+
   return (
     <section className={styles.hero}>
       <div className={styles.content}>
-        <div className={styles.tag}>✦ Jasa Digital & Desain Kreatif</div>
+        <div className={styles.tag}>{h.tag}</div>
         <h1>
-          Wujudkan Kehadiran <em>Digital</em><br />yang Berkesan
+          {h.titleBefore}<em>{h.titleEm}</em><br />
+          {h.titleAfter}
         </h1>
-        <p className={styles.sub}>
-          RHP Creatives hadir untuk membantu Anda tampil profesional di dunia digital —
-          dari undangan online, landing page, website, hingga desain grafis berkualitas.
-        </p>
+        <p className={styles.sub}>{h.sub}</p>
         <div className={styles.actions}>
-          <Link href="#order" className={styles.btnPrimary}>Mulai Proyek ↗</Link>
-          <Link href="#layanan" className={styles.btnOutline}>Lihat Layanan →</Link>
+          <Link href="#order" className={styles.btnPrimary}>{h.cta1}</Link>
+          <Link href="#layanan" className={styles.btnOutline}>{h.cta2}</Link>
         </div>
         <div className={styles.stats}>
           <div className={styles.statItem}>
             <span className={styles.statNum}>5</span>
-            <span className={styles.statLabel}>Layanan Tersedia</span>
+            <span className={styles.statLabel}>{h.stat1Label}</span>
           </div>
           <div className={styles.statItem}>
             <span className={styles.statNum}>Fast</span>
-            <span className={styles.statLabel}>Pengerjaan Cepat</span>
+            <span className={styles.statLabel}>{h.stat2Label}</span>
           </div>
           <div className={styles.statItem}>
             <span className={styles.statNum}>✓</span>
-            <span className={styles.statLabel}>Revisi Inklusif</span>
+            <span className={styles.statLabel}>{h.stat3Label}</span>
           </div>
         </div>
       </div>
@@ -44,13 +47,11 @@ export default function Hero() {
               </svg>
             </div>
             <div className={styles.cardTitle}>RHP Creatives</div>
-            <div className={styles.cardDesc}>
-              Undangan Online · Landing Page · Website · Desain Instagram · Flyer · Banner · Brosur · Edit Foto
-            </div>
-            <div className={styles.cardPrice}>Mulai Terjangkau</div>
-            <div className={styles.cardBadge}>⚡ Pengerjaan Profesional</div>
+            <div className={styles.cardDesc}>{h.cardDesc}</div>
+            <div className={styles.cardPrice}>{h.cardPrice}</div>
+            <div className={styles.cardBadge}>{h.cardBadge}</div>
             <div className={styles.cardStars}>
-              ★★★★★ <span>Kepuasan Klien #1</span>
+              ★★★★★ <span>{h.cardSatisfaction}</span>
             </div>
           </div>
         </div>
