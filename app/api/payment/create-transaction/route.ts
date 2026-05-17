@@ -96,7 +96,21 @@ export async function POST(req: Request) {
       adminWaUrl: `https://wa.me/${ADMIN_WA}?text=${waMessage}`,
     })
   } catch (err) {
-    console.error('create-transaction error:', err)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    const message = err instanceof Error ? err.message : String(err)
+    // midtrans-client attaches the raw API response on the error object
+    const midtransResponse = (err as { ApiResponse?: unknown })?.ApiResponse
+
+    console.error('[create-transaction] error:', {
+      message,
+      midtransResponse,
+      serverKeyPresent: !!process.env.MIDTRANS_SERVER_KEY,
+      isProduction: process.env.MIDTRANS_IS_PRODUCTION,
+    })
+
+    return NextResponse.json({
+      error: 'Server error',
+      detail: message,
+      midtransResponse,
+    }, { status: 500 })
   }
 }

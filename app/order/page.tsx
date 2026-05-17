@@ -149,8 +149,18 @@ export default function OrderPage() {
       }
 
       const data = await res.json()
-      if (!data.snapToken || !data.orderId) {
-        setError(p.errorGeneral)
+
+      if (!res.ok || !data.snapToken || !data.orderId) {
+        // Surface actual error from API if available
+        const msg = data.detail || data.error || p.errorGeneral
+        console.error('[order] create-transaction failed:', data)
+        setError(msg)
+        setIsSubmitting(false)
+        return
+      }
+
+      if (typeof window.snap === 'undefined') {
+        setError('Snap.js belum dimuat. Coba refresh halaman.')
         setIsSubmitting(false)
         return
       }
@@ -158,13 +168,15 @@ export default function OrderPage() {
       window.snap.pay(data.snapToken, {
         onSuccess: () => router.push(`/order/sukses/${data.orderId}`),
         onPending: () => router.push(`/order/sukses/${data.orderId}`),
-        onError: () => {
+        onError: (result: unknown) => {
+          console.error('[snap] onError:', result)
           setError(p.errorGeneral)
           setIsSubmitting(false)
         },
         onClose: () => setIsSubmitting(false),
       })
-    } catch {
+    } catch (err) {
+      console.error('[order] handlePayment exception:', err)
       setError(p.errorGeneral)
       setIsSubmitting(false)
     }
