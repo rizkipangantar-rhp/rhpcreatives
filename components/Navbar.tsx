@@ -136,7 +136,9 @@ export default function Navbar() {
     </nav>
 
       {menuOpen && (
-        <div className={styles.mobileMenu}>
+        <>
+          <div className={styles.mobileOverlay} onClick={closeMenu} />
+          <div className={styles.mobileMenu}>
           <div className={styles.mobilePanelTop}>
             <span className={styles.mobileLogo}>RHP<span>Creatives</span></span>
             <button className={styles.closeBtn} onClick={closeMenu}>✕</button>
@@ -155,8 +157,8 @@ export default function Navbar() {
           )}
 
           <ul className={styles.mobileLinks}>
-            {NAV_LINKS.map(({ key, href }) => (
-              <li key={key}>
+            {NAV_LINKS.map(({ key, href }, i) => (
+              <li key={key} style={{ animationDelay: `${0.06 + i * 0.05}s` }}>
                 <Link
                   href={href}
                   className={`${pathname === href ? styles.mobileLinkActive : ''} ${key === 'promo' ? styles.mobileLinkPromo : ''}`}
@@ -193,7 +195,8 @@ export default function Navbar() {
               {tr.nav.cta}
             </Link>
           </div>
-        </div>
+          </div>
+        </>
       )}
     </>
   )
