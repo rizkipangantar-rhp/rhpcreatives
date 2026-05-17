@@ -6,7 +6,6 @@ import { useLanguage } from '@/context/LanguageContext'
 import styles from './EarlyBirdPopup.module.css'
 
 const SLOTS_TOTAL = 20
-const SLOTS_LEFT = 17
 
 export default function EarlyBirdPopup() {
   const { tr } = useLanguage()
@@ -15,12 +14,21 @@ export default function EarlyBirdPopup() {
   const router = useRouter()
   const { status } = useSession()
   const [visible, setVisible] = useState(false)
+  const [slotsLeft, setSlotsLeft] = useState(17)
 
   useEffect(() => {
     if (pathname !== '/') return
     const timer = setTimeout(() => setVisible(true), 2_000)
     return () => clearTimeout(timer)
   }, [pathname])
+
+  useEffect(() => {
+    if (!visible) return
+    fetch('/api/early-bird/quota')
+      .then(r => r.json())
+      .then(data => setSlotsLeft(data.remaining ?? 17))
+      .catch(() => {})
+  }, [visible])
 
   function close() {
     setVisible(false)
@@ -51,12 +59,12 @@ export default function EarlyBirdPopup() {
             {Array.from({ length: SLOTS_TOTAL }).map((_, i) => (
               <div
                 key={i}
-                className={`${styles.slotDot} ${i < SLOTS_TOTAL - SLOTS_LEFT ? styles.slotDotTaken : ''}`}
+                className={`${styles.slotDot} ${i < SLOTS_TOTAL - slotsLeft ? styles.slotDotTaken : ''}`}
               />
             ))}
           </div>
           <div className={styles.slotText}>
-            <span className={styles.slotNum}>{SLOTS_LEFT}</span>
+            <span className={styles.slotNum}>{slotsLeft}</span>
             {' '}{p.slotsLeft}
           </div>
         </div>

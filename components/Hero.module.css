@@ -18,7 +18,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
-  padding: 8rem 4rem 5rem;
+  padding: calc(var(--bar-h) + 5.25rem) 4rem 5rem;
   background: var(--bg);
   position: relative;
   overflow: hidden;
@@ -313,7 +313,7 @@
 @media (max-width: 960px) {
   .hero {
     grid-template-columns: 1fr;
-    padding: 7rem 2rem 4rem;
+    padding: calc(var(--bar-h) + 5.5rem) 2rem 4rem;
     gap: 3.5rem;
     text-align: center;
   }
@@ -325,7 +325,7 @@
 }
 
 @media (max-width: 480px) {
-  .hero { padding: 6rem 1.25rem 3rem; }
+  .hero { padding: calc(var(--bar-h) + 5rem) 1.25rem 3rem; }
   .cardStack { width: 280px; height: 380px; }
   .cardMain { width: 260px; min-height: 320px; }
   .cardBack1 { width: 250px; height: 310px; }

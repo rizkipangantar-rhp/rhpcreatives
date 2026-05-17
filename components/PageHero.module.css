@@ -1,5 +1,5 @@
 .hero {
-  padding: 9rem 4rem 5rem;
+  padding: calc(var(--bar-h) + 5.75rem) 4rem 5rem;
   background: var(--bg);
   text-align: center;
   position: relative;
@@ -55,6 +55,6 @@
 }
 
 @media (max-width: 768px) {
-  .hero { padding: 7rem 1.5rem 3.5rem; }
+  .hero { padding: calc(var(--bar-h) + 5rem) 1.5rem 3.5rem; }
   .sub { font-size: 0.92rem; }
 }
