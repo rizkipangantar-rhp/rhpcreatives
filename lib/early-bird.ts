@@ -1,7 +1,8 @@
 import fs from 'fs'
 import path from 'path'
+import { getDataPath } from '@/lib/data-path'
 
-const DB_PATH = path.join(process.cwd(), 'data', 'early-bird.json')
+const DB_PATH = () => getDataPath('early-bird.json')
 export const QUOTA = 20
 
 export type ClaimEntry = {
@@ -27,17 +28,19 @@ type EarlyBirdData = {
 
 function read(): EarlyBirdData {
   try {
-    if (!fs.existsSync(DB_PATH)) return { claims: [], waitlist: [] }
-    return JSON.parse(fs.readFileSync(DB_PATH, 'utf-8')) as EarlyBirdData
+    const p = DB_PATH()
+    if (!fs.existsSync(p)) return { claims: [], waitlist: [] }
+    return JSON.parse(fs.readFileSync(p, 'utf-8')) as EarlyBirdData
   } catch {
     return { claims: [], waitlist: [] }
   }
 }
 
 function write(data: EarlyBirdData) {
-  const dir = path.dirname(DB_PATH)
+  const p = DB_PATH()
+  const dir = path.dirname(p)
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
-  fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf-8')
+  fs.writeFileSync(p, JSON.stringify(data, null, 2), 'utf-8')
 }
 
 function generateCode(): string {
