@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { getOrderById } from '@/lib/orders'
+import { getOrderById, updateOrderStatus, updateOrderPaymentInfo } from '@/lib/orders'
+import { checkTransactionStatus } from '@/lib/payment'
 
 const ADMIN_EMAIL = 'rhpcreativesid@gmail.com'
 
@@ -17,12 +18,33 @@ export async function GET(
     return NextResponse.json({ error: 'Order not found' }, { status: 404 })
   }
 
-  // Allow order owner or admin
   const isAdmin = session?.user?.email === ADMIN_EMAIL
   const isOwner = session?.user?.id === order.userId
 
   if (!isAdmin && !isOwner) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  // For local dev: if order is still pending and has a midtransOrderId, sync status from Midtrans
+  if (order.status === 'pending' && order.midtransOrderId) {
+    try {
+      const txStatus = await checkTransactionStatus(order.midtransOrderId)
+      const s = txStatus.transaction_status
+      const fraud = txStatus.fraud_status
+
+      if (s === 'settlement' || (s === 'capture' && fraud === 'accept')) {
+        updateOrderStatus(order_id, 'paid')
+        updateOrderPaymentInfo(order_id, { status: 'paid' })
+        const updated = getOrderById(order_id)
+        return NextResponse.json(updated)
+      } else if (s === 'expire' || s === 'cancel' || s === 'deny') {
+        updateOrderStatus(order_id, 'cancelled')
+        const updated = getOrderById(order_id)
+        return NextResponse.json(updated)
+      }
+    } catch {
+      // Midtrans check failed (e.g., no transaction yet) — return current local state
+    }
   }
 
   return NextResponse.json(order)

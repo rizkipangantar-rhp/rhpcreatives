@@ -25,6 +25,15 @@ export type Order = {
   notes?: string
   status: OrderStatus
   snapToken?: string
+  midtransOrderId?: string
+  paymentMethod?: 'bank_transfer' | 'qris' | 'gopay' | 'shopeepay' | 'credit_card'
+  paymentBank?: string
+  paymentVa?: string
+  paymentBillerCode?: string
+  paymentBillKey?: string
+  paymentQrUrl?: string
+  paymentDeepLink?: string
+  paymentExpiry?: string
   createdAt: string
   updatedAt: string
 }
@@ -100,6 +109,21 @@ export function updateOrderSnapToken(orderId: string, snapToken: string): boolea
   if (idx === -1) return false
   db.orders[idx].snapToken = snapToken
   db.orders[idx].updatedAt = new Date().toISOString()
+  write(db)
+  return true
+}
+
+export function updateOrderPaymentInfo(
+  orderId: string,
+  info: Partial<Pick<Order,
+    'midtransOrderId' | 'paymentMethod' | 'paymentBank' | 'paymentVa' |
+    'paymentBillerCode' | 'paymentBillKey' | 'paymentQrUrl' | 'paymentDeepLink' | 'paymentExpiry' | 'status'
+  >>
+): boolean {
+  const db = read()
+  const idx = db.orders.findIndex(o => o.orderId === orderId)
+  if (idx === -1) return false
+  Object.assign(db.orders[idx], info, { updatedAt: new Date().toISOString() })
   write(db)
   return true
 }

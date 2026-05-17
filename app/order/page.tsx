@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useLanguage } from '@/context/LanguageContext'
 import styles from './order.module.css'
 
+
 type ServiceOption = { id: string; nameId: string; nameEn: string; icon: string }
 type PackageOption = { id: string; nameId: string; nameEn: string; price: number; periodId: string; periodEn: string }
 
@@ -44,19 +45,6 @@ function fmt(price: number) {
   return `Rp${price.toLocaleString('id-ID')}`
 }
 
-declare global {
-  interface Window {
-    snap: {
-      pay: (token: string, options: {
-        onSuccess: (result: unknown) => void
-        onPending: (result: unknown) => void
-        onError: (result: unknown) => void
-        onClose: () => void
-      }) => void
-    }
-  }
-}
-
 export default function OrderPage() {
   const { tr, lang } = useLanguage()
   const p = tr.orderPage
@@ -82,19 +70,6 @@ export default function OrderPage() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session])
-
-  useEffect(() => {
-    const isProduction = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true'
-    const snapUrl = isProduction
-      ? 'https://app.midtrans.com/snap/snap.js'
-      : 'https://app.sandbox.midtrans.com/snap/snap.js'
-    const script = document.createElement('script')
-    script.src = snapUrl
-    script.setAttribute('data-client-key', process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY ?? '')
-    script.async = true
-    document.head.appendChild(script)
-    return () => { if (document.head.contains(script)) document.head.removeChild(script) }
-  }, [])
 
   const selectedSvc = SERVICES.find(s => s.id === selectedService)
   const selectedPkg = selectedPackage ? (PACKAGES[selectedService] ?? []).find(p => p.id === selectedPackage) : null
@@ -150,8 +125,7 @@ export default function OrderPage() {
 
       const data = await res.json()
 
-      if (!res.ok || !data.snapToken || !data.orderId) {
-        // Surface actual error from API if available
+      if (!res.ok || !data.orderId) {
         const msg = data.detail || data.error || p.errorGeneral
         console.error('[order] create-transaction failed:', data)
         setError(msg)
@@ -159,22 +133,7 @@ export default function OrderPage() {
         return
       }
 
-      if (typeof window.snap === 'undefined') {
-        setError('Snap.js belum dimuat. Coba refresh halaman.')
-        setIsSubmitting(false)
-        return
-      }
-
-      window.snap.pay(data.snapToken, {
-        onSuccess: () => router.push(`/order/sukses/${data.orderId}`),
-        onPending: () => router.push(`/order/sukses/${data.orderId}`),
-        onError: (result: unknown) => {
-          console.error('[snap] onError:', result)
-          setError(p.errorGeneral)
-          setIsSubmitting(false)
-        },
-        onClose: () => setIsSubmitting(false),
-      })
+      router.push(`/order/payment/${data.orderId}`)
     } catch (err) {
       console.error('[order] handlePayment exception:', err)
       setError(p.errorGeneral)

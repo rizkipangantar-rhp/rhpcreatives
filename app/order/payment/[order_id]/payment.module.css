@@ -1,0 +1,610 @@
+.page {
+  min-height: 100vh;
+  background: var(--bg);
+  padding: calc(var(--bar-h, 0px) + 4rem) 1rem 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.blob1,
+.blob2 {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.blob1 {
+  width: 500px;
+  height: 500px;
+  background: var(--accent);
+  top: -100px;
+  left: -100px;
+}
+
+.blob2 {
+  width: 400px;
+  height: 400px;
+  background: var(--pink);
+  bottom: -80px;
+  right: -80px;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: color 0.2s;
+  margin-bottom: 1rem;
+}
+
+.backLink:hover {
+  color: var(--text);
+}
+
+.title {
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 700;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Summary card ── */
+.summaryCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  position: sticky;
+  top: calc(var(--bar-h, 0px) + 5rem);
+}
+
+.summaryTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.summaryService {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 0.2rem;
+}
+
+.summaryPackage {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+
+.summaryDivider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.75rem 0;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+
+.summaryTotal {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.summaryId {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-family: monospace;
+  word-break: break-all;
+  margin-top: 0.5rem;
+}
+
+/* ── Countdown ── */
+.countdown {
+  margin-top: 1.25rem;
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+.countdownLabel {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+
+.countdownTime {
+  font-size: 1.8rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.05em;
+}
+
+.countdownExpired {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ef4444;
+}
+
+/* ── Tabs ── */
+.paymentCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--border);
+}
+
+@media (max-width: 480px) {
+  .tabs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.tab {
+  padding: 1rem 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.tab:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.tabActive {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  background: rgba(139, 92, 246, 0.06);
+}
+
+.tabContent {
+  padding: 1.75rem;
+}
+
+/* ── Bank transfer ── */
+.bankGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 600px) {
+  .bankGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.bankBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.75rem 0.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.bankBtn:hover {
+  border-color: var(--accent);
+  color: var(--text);
+  background: rgba(139, 92, 246, 0.06);
+}
+
+.bankBtnActive {
+  border-color: var(--accent);
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--text);
+}
+
+.bankLogo {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+/* ── VA number display ── */
+.vaBox {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.vaLabel {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.vaRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.vaNumber {
+  flex: 1;
+  font-size: 1.4rem;
+  font-weight: 800;
+  font-family: monospace;
+  letter-spacing: 0.1em;
+  color: var(--text);
+  word-break: break-all;
+}
+
+.copyBtn {
+  padding: 0.5rem 1rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.copyBtn:hover {
+  opacity: 0.85;
+}
+
+/* ── Instructions ── */
+.instructionsTitle {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.instructionsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.instructionsList li {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.instructionsList li::before {
+  content: attr(data-step);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  min-width: 1.4rem;
+  border-radius: 50%;
+  background: rgba(139, 92, 246, 0.2);
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-top: 0.1rem;
+}
+
+/* ── E-wallet ── */
+.ewalletGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 500px) {
+  .ewalletGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.ewalletBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.875rem 0.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.ewalletBtn:hover {
+  border-color: var(--accent);
+  color: var(--text);
+  background: rgba(139, 92, 246, 0.06);
+}
+
+.ewalletBtnActive {
+  border-color: var(--accent);
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--text);
+}
+
+.ewalletIcon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+/* ── QR code ── */
+.qrWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.qrImage {
+  width: 200px;
+  height: 200px;
+  border-radius: 1rem;
+  border: 3px solid var(--border);
+  background: #fff;
+  padding: 0.5rem;
+  object-fit: contain;
+}
+
+.qrSub {
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.deepLinkBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  background: linear-gradient(135deg, var(--accent), var(--pink));
+  color: #fff;
+  border: none;
+  border-radius: 0.6rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.deepLinkBtn:hover {
+  opacity: 0.85;
+}
+
+/* ── Credit card ── */
+.ccWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1rem 0;
+}
+
+.ccIcon {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.ccTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+}
+
+.ccSub {
+  font-size: 0.875rem;
+  color: var(--muted);
+  text-align: center;
+  max-width: 300px;
+}
+
+.ccPayBtn {
+  padding: 0.8rem 2rem;
+  background: linear-gradient(135deg, var(--accent), var(--pink));
+  color: #fff;
+  border: none;
+  border-radius: 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.ccPayBtn:hover {
+  opacity: 0.85;
+}
+
+.ccPayBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Loading / states ── */
+.loadingWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.errorMsg {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.retryBtn {
+  padding: 0.6rem 1.5rem;
+  background: transparent;
+  border: 1px solid var(--accent);
+  border-radius: 0.5rem;
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.retryBtn:hover {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+/* ── Expired state ── */
+.expiredWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.expiredIcon {
+  font-size: 3rem;
+}
+
+.expiredTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ef4444;
+}
+
+.expiredSub {
+  font-size: 0.875rem;
+  color: var(--muted);
+  max-width: 320px;
+}
+
+/* ── Status bar ── */
+.statusBar {
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 0.5rem;
+  padding: 0.6rem 1rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}

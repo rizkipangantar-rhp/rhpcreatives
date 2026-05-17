@@ -166,6 +166,45 @@ export type Tr = {
     notFoundTitle: string
     notFoundSub: string
   }
+  paymentPage: {
+    title: string
+    orderSummary: string
+    orderIdLabel: string
+    serviceLabel: string
+    amountLabel: string
+    expiryLabel: string
+    tabBankTransfer: string
+    tabEWallet: string
+    tabQRIS: string
+    tabCreditCard: string
+    selectBank: string
+    vaNumberLabel: string
+    billerCodeLabel: string
+    billKeyLabel: string
+    copyBtn: string
+    copied: string
+    instructionsTitle: string
+    bankInstructionsBCA: string[]
+    bankInstructionsBNI: string[]
+    bankInstructionsBRI: string[]
+    bankInstructionsMandiri: string[]
+    bankInstructionsPermata: string[]
+    ewalletScanQR: string
+    ewalletOrDeepLink: string
+    ewalletOpenApp: string
+    qrisTitle: string
+    qrisSub: string
+    ccTitle: string
+    ccSub: string
+    ccPayBtn: string
+    loadingPayment: string
+    errorCharge: string
+    statusChecking: string
+    expiredTitle: string
+    expiredSub: string
+    backToOrder: string
+    countdownLabel: string
+  }
   adminOrders: {
     title: string
     sub: string
@@ -490,6 +529,71 @@ export const t: Record<Lang, Tr> = {
       orderHistoryBtn: 'Lihat Semua Order',
       notFoundTitle: 'Order Tidak Ditemukan',
       notFoundSub: 'Order dengan ID ini tidak ada atau kamu tidak punya akses.',
+    },
+    paymentPage: {
+      title: 'Pilih Metode Pembayaran',
+      orderSummary: 'Ringkasan Order',
+      orderIdLabel: 'Order ID',
+      serviceLabel: 'Layanan',
+      amountLabel: 'Total Bayar',
+      expiryLabel: 'Batas Bayar',
+      tabBankTransfer: 'Transfer Bank',
+      tabEWallet: 'E-Wallet',
+      tabQRIS: 'QRIS',
+      tabCreditCard: 'Kartu Kredit',
+      selectBank: 'Pilih Bank',
+      vaNumberLabel: 'Nomor Virtual Account',
+      billerCodeLabel: 'Kode Biller',
+      billKeyLabel: 'Kode Bayar',
+      copyBtn: 'Salin',
+      copied: 'Tersalin!',
+      instructionsTitle: 'Cara Bayar',
+      bankInstructionsBCA: [
+        'Buka aplikasi BCA mobile atau ATM BCA',
+        'Pilih menu Transfer → ke BCA Virtual Account',
+        'Masukkan nomor Virtual Account di atas',
+        'Konfirmasi jumlah dan selesaikan pembayaran',
+      ],
+      bankInstructionsBNI: [
+        'Buka aplikasi BNI mobile atau ATM BNI',
+        'Pilih Transfer → Virtual Account',
+        'Masukkan nomor Virtual Account di atas',
+        'Ikuti instruksi dan selesaikan pembayaran',
+      ],
+      bankInstructionsBRI: [
+        'Buka aplikasi BRImo atau ATM BRI',
+        'Pilih Pembayaran → BRIVA',
+        'Masukkan nomor Virtual Account di atas',
+        'Konfirmasi dan selesaikan pembayaran',
+      ],
+      bankInstructionsMandiri: [
+        'Buka aplikasi Mandiri Online atau ATM Mandiri',
+        'Pilih Bayar → Multi Payment',
+        'Masukkan Kode Biller di atas',
+        'Masukkan Kode Bayar di atas',
+        'Konfirmasi dan selesaikan pembayaran',
+      ],
+      bankInstructionsPermata: [
+        'Buka aplikasi PermataMobile atau ATM Permata',
+        'Pilih Pembayaran → Virtual Account',
+        'Masukkan nomor Virtual Account di atas',
+        'Konfirmasi dan selesaikan pembayaran',
+      ],
+      ewalletScanQR: 'Scan QR Code berikut',
+      ewalletOrDeepLink: 'atau buka langsung di aplikasi',
+      ewalletOpenApp: 'Buka di Aplikasi',
+      qrisTitle: 'Scan QRIS',
+      qrisSub: 'Scan dengan aplikasi dompet digital apapun yang mendukung QRIS',
+      ccTitle: 'Kartu Kredit / Debit',
+      ccSub: 'Bayar dengan kartu kredit atau debit visa/mastercard',
+      ccPayBtn: 'Bayar dengan Kartu →',
+      loadingPayment: 'Memuat detail pembayaran...',
+      errorCharge: 'Gagal memuat pembayaran. Coba lagi.',
+      statusChecking: 'Mengecek status pembayaran...',
+      expiredTitle: 'Waktu Bayar Habis',
+      expiredSub: 'Batas waktu pembayaran sudah lewat. Silakan buat order baru.',
+      backToOrder: '← Buat Order Baru',
+      countdownLabel: 'Sisa waktu bayar',
     },
     adminOrders: {
       title: 'Admin — Daftar Order',
@@ -1119,6 +1223,71 @@ export const t: Record<Lang, Tr> = {
       orderHistoryBtn: 'View All Orders',
       notFoundTitle: 'Order Not Found',
       notFoundSub: "This order doesn't exist or you don't have access to it.",
+    },
+    paymentPage: {
+      title: 'Choose Payment Method',
+      orderSummary: 'Order Summary',
+      orderIdLabel: 'Order ID',
+      serviceLabel: 'Service',
+      amountLabel: 'Amount',
+      expiryLabel: 'Pay Before',
+      tabBankTransfer: 'Bank Transfer',
+      tabEWallet: 'E-Wallet',
+      tabQRIS: 'QRIS',
+      tabCreditCard: 'Credit Card',
+      selectBank: 'Select Bank',
+      vaNumberLabel: 'Virtual Account Number',
+      billerCodeLabel: 'Biller Code',
+      billKeyLabel: 'Bill Key',
+      copyBtn: 'Copy',
+      copied: 'Copied!',
+      instructionsTitle: 'How to Pay',
+      bankInstructionsBCA: [
+        'Open BCA mobile app or go to an ATM',
+        'Select Transfer → BCA Virtual Account',
+        'Enter the Virtual Account number above',
+        'Confirm the amount and complete payment',
+      ],
+      bankInstructionsBNI: [
+        'Open BNI mobile app or go to an ATM',
+        'Select Transfer → Virtual Account',
+        'Enter the Virtual Account number above',
+        'Follow the instructions and complete payment',
+      ],
+      bankInstructionsBRI: [
+        'Open BRImo app or go to a BRI ATM',
+        'Select Payment → BRIVA',
+        'Enter the Virtual Account number above',
+        'Confirm and complete payment',
+      ],
+      bankInstructionsMandiri: [
+        'Open Mandiri Online app or go to an ATM',
+        'Select Pay → Multi Payment',
+        'Enter the Biller Code above',
+        'Enter the Bill Key above',
+        'Confirm and complete payment',
+      ],
+      bankInstructionsPermata: [
+        'Open PermataMobile app or go to an ATM',
+        'Select Payment → Virtual Account',
+        'Enter the Virtual Account number above',
+        'Confirm and complete payment',
+      ],
+      ewalletScanQR: 'Scan the QR Code below',
+      ewalletOrDeepLink: 'or open directly in the app',
+      ewalletOpenApp: 'Open in App',
+      qrisTitle: 'Scan QRIS',
+      qrisSub: 'Scan with any digital wallet app that supports QRIS',
+      ccTitle: 'Credit / Debit Card',
+      ccSub: 'Pay with your Visa or Mastercard credit or debit card',
+      ccPayBtn: 'Pay with Card →',
+      loadingPayment: 'Loading payment details...',
+      errorCharge: 'Failed to load payment. Try again.',
+      statusChecking: 'Checking payment status...',
+      expiredTitle: 'Payment Time Expired',
+      expiredSub: 'The payment window has closed. Please place a new order.',
+      backToOrder: '← Place New Order',
+      countdownLabel: 'Time remaining',
     },
     adminOrders: {
       title: 'Admin — Order List',

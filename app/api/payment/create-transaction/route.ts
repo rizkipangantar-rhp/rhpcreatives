@@ -3,24 +3,13 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { findPackageById, findServiceById } from '@/lib/packages'
 import { createOrder } from '@/lib/orders'
-import { createSnapTransaction } from '@/lib/payment'
 import { findClaimByCode } from '@/lib/early-bird'
-
-const ADMIN_WA = '6285179992598'
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
-
-  // ── Debug: confirm env vars are readable at request time ──
-  const serverKey = process.env.MIDTRANS_SERVER_KEY ?? ''
-  const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY ?? ''
-  console.log('[create-transaction] Server Key exists:', !!serverKey.trim())
-  console.log('[create-transaction] Server Key prefix:', serverKey.trim().substring(0, 10))
-  console.log('[create-transaction] Client Key prefix:', clientKey.trim().substring(0, 10))
-  console.log('[create-transaction] isProduction env:', process.env.MIDTRANS_IS_PRODUCTION)
 
   try {
     const body = await req.json()
@@ -47,7 +36,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Layanan tidak ditemukan' }, { status: 400 })
     }
 
-    // Validate voucher
     let discountAmount = 0
     let appliedVoucher: string | undefined
 
@@ -61,7 +49,6 @@ export async function POST(req: Request) {
 
     const totalPrice = pkg.price - discountAmount
 
-    // Create order record first
     const order = createOrder({
       userId: session.user.id,
       name,
@@ -83,45 +70,10 @@ export async function POST(req: Request) {
 
     console.log('[create-transaction] Order created:', order.orderId, '| amount:', totalPrice)
 
-    // Create Midtrans Snap transaction
-    const snapResult = await createSnapTransaction({
-      orderId: order.orderId,
-      grossAmount: totalPrice,
-      customerName: name,
-      customerEmail: email,
-      customerPhone: wa,
-      itemId: pkg.id,
-      itemName: `${svc.nameId} - ${pkg.nameId}`,
-      itemPrice: totalPrice,
-    })
-
-    console.log('[create-transaction] Snap token received for order:', order.orderId)
-
-    const waMessage = encodeURIComponent(
-      `🛒 ORDER BARU!\n\nOrder ID: ${order.orderId}\nLayanan: ${svc.nameId} - ${pkg.nameId}\nNama: ${name}\nEmail: ${email}\nWA: ${wa}\nTotal: Rp${totalPrice.toLocaleString('id-ID')}${appliedVoucher ? `\nVoucher: ${appliedVoucher}` : ''}${notes ? `\nCatatan: ${notes}` : ''}`
-    )
-
-    return NextResponse.json({
-      orderId: order.orderId,
-      snapToken: snapResult.token,
-      adminWaUrl: `https://wa.me/${ADMIN_WA}?text=${waMessage}`,
-    })
+    return NextResponse.json({ orderId: order.orderId })
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
-    const midtransResponse = (err as { ApiResponse?: unknown })?.ApiResponse
-
-    console.error('[create-transaction] FAILED:', {
-      message,
-      midtransResponse,
-      serverKeyPresent: !!serverKey.trim(),
-      serverKeyPrefix: serverKey.trim().substring(0, 10),
-      isProduction: process.env.MIDTRANS_IS_PRODUCTION,
-    })
-
-    return NextResponse.json({
-      error: 'Server error',
-      detail: message,
-      midtransResponse,
-    }, { status: 500 })
+    console.error('[create-transaction] FAILED:', message)
+    return NextResponse.json({ error: 'Server error', detail: message }, { status: 500 })
   }
 }
