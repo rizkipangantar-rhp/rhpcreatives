@@ -54,7 +54,7 @@ export default function AnnouncementBar() {
     <div ref={barRef} className={styles.bar}>
       <div className={styles.shimmer} />
       <span className={styles.textFull}>{p.text}</span>
-      <Link href="/promo/klaim-early-bird" className={styles.textShort}>🔥 Early Bird 25% OFF — Klaim →</Link>
+      <Link href="/promo/klaim-early-bird" className={styles.textShort}>🔥 Early Bird 25% OFF</Link>
       <Link href="/promo/klaim-early-bird" className={styles.ctaLink}>Klaim →</Link>
       <span className={styles.countdown}>
         <span className={styles.unit}>{pad(time.d)}<span className={styles.label}>{p.days}</span></span>
