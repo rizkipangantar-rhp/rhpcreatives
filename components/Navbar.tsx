@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useLanguage } from '@/context/LanguageContext'
 import styles from './Navbar.module.css'
@@ -16,6 +16,31 @@ const NAV_LINKS = [
   { key: 'about' as const, href: '/about' },
 ]
 
+function Avatar({ src, name, size, className }: { src?: string | null; name?: string | null; size: number; className?: string }) {
+  const [imgError, setImgError] = useState(false)
+
+  useEffect(() => { setImgError(false) }, [src])
+
+  const initials = name
+    ? name.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase()
+    : '?'
+
+  if (src && !imgError) {
+    return (
+      <Image
+        src={src}
+        alt={name ?? 'User'}
+        width={size}
+        height={size}
+        className={className}
+        onError={() => setImgError(true)}
+      />
+    )
+  }
+
+  return <span className={styles.avatarInitials}>{initials}</span>
+}
+
 export default function Navbar() {
   const { lang, toggle, tr } = useLanguage()
   const pathname = usePathname()
@@ -24,10 +49,6 @@ export default function Navbar() {
   const { data: session, status } = useSession()
 
   const closeMenu = () => setMenuOpen(false)
-
-  const initials = session?.user?.name
-    ? session.user.name.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase()
-    : '?'
 
   return (
     <nav className={styles.nav}>
@@ -62,17 +83,7 @@ export default function Navbar() {
               onClick={() => setDropdownOpen(!dropdownOpen)}
               aria-label="User menu"
             >
-              {session.user?.image ? (
-                <Image
-                  src={session.user.image}
-                  alt={session.user.name ?? 'User'}
-                  width={32}
-                  height={32}
-                  className={styles.avatarImg}
-                />
-              ) : (
-                <span className={styles.avatarInitials}>{initials}</span>
-              )}
+              <Avatar src={session.user?.image} name={session.user?.name} size={32} className={styles.avatarImg} />
             </button>
             {dropdownOpen && (
               <>
@@ -82,6 +93,14 @@ export default function Navbar() {
                     <span className={styles.dropdownName}>{session.user?.name}</span>
                     <span className={styles.dropdownEmail}>{session.user?.email}</span>
                   </div>
+                  <div className={styles.dropdownDivider} />
+                  <Link
+                    href="/dashboard/profil"
+                    className={styles.dropdownLink}
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    Profil & Referral
+                  </Link>
                   <div className={styles.dropdownDivider} />
                   <button
                     className={styles.dropdownLogout}
@@ -125,17 +144,7 @@ export default function Navbar() {
             {session && (
               <div className={styles.mobileUser}>
                 <div className={styles.mobileAvatarWrap}>
-                  {session.user?.image ? (
-                    <Image
-                      src={session.user.image}
-                      alt={session.user.name ?? 'User'}
-                      width={36}
-                      height={36}
-                      className={styles.avatarImg}
-                    />
-                  ) : (
-                    <span className={styles.mobileAvatarInitials}>{initials}</span>
-                  )}
+                  <Avatar src={session.user?.image} name={session.user?.name} size={36} className={styles.avatarImg} />
                 </div>
                 <div>
                   <p className={styles.mobileUserName}>{session.user?.name}</p>
@@ -162,12 +171,17 @@ export default function Navbar() {
                 {lang === 'id' ? 'ID → Switch to English' : 'EN → Ganti ke Indonesia'}
               </button>
               {session ? (
-                <button
-                  className={styles.mobileLogoutBtn}
-                  onClick={() => { closeMenu(); signOut({ callbackUrl: '/' }) }}
-                >
-                  Keluar
-                </button>
+                <>
+                  <Link href="/dashboard/profil" className={styles.mobileLoginBtn} onClick={closeMenu}>
+                    Profil & Referral
+                  </Link>
+                  <button
+                    className={styles.mobileLogoutBtn}
+                    onClick={() => { closeMenu(); signOut({ callbackUrl: '/' }) }}
+                  >
+                    Keluar
+                  </button>
+                </>
               ) : (
                 <Link href="/login" className={styles.mobileLoginBtn} onClick={closeMenu}>
                   Masuk

@@ -421,6 +421,24 @@
   margin: 0.2rem 0;
 }
 
+.dropdownLink {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--r-sm);
+  color: var(--text-2);
+  font-family: var(--font-body);
+  font-size: 0.83rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.dropdownLink:hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+}
+
 .dropdownLogout {
   display: block;
   width: 100%;
