@@ -281,8 +281,13 @@ export type Tr = {
   serviceModal: {
     title: string
     sub: string
-    hotBadge: string
-    viewAll: string
+    digitalName: string
+    digitalItems: string[]
+    digitalTagline: string
+    designName: string
+    designItems: string[]
+    designTagline: string
+    unsure: string
     consultWa: string
   }
   services: {
@@ -713,9 +718,14 @@ export const t: Record<Lang, Tr> = {
     serviceModal: {
       title: 'Mau bikin apa hari ini? 🔥',
       sub: 'Pilih layanan yang kamu butuhin, nanti kita gasken bareng!',
-      hotBadge: '⭐ Terlaris',
-      viewAll: 'Lihat semua paket & harga lengkap →',
-      consultWa: 'Mau konsultasi dulu? Chat WA →',
+      digitalName: 'Layanan Digital',
+      digitalItems: ['Undangan Online — mulai Rp79.000', 'Landing Page — mulai Rp299.000'],
+      digitalTagline: 'Buat tampilan digitalmu makin exist!',
+      designName: 'Layanan Desain',
+      designItems: ['Desain Instagram — mulai Rp40.000', 'Edit Foto — mulai Rp20.000'],
+      designTagline: 'Konten estetis yang bikin orang stop scroll!',
+      unsure: 'Belum yakin mau yang mana?',
+      consultWa: 'Konsultasi dulu via WA →',
     },
     services: {
       label: 'Apa yang Kami Kerjain',
@@ -1429,9 +1439,14 @@ export const t: Record<Lang, Tr> = {
     serviceModal: {
       title: 'What are we making today? 🔥',
       sub: "Pick what you need and let's get it done!",
-      hotBadge: '⭐ Popular',
-      viewAll: 'See all packages & full pricing →',
-      consultWa: 'Need to consult first? Chat WA →',
+      digitalName: 'Digital Services',
+      digitalItems: ['Online Invitation — from Rp79.000', 'Landing Page — from Rp299.000'],
+      digitalTagline: 'Make your digital presence shine!',
+      designName: 'Design Services',
+      designItems: ['Instagram Design — from Rp40.000', 'Photo Edit — from Rp20.000'],
+      designTagline: 'Aesthetic content that makes people stop scrolling!',
+      unsure: 'Not sure which one?',
+      consultWa: 'Consult via WA first →',
     },
     services: {
       label: 'What We Do',
