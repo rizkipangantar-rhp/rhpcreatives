@@ -1,4 +1,10 @@
 import { NextAuthOptions } from 'next-auth'
+
+declare module 'next-auth' {
+  interface Session {
+    user: { id?: string; name?: string | null; email?: string | null; image?: string | null }
+  }
+}
 import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
@@ -33,13 +39,11 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: 'jwt' },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.id = user.id
+      if (user) token.sub = user.id
       return token
     },
     async session({ session, token }) {
-      if (token && session.user) {
-        (session.user as { id?: string }).id = token.id as string
-      }
+      if (session.user) session.user.id = token.sub
       return session
     },
   },
