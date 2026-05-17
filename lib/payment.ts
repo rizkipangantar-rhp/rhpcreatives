@@ -1,17 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const midtransClient = require('midtrans-client')
 
-// Lazy initialization so env vars are read at request time, not module load time
-function getSnap() {
-  const isProduction = process.env.MIDTRANS_IS_PRODUCTION === 'true'
-  const serverKey = process.env.MIDTRANS_SERVER_KEY ?? ''
-  const clientKey = process.env.MIDTRANS_CLIENT_KEY ?? ''
-
-  if (!serverKey) throw new Error('MIDTRANS_SERVER_KEY is not set')
-
-  return new midtransClient.Snap({ isProduction, serverKey, clientKey })
-}
-
 export type SnapTransactionParams = {
   orderId: string
   grossAmount: number
@@ -23,8 +12,22 @@ export type SnapTransactionParams = {
   itemPrice: number
 }
 
+// Lazy initialization — env vars are read at request time, not module load time.
+// Keys are trimmed to remove any accidental whitespace/newlines.
+function getSnap() {
+  const serverKey = (process.env.MIDTRANS_SERVER_KEY ?? '').trim()
+  const clientKey = (process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY ?? '').trim()
+  const isProduction = process.env.MIDTRANS_IS_PRODUCTION === 'true'
+
+  if (!serverKey) throw new Error('MIDTRANS_SERVER_KEY is not set in environment')
+  if (!clientKey) throw new Error('NEXT_PUBLIC_MIDTRANS_CLIENT_KEY is not set in environment')
+
+  return new midtransClient.Snap({ isProduction, serverKey, clientKey })
+}
+
 export async function createSnapTransaction(params: SnapTransactionParams): Promise<{ token: string; redirect_url: string }> {
-  const result = await getSnap().createTransaction({
+  const snap = getSnap()
+  const result = await snap.createTransaction({
     transaction_details: {
       order_id: params.orderId,
       gross_amount: params.grossAmount,

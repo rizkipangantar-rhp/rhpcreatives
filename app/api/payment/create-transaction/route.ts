@@ -14,6 +14,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  // ── Debug: confirm env vars are readable at request time ──
+  const serverKey = process.env.MIDTRANS_SERVER_KEY ?? ''
+  const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY ?? ''
+  console.log('[create-transaction] Server Key exists:', !!serverKey.trim())
+  console.log('[create-transaction] Server Key prefix:', serverKey.trim().substring(0, 10))
+  console.log('[create-transaction] Client Key prefix:', clientKey.trim().substring(0, 10))
+  console.log('[create-transaction] isProduction env:', process.env.MIDTRANS_IS_PRODUCTION)
+
   try {
     const body = await req.json()
     const { packageId, name, email, wa, notes, voucherCode } = body as {
@@ -73,6 +81,8 @@ export async function POST(req: Request) {
       status: 'pending',
     })
 
+    console.log('[create-transaction] Order created:', order.orderId, '| amount:', totalPrice)
+
     // Create Midtrans Snap transaction
     const snapResult = await createSnapTransaction({
       orderId: order.orderId,
@@ -85,7 +95,8 @@ export async function POST(req: Request) {
       itemPrice: totalPrice,
     })
 
-    // Compose WhatsApp notification link for reference (attached to success page)
+    console.log('[create-transaction] Snap token received for order:', order.orderId)
+
     const waMessage = encodeURIComponent(
       `🛒 ORDER BARU!\n\nOrder ID: ${order.orderId}\nLayanan: ${svc.nameId} - ${pkg.nameId}\nNama: ${name}\nEmail: ${email}\nWA: ${wa}\nTotal: Rp${totalPrice.toLocaleString('id-ID')}${appliedVoucher ? `\nVoucher: ${appliedVoucher}` : ''}${notes ? `\nCatatan: ${notes}` : ''}`
     )
@@ -97,13 +108,13 @@ export async function POST(req: Request) {
     })
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
-    // midtrans-client attaches the raw API response on the error object
     const midtransResponse = (err as { ApiResponse?: unknown })?.ApiResponse
 
-    console.error('[create-transaction] error:', {
+    console.error('[create-transaction] FAILED:', {
       message,
       midtransResponse,
-      serverKeyPresent: !!process.env.MIDTRANS_SERVER_KEY,
+      serverKeyPresent: !!serverKey.trim(),
+      serverKeyPrefix: serverKey.trim().substring(0, 10),
       isProduction: process.env.MIDTRANS_IS_PRODUCTION,
     })
 
