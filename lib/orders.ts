@@ -113,6 +113,16 @@ export function updateOrderSnapToken(orderId: string, snapToken: string): boolea
   return true
 }
 
+export function updateOrderNotes(orderId: string, notes: string): boolean {
+  const db = read()
+  const idx = db.orders.findIndex(o => o.orderId === orderId)
+  if (idx === -1) return false
+  db.orders[idx].notes = notes
+  db.orders[idx].updatedAt = new Date().toISOString()
+  write(db)
+  return true
+}
+
 export function updateOrderPaymentInfo(
   orderId: string,
   info: Partial<Pick<Order,

@@ -40,6 +40,13 @@ const PACKAGES: Record<string, PackageOption[]> = {
   ],
 }
 
+const PKG_TO_SERVICE: Record<string, string> = {
+  'undangan-simpel': 'undangan', 'undangan-aesthetic': 'undangan', 'undangan-sultan': 'undangan',
+  'landing-santuy': 'landing-page', 'landing-kece': 'landing-page', 'landing-sultan': 'landing-page',
+  'ig-satu-post': 'desain-ig', 'ig-feed-pemula': 'desain-ig', 'ig-feed-aesthetic': 'desain-ig', 'ig-feed-sultan': 'desain-ig',
+  'foto-poles-dikit': 'edit-foto', 'foto-poles-banyak': 'edit-foto', 'foto-poles-abis': 'edit-foto',
+}
+
 function fmt(price: number) {
   return `Rp${price.toLocaleString('id-ID')}`
 }
@@ -58,10 +65,13 @@ export default function OrderPage() {
   const [notes, setNotes] = useState('')
   const [voucherCode, setVoucherCode] = useState('')
   const [voucherDiscount, setVoucherDiscount] = useState(0)
+  const [voucherType, setVoucherType] = useState<'ebird' | 'referral' | ''>('')
   const [voucherStatus, setVoucherStatus] = useState<'idle' | 'valid' | 'invalid' | 'checking'>('idle')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [showConfirm, setShowConfirm] = useState(false)
 
+  // Auto-fill from session
   useEffect(() => {
     if (session?.user) {
       if (session.user.name && !name) setName(session.user.name)
@@ -70,11 +80,27 @@ export default function OrderPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session])
 
+  // Auto-select service+package from URL ?paket=
+  useEffect(() => {
+    const search = window.location.search
+    if (!search) return
+    const params = new URLSearchParams(search)
+    const paket = params.get('paket')
+    if (!paket) return
+    const serviceId = PKG_TO_SERVICE[paket]
+    if (serviceId) {
+      setSelectedService(serviceId)
+      setSelectedPackage(paket)
+    }
+  }, [])
+
   const selectedSvc = SERVICES.find(s => s.id === selectedService)
   const selectedPkg = selectedPackage ? (PACKAGES[selectedService] ?? []).find(p => p.id === selectedPackage) : null
   const originalPrice = selectedPkg?.price ?? 0
   const discountAmount = Math.round(originalPrice * voucherDiscount)
   const totalPrice = originalPrice - discountAmount
+
+  const discountLabel = voucherType === 'referral' ? p.discountReferral : p.discount
 
   async function applyVoucher() {
     if (!voucherCode.trim()) return
@@ -88,9 +114,11 @@ export default function OrderPage() {
       const data = await res.json()
       if (data.valid) {
         setVoucherDiscount(data.discount)
+        setVoucherType(data.type ?? 'ebird')
         setVoucherStatus('valid')
       } else {
         setVoucherDiscount(0)
+        setVoucherType('')
         setVoucherStatus('invalid')
       }
     } catch {
@@ -140,12 +168,68 @@ export default function OrderPage() {
     }
   }
 
+  const waConsultUrl = selectedPkg
+    ? `https://wa.me/6285179992598?text=${encodeURIComponent(`Halo RHP Creatives! 👋 Mau konsultasi dulu sebelum order:\n\nLayanan: ${lang === 'id' ? (selectedSvc?.nameId ?? '') : (selectedSvc?.nameEn ?? '')}\nPaket: ${lang === 'id' ? selectedPkg.nameId : selectedPkg.nameEn}\nTotal: ${fmt(totalPrice)}`)}`
+    : 'https://wa.me/6285179992598?text=Halo%20RHP%20Creatives!%20Mau%20konsultasi%20dulu%20nih%20%F0%9F%91%8B'
+
   const canPay = selectedService && selectedPackage && name.trim() && email.trim() && wa.trim() && !isSubmitting
 
   return (
     <main className={styles.page}>
       <div className={styles.blob1} />
       <div className={styles.blob2} />
+
+      {/* ── Confirm Modal ── */}
+      {showConfirm && selectedPkg && (
+        <div className={styles.modalBackdrop} onClick={() => setShowConfirm(false)}>
+          <div className={styles.modal} onClick={e => e.stopPropagation()}>
+            <button className={styles.modalClose} onClick={() => setShowConfirm(false)}>✕</button>
+            <p className={styles.modalTitle}>{p.confirmTitle}</p>
+            <p className={styles.modalSub}>{p.confirmSub}</p>
+
+            <div className={styles.modalDetails}>
+              <div className={styles.modalRow}>
+                <span className={styles.modalRowLabel}>{tr.paymentPage.serviceLabel}</span>
+                <span className={styles.modalRowValue}>{lang === 'id' ? (selectedSvc?.nameId ?? '') : (selectedSvc?.nameEn ?? '')}</span>
+              </div>
+              <div className={styles.modalRow}>
+                <span className={styles.modalRowLabel}>{tr.orderSuccess.packageLabel}</span>
+                <span className={styles.modalRowValue}>{lang === 'id' ? selectedPkg.nameId : selectedPkg.nameEn}</span>
+              </div>
+              {discountAmount > 0 && (
+                <div className={styles.modalRow}>
+                  <span className={styles.modalRowLabel}>{discountLabel}</span>
+                  <span className={styles.modalRowValue}>-{fmt(discountAmount)}</span>
+                </div>
+              )}
+              <div className={styles.modalDivider} />
+              <div className={`${styles.modalRow} ${styles.modalTotal}`}>
+                <span className={styles.modalRowLabel}>{p.total}</span>
+                <span className={styles.modalRowValue}>{fmt(totalPrice)}</span>
+              </div>
+            </div>
+
+            <div className={styles.modalActions}>
+              <button
+                className={styles.modalPrimary}
+                onClick={() => { setShowConfirm(false); handlePayment() }}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? p.paying : p.confirmGasken}
+              </button>
+              <a
+                href={waConsultUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.modalSecondary}
+                onClick={() => setShowConfirm(false)}
+              >
+                💬 {p.confirmWa}
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className={styles.container}>
         <div className={styles.hero}>
@@ -240,7 +324,7 @@ export default function OrderPage() {
                   <input
                     className={`${styles.input} ${styles.voucherInput} ${voucherStatus === 'valid' ? styles.inputValid : ''} ${voucherStatus === 'invalid' ? styles.inputInvalid : ''}`}
                     value={voucherCode}
-                    onChange={e => { setVoucherCode(e.target.value); setVoucherStatus('idle'); setVoucherDiscount(0) }}
+                    onChange={e => { setVoucherCode(e.target.value); setVoucherStatus('idle'); setVoucherDiscount(0); setVoucherType('') }}
                     placeholder={p.voucherPlaceholder}
                   />
                   <button
@@ -251,7 +335,11 @@ export default function OrderPage() {
                     {voucherStatus === 'checking' ? '...' : p.voucherApply}
                   </button>
                 </div>
-                {voucherStatus === 'valid' && <p className={styles.voucherSuccess}>{p.voucherApplied}</p>}
+                {voucherStatus === 'valid' && (
+                  <p className={styles.voucherSuccess}>
+                    {voucherType === 'referral' ? p.voucherAppliedReferral : p.voucherApplied}
+                  </p>
+                )}
                 {voucherStatus === 'invalid' && <p className={styles.voucherError}>{p.voucherInvalid}</p>}
               </section>
             )}
@@ -277,7 +365,7 @@ export default function OrderPage() {
                   </div>
                   {voucherDiscount > 0 && (
                     <div className={`${styles.summaryRow} ${styles.summaryDiscount}`}>
-                      <span>{p.discount}</span>
+                      <span>{discountLabel}</span>
                       <span>-{fmt(discountAmount)}</span>
                     </div>
                   )}
@@ -301,7 +389,7 @@ export default function OrderPage() {
               ) : (
                 <button
                   className={styles.payBtn}
-                  onClick={handlePayment}
+                  onClick={() => { if (canPay) setShowConfirm(true) }}
                   disabled={!canPay}
                 >
                   {isSubmitting ? p.paying : p.payBtn}

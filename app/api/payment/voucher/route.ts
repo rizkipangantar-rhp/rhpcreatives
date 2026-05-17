@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server'
-import { findClaimByCode } from '@/lib/early-bird'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { findClaimByCode, isCodeUsed } from '@/lib/early-bird'
+import { findUserByReferralCode } from '@/lib/users'
+import { hasUserUsedReferral } from '@/lib/referral'
 
 export async function POST(req: Request) {
   try {
@@ -11,21 +15,58 @@ export async function POST(req: Request) {
 
     const normalized = code.trim().toUpperCase()
 
-    if (!normalized.startsWith('EBIRD-') || normalized.length < 10) {
-      return NextResponse.json({ valid: false, message: 'Format kode tidak valid' })
+    // Early Bird voucher
+    if (normalized.startsWith('EBIRD-')) {
+      if (normalized.length < 10) {
+        return NextResponse.json({ valid: false, message: 'Format kode tidak valid' })
+      }
+
+      const claim = findClaimByCode(normalized)
+      if (!claim) {
+        return NextResponse.json({ valid: false, message: 'Kode voucher tidak ditemukan' })
+      }
+
+      if (isCodeUsed(normalized)) {
+        return NextResponse.json({ valid: false, message: 'Kode voucher sudah pernah dipakai' })
+      }
+
+      return NextResponse.json({
+        valid: true,
+        type: 'ebird',
+        discount: 0.25,
+        message: 'Voucher Early Bird berhasil! Diskon 25%',
+      })
     }
 
-    const claim = findClaimByCode(normalized)
+    // Referral code
+    if (normalized.startsWith('RHP-')) {
+      const session = await getServerSession(authOptions)
+      if (!session?.user?.id) {
+        return NextResponse.json({ valid: false, message: 'Login dulu untuk pakai kode referral' })
+      }
 
-    if (!claim) {
-      return NextResponse.json({ valid: false, message: 'Kode voucher tidak ditemukan' })
+      const referrer = findUserByReferralCode(normalized)
+      if (!referrer) {
+        return NextResponse.json({ valid: false, message: 'Kode referral tidak ditemukan' })
+      }
+
+      if (referrer.id === session.user.id) {
+        return NextResponse.json({ valid: false, message: 'Tidak bisa pakai kode referral sendiri' })
+      }
+
+      if (hasUserUsedReferral(session.user.id)) {
+        return NextResponse.json({ valid: false, message: 'Kamu sudah pernah pakai kode referral sebelumnya' })
+      }
+
+      return NextResponse.json({
+        valid: true,
+        type: 'referral',
+        discount: 0.10,
+        message: 'Kode referral berhasil! Diskon 10%',
+      })
     }
 
-    return NextResponse.json({
-      valid: true,
-      discount: 0.25,
-      message: 'Voucher berhasil diterapkan! Diskon 25%',
-    })
+    return NextResponse.json({ valid: false, message: 'Format kode tidak valid' })
   } catch {
     return NextResponse.json({ valid: false, message: 'Terjadi kesalahan' })
   }

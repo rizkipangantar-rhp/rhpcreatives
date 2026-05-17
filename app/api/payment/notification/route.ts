@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { updateOrderStatus, getOrderById, type OrderStatus } from '@/lib/orders'
+import { markCodeUsed } from '@/lib/early-bird'
+import { recordReferralUsage } from '@/lib/referral'
 
 export async function POST(req: Request) {
   try {
@@ -13,7 +15,6 @@ export async function POST(req: Request) {
       transaction_status: string
     }
 
-    // Verify Midtrans signature
     const serverKey = process.env.MIDTRANS_SERVER_KEY ?? ''
     const expected = crypto
       .createHash('sha512')
@@ -24,7 +25,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: 'Invalid signature' }, { status: 403 })
     }
 
-    const order = getOrderById(order_id)
+    // order_id from Midtrans is the midtransOrderId (e.g. RHP-20260517-XXXXX-bt-bca-abc123)
+    // We need to find our actual order by matching the midtransOrderId prefix
+    // The actual orderId is everything before the last payment suffix
+    // Pattern: {orderId}-{method}-{ts} or {orderId}-{method}-{bank}-{ts}
+    // Our orderId format: RHP-YYYYMMDD-XXXXX
+    const orderIdMatch = order_id.match(/^(RHP-\d{8}-[A-Z0-9]{5})/)
+    const actualOrderId = orderIdMatch?.[1] ?? order_id
+
+    const order = getOrderById(actualOrderId)
     if (!order) {
       return NextResponse.json({ message: 'Order not found' }, { status: 404 })
     }
@@ -38,7 +47,16 @@ export async function POST(req: Request) {
       newStatus = 'cancelled'
     }
 
-    updateOrderStatus(order_id, newStatus)
+    updateOrderStatus(actualOrderId, newStatus)
+
+    if (newStatus === 'paid' && order.voucherCode) {
+      const code = order.voucherCode.toUpperCase()
+      if (code.startsWith('EBIRD-')) {
+        markCodeUsed(code, actualOrderId)
+      } else if (code.startsWith('RHP-')) {
+        recordReferralUsage(order.userId, code, actualOrderId)
+      }
+    }
 
     return NextResponse.json({ message: 'OK' })
   } catch (err) {

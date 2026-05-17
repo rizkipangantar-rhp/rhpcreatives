@@ -33,6 +33,26 @@ export function findUserByEmail(email: string): StoredUser | undefined {
   return readUsers().find(u => u.email.toLowerCase() === email.toLowerCase())
 }
 
+function generateReferralCode(email: string): string {
+  let hash = 0
+  for (let i = 0; i < email.length; i++) {
+    hash = ((hash << 5) - hash) + email.charCodeAt(i)
+    hash |= 0
+  }
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  let code = ''
+  let n = Math.abs(hash)
+  for (let i = 0; i < 5; i++) {
+    code += chars[n % chars.length]
+    n = Math.floor(n / chars.length)
+  }
+  return `RHP-${code}`
+}
+
+export function findUserByReferralCode(code: string): StoredUser | undefined {
+  return readUsers().find(u => generateReferralCode(u.email) === code)
+}
+
 export function createUser(data: Omit<StoredUser, 'id' | 'createdAt'>): StoredUser {
   const users = readUsers()
   const newUser: StoredUser = {

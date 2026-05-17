@@ -5,9 +5,13 @@ import Link from 'next/link'
 import { useLanguage } from '@/context/LanguageContext'
 import styles from './payment.module.css'
 
+const ADMIN_WA = '6285179992598'
+
 type Order = {
   orderId: string
   name: string
+  email: string
+  wa: string
   serviceNameId: string
   serviceNameEn: string
   packageNameId: string
@@ -15,6 +19,8 @@ type Order = {
   totalPrice: number
   originalPrice: number
   discountAmount: number
+  voucherCode?: string
+  notes?: string
   status: string
   createdAt: string
   paymentExpiry?: string
@@ -120,6 +126,9 @@ export default function PaymentPage() {
   const [chargeError, setChargeError] = useState('')
   const [copiedKey, setCopiedKey] = useState('')
   const [ccLoading, setCcLoading] = useState(false)
+  const [notes, setNotes] = useState('')
+  const [notesSaveStatus, setNotesSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
+  const notesSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   // 24h expiry from order creation (if no Midtrans expiry yet)
@@ -149,6 +158,7 @@ export default function PaymentPage() {
         if (!res.ok) throw new Error('Not found')
         const data: Order = await res.json()
         setOrder(data)
+        if (data.notes) setNotes(data.notes)
 
         // If already paid, redirect immediately
         if (data.status === 'paid' || data.status === 'completed') {
@@ -190,6 +200,28 @@ export default function PaymentPage() {
     fetchOrder()
   }, [order_id, router])
 
+  function triggerAdminWA(paidOrder: Order, lang: string) {
+    const fmt = (n: number) => `Rp${n.toLocaleString('id-ID')}`
+    const svc = lang === 'id' ? paidOrder.serviceNameId : paidOrder.serviceNameEn
+    const pkg = lang === 'id' ? paidOrder.packageNameId : paidOrder.packageNameEn
+    const method = paidOrder.paymentMethod ?? '-'
+    const msg = [
+      '💰 PEMBAYARAN MASUK!',
+      '',
+      `Order ID: ${paidOrder.orderId}`,
+      `Layanan: ${svc} — ${pkg}`,
+      `Nama: ${paidOrder.name}`,
+      `Email: ${paidOrder.email}`,
+      `WA: ${paidOrder.wa}`,
+      `Total: ${fmt(paidOrder.totalPrice)}`,
+      `Metode: ${method}`,
+      paidOrder.voucherCode ? `Voucher: ${paidOrder.voucherCode}` : '',
+      paidOrder.notes ? `Catatan: ${paidOrder.notes}` : '',
+    ].filter(Boolean).join('\n')
+
+    window.open(`https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(msg)}`, '_blank')
+  }
+
   // Poll status every 5s when there's an active charge
   const startPolling = useCallback(() => {
     if (pollRef.current) return
@@ -201,11 +233,13 @@ export default function PaymentPage() {
         if (data.status === 'paid' || data.status === 'completed') {
           clearInterval(pollRef.current!)
           pollRef.current = null
+          triggerAdminWA(data, lang)
           router.push(`/order/sukses/${order_id}`)
         }
       } catch { /* silent */ }
     }, 5000)
-  }, [order_id, router])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [order_id, router, lang])
 
   useEffect(() => {
     if (chargeResult) startPolling()
@@ -277,6 +311,25 @@ export default function PaymentPage() {
       setChargeError(p.errorCharge)
       setCcLoading(false)
     }
+  }
+
+  function handleNotesChange(value: string) {
+    setNotes(value)
+    setNotesSaveStatus('saving')
+    if (notesSaveTimer.current) clearTimeout(notesSaveTimer.current)
+    notesSaveTimer.current = setTimeout(async () => {
+      try {
+        await fetch(`/api/payment/order-notes/${order_id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ notes: value }),
+        })
+        setNotesSaveStatus('saved')
+        setTimeout(() => setNotesSaveStatus('idle'), 2000)
+      } catch {
+        setNotesSaveStatus('idle')
+      }
+    }, 600)
   }
 
   function copyText(text: string, key: string) {
@@ -376,6 +429,22 @@ export default function PaymentPage() {
                 ) : (
                   <p className={styles.countdownTime}>{countdownDisplay}</p>
                 )}
+              </div>
+
+              {/* Notes */}
+              <div className={styles.notesWrap}>
+                <label className={styles.notesLabel}>
+                  {p.notesLabel}
+                  {notesSaveStatus === 'saving' && <span className={styles.notesSaveStatus}> {p.notesSaving}</span>}
+                  {notesSaveStatus === 'saved' && <span className={styles.notesSaveStatus}> {p.notesSaved}</span>}
+                </label>
+                <textarea
+                  className={styles.notesTextarea}
+                  value={notes}
+                  onChange={e => handleNotesChange(e.target.value)}
+                  placeholder={p.notesPlaceholder}
+                  rows={3}
+                />
               </div>
             </div>
           </aside>

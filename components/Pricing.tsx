@@ -4,6 +4,22 @@ import { useLanguage } from '@/context/LanguageContext'
 import styles from './Pricing.module.css'
 import PricingBanner from './PricingBanner'
 
+const TIER_TO_PKG: Record<string, string> = {
+  'Undangan Simpel': 'undangan-simpel', 'Simple Invite': 'undangan-simpel',
+  'Undangan Aesthetic': 'undangan-aesthetic', 'Aesthetic Invite': 'undangan-aesthetic',
+  'Undangan Sultan': 'undangan-sultan', 'Sultan Invite': 'undangan-sultan',
+  'Halaman Santuy': 'landing-santuy', 'Chill Page': 'landing-santuy',
+  'Halaman Kece': 'landing-kece', 'Kece Page': 'landing-kece',
+  'Halaman Sultan': 'landing-sultan', 'Sultan Page': 'landing-sultan',
+  'Satu Post Dulu': 'ig-satu-post', 'One Post First': 'ig-satu-post',
+  'Feed Pemula': 'ig-feed-pemula', 'Starter Feed': 'ig-feed-pemula',
+  'Feed Aesthetic': 'ig-feed-aesthetic', 'Aesthetic Feed': 'ig-feed-aesthetic',
+  'Feed Sultan': 'ig-feed-sultan', 'Sultan Feed': 'ig-feed-sultan',
+  'Poles Dikit': 'foto-poles-dikit', 'Quick Polish': 'foto-poles-dikit',
+  'Poles Banyak': 'foto-poles-banyak', 'Full Polish': 'foto-poles-banyak',
+  'Poles Abis': 'foto-poles-abis', 'Max Polish': 'foto-poles-abis',
+}
+
 interface PricingProps {
   filter?: 'digital' | 'design' | 'all'
   showHeader?: boolean
@@ -69,7 +85,7 @@ export default function Pricing({ filter = 'all', showHeader = true }: PricingPr
                         {p.consultCta}
                       </a>
                     ) : (
-                      <Link href="#order" className={styles.btn}>{p.orderCta}</Link>
+                      <Link href={`/order?paket=${TIER_TO_PKG[tier.name] ?? ''}`} className={styles.btn}>{p.orderCta}</Link>
                     )}
                   </div>
                 ))}

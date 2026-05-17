@@ -51,14 +51,9 @@ export default function PromoContent() {
             </div>
           </div>
 
-          <a
-            href="https://wa.me/6285179992598"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.earlyBirdCta}
-          >
+          <Link href="/promo/klaim-early-bird" className={styles.earlyBirdCta}>
             {promo.earlyBird.cta}
-          </a>
+          </Link>
         </div>
       </section>
 
@@ -79,7 +74,7 @@ export default function PromoContent() {
               </div>
               <div className={styles.bundleSave}>{item.save}</div>
               <a
-                href="https://wa.me/6285179992598"
+                href="https://wa.me/6285179992598?text=Halo%20RHP%20Creatives!%20Mau%20konsultasi%20paket%20bundling%20nih%20%F0%9F%91%8B"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.bundleBtn}
@@ -122,14 +117,9 @@ export default function PromoContent() {
               </div>
             ))}
           </div>
-          <a
-            href="https://wa.me/6285179992598"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.howCta}
-          >
+          <Link href="/dashboard/profil" className={styles.howCta}>
             {promo.referral.cta}
-          </a>
+          </Link>
         </div>
       </section>
 

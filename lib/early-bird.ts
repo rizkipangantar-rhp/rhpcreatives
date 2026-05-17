@@ -13,6 +13,8 @@ export type ClaimEntry = {
   service: string
   voucherCode: string
   claimedAt: string
+  usedOrderId?: string
+  usedAt?: string
 }
 
 export type WaitlistEntry = {
@@ -71,6 +73,21 @@ export function addClaim(entry: Omit<ClaimEntry, 'voucherCode' | 'claimedAt'>): 
 
 export function findClaimByCode(code: string): ClaimEntry | undefined {
   return read().claims.find(c => c.voucherCode === code)
+}
+
+export function isCodeUsed(code: string): boolean {
+  const claim = findClaimByCode(code)
+  return !!claim?.usedAt
+}
+
+export function markCodeUsed(code: string, orderId: string): boolean {
+  const data = read()
+  const idx = data.claims.findIndex(c => c.voucherCode === code)
+  if (idx === -1) return false
+  data.claims[idx].usedOrderId = orderId
+  data.claims[idx].usedAt = new Date().toISOString()
+  write(data)
+  return true
 }
 
 export function addWaitlist(email: string, wa: string): void {

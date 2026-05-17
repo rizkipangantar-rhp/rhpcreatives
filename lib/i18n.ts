@@ -135,10 +135,12 @@ export type Tr = {
     voucherPlaceholder: string
     voucherApply: string
     voucherApplied: string
+    voucherAppliedReferral: string
     voucherInvalid: string
     summaryLabel: string
     originalPrice: string
     discount: string
+    discountReferral: string
     total: string
     payBtn: string
     paying: string
@@ -146,6 +148,10 @@ export type Tr = {
     loginBtn: string
     selectFirst: string
     errorGeneral: string
+    confirmTitle: string
+    confirmSub: string
+    confirmGasken: string
+    confirmWa: string
   }
   orderSuccess: {
     title: string
@@ -204,6 +210,10 @@ export type Tr = {
     expiredSub: string
     backToOrder: string
     countdownLabel: string
+    notesLabel: string
+    notesPlaceholder: string
+    notesSaving: string
+    notesSaved: string
   }
   adminOrders: {
     title: string
@@ -498,11 +508,13 @@ export const t: Record<Lang, Tr> = {
       voucherLabel: 'Kode Voucher',
       voucherPlaceholder: 'EBIRD-XXXXX',
       voucherApply: 'Terapkan',
-      voucherApplied: '✓ Voucher berhasil! Diskon 25% diterapkan',
+      voucherApplied: '✓ Voucher Early Bird berhasil! Diskon 25% diterapkan',
+      voucherAppliedReferral: '✓ Kode referral berhasil! Diskon 10% diterapkan',
       voucherInvalid: '✗ Kode voucher tidak valid',
       summaryLabel: 'Ringkasan Order',
       originalPrice: 'Harga asli',
       discount: 'Diskon Early Bird',
+      discountReferral: 'Diskon Referral',
       total: 'Total Bayar',
       payBtn: 'Bayar Sekarang →',
       paying: 'Memproses...',
@@ -510,6 +522,10 @@ export const t: Record<Lang, Tr> = {
       loginBtn: 'Login Sekarang →',
       selectFirst: 'Pilih layanan dan paket dulu',
       errorGeneral: 'Gagal membuat transaksi. Coba lagi.',
+      confirmTitle: 'Cek dulu ya, bestie! ✨',
+      confirmSub: 'Pastiin orderan kamu udah bener sebelum bayar',
+      confirmGasken: 'Gasken Bayar! →',
+      confirmWa: 'Konsultasi WA dulu',
     },
     orderSuccess: {
       title: 'Yay! Order Berhasil! 🎉',
@@ -524,7 +540,7 @@ export const t: Record<Lang, Tr> = {
       statusProcessing: 'Sedang Diproses',
       statusCompleted: 'Selesai',
       statusCancelled: 'Dibatalkan',
-      waBtn: 'Hubungi via WhatsApp →',
+      waBtn: 'Hubungi CS untuk Follow Up →',
       homeBtn: 'Kembali ke Beranda',
       orderHistoryBtn: 'Lihat Semua Order',
       notFoundTitle: 'Order Tidak Ditemukan',
@@ -594,6 +610,10 @@ export const t: Record<Lang, Tr> = {
       expiredSub: 'Batas waktu pembayaran sudah lewat. Silakan buat order baru.',
       backToOrder: '← Buat Order Baru',
       countdownLabel: 'Sisa waktu bayar',
+      notesLabel: 'Catatan / Request Kamu',
+      notesPlaceholder: 'Tulis catatan atau request spesifik kamu di sini (opsional)',
+      notesSaving: 'Menyimpan...',
+      notesSaved: 'Tersimpan ✓',
     },
     adminOrders: {
       title: 'Admin — Daftar Order',
@@ -1192,11 +1212,13 @@ export const t: Record<Lang, Tr> = {
       voucherLabel: 'Voucher Code',
       voucherPlaceholder: 'EBIRD-XXXXX',
       voucherApply: 'Apply',
-      voucherApplied: '✓ Voucher applied! 25% discount activated',
+      voucherApplied: '✓ Early Bird voucher applied! 25% discount activated',
+      voucherAppliedReferral: '✓ Referral code applied! 10% discount activated',
       voucherInvalid: '✗ Invalid voucher code',
       summaryLabel: 'Order Summary',
       originalPrice: 'Original price',
       discount: 'Early Bird Discount',
+      discountReferral: 'Referral Discount',
       total: 'Total',
       payBtn: 'Pay Now →',
       paying: 'Processing...',
@@ -1204,6 +1226,10 @@ export const t: Record<Lang, Tr> = {
       loginBtn: 'Login Now →',
       selectFirst: 'Select a service and package first',
       errorGeneral: 'Failed to create transaction. Please try again.',
+      confirmTitle: 'Double-check, bestie! ✨',
+      confirmSub: 'Make sure your order details are correct before paying',
+      confirmGasken: 'Pay Now! →',
+      confirmWa: 'Chat WA first',
     },
     orderSuccess: {
       title: 'Order Placed! 🎉',
@@ -1218,7 +1244,7 @@ export const t: Record<Lang, Tr> = {
       statusProcessing: 'Processing',
       statusCompleted: 'Completed',
       statusCancelled: 'Cancelled',
-      waBtn: 'Chat via WhatsApp →',
+      waBtn: 'Contact CS for Follow Up →',
       homeBtn: 'Back to Home',
       orderHistoryBtn: 'View All Orders',
       notFoundTitle: 'Order Not Found',
@@ -1288,6 +1314,10 @@ export const t: Record<Lang, Tr> = {
       expiredSub: 'The payment window has closed. Please place a new order.',
       backToOrder: '← Place New Order',
       countdownLabel: 'Time remaining',
+      notesLabel: 'Your Notes / Request',
+      notesPlaceholder: 'Write any specific notes or requests here (optional)',
+      notesSaving: 'Saving...',
+      notesSaved: 'Saved ✓',
     },
     adminOrders: {
       title: 'Admin — Order List',

@@ -3,7 +3,9 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { findPackageById, findServiceById } from '@/lib/packages'
 import { createOrder } from '@/lib/orders'
-import { findClaimByCode } from '@/lib/early-bird'
+import { findClaimByCode, isCodeUsed } from '@/lib/early-bird'
+import { findUserByReferralCode } from '@/lib/users'
+import { hasUserUsedReferral } from '@/lib/referral'
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions)
@@ -40,10 +42,20 @@ export async function POST(req: Request) {
     let appliedVoucher: string | undefined
 
     if (voucherCode) {
-      const claim = findClaimByCode(voucherCode.toUpperCase())
-      if (claim) {
-        discountAmount = Math.round(pkg.price * 0.25)
-        appliedVoucher = voucherCode.toUpperCase()
+      const normalized = voucherCode.trim().toUpperCase()
+
+      if (normalized.startsWith('EBIRD-')) {
+        const claim = findClaimByCode(normalized)
+        if (claim && !isCodeUsed(normalized)) {
+          discountAmount = Math.round(pkg.price * 0.25)
+          appliedVoucher = normalized
+        }
+      } else if (normalized.startsWith('RHP-')) {
+        const referrer = findUserByReferralCode(normalized)
+        if (referrer && referrer.id !== session.user.id && !hasUserUsedReferral(session.user.id)) {
+          discountAmount = Math.round(pkg.price * 0.10)
+          appliedVoucher = normalized
+        }
       }
     }
 
