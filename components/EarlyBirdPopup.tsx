@@ -15,12 +15,25 @@ export default function EarlyBirdPopup() {
   const { status } = useSession()
   const [visible, setVisible] = useState(false)
   const [slotsLeft, setSlotsLeft] = useState(17)
+  const [hasClaim, setHasClaim] = useState<boolean | null>(null)
+
+  // Check if authenticated user already claimed — suppress popup if so
+  useEffect(() => {
+    if (status === 'loading') return
+    if (status === 'unauthenticated') { setHasClaim(false); return }
+    fetch('/api/early-bird/status')
+      .then(r => r.json())
+      .then(data => setHasClaim(!!data.claim))
+      .catch(() => setHasClaim(false))
+  }, [status])
 
   useEffect(() => {
     if (pathname !== '/') return
+    if (hasClaim === null) return  // wait until claim status is known
+    if (hasClaim) return           // already claimed — never show
     const timer = setTimeout(() => setVisible(true), 2_000)
     return () => clearTimeout(timer)
-  }, [pathname])
+  }, [pathname, hasClaim])
 
   useEffect(() => {
     if (!visible) return
