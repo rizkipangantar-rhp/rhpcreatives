@@ -160,34 +160,20 @@
 /* ── Mobile Menu ── */
 .mobileMenu {
   position: fixed;
-  inset: 0;
-  z-index: 200;
-}
-
-.mobileOverlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.75);
-}
-
-.mobilePanel {
-  position: absolute;
-  top: 0; right: 0; bottom: 0;
-  width: min(320px, 100vw);
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 9999;
   background: #0d0d1e;
-  border-left: 1px solid rgba(255,255,255,0.08);
-  padding: 1.5rem;
   display: flex;
   flex-direction: column;
+  padding: 1.5rem;
   gap: 1.25rem;
-  animation: slideInRight 0.25s ease-out;
   overflow-y: auto;
-  box-shadow: -12px 0 48px rgba(0,0,0,0.7);
+  animation: fadeInMenu 0.2s ease;
 }
 
-@keyframes slideInRight {
-  from { transform: translateX(100%); }
-  to   { transform: translateX(0); }
+@keyframes fadeInMenu {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 .mobilePanelTop {

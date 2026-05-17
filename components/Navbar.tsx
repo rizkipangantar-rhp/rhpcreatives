@@ -134,8 +134,6 @@ export default function Navbar() {
 
       {menuOpen && (
         <div className={styles.mobileMenu}>
-          <div className={styles.mobileOverlay} onClick={closeMenu} />
-          <div className={styles.mobilePanel}>
             <div className={styles.mobilePanelTop}>
               <span className={styles.mobileLogo}>RHP<span>Creatives</span></span>
               <button className={styles.closeBtn} onClick={closeMenu}>✕</button>
@@ -191,7 +189,6 @@ export default function Navbar() {
                 {tr.nav.cta}
               </Link>
             </div>
-          </div>
         </div>
       )}
     </nav>
