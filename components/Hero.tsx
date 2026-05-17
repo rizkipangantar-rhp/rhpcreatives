@@ -1,11 +1,15 @@
 'use client'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 import { useLanguage } from '@/context/LanguageContext'
 import styles from './Hero.module.css'
 
 export default function Hero() {
   const { tr } = useLanguage()
   const h = tr.hero
+  const { status } = useSession()
+
+  const orderHref = status === 'unauthenticated' ? '/login?callbackUrl=/order' : '/order'
 
   return (
     <section className={styles.hero}>
@@ -17,7 +21,7 @@ export default function Hero() {
         </h1>
         <p className={styles.sub}>{h.sub}</p>
         <div className={styles.actions}>
-          <Link href="#order" className={styles.btnPrimary}>{h.cta1}</Link>
+          <Link href={orderHref} className={styles.btnPrimary}>{h.cta1}</Link>
           <Link href="#layanan" className={styles.btnOutline}>{h.cta2}</Link>
         </div>
         <div className={styles.stats}>

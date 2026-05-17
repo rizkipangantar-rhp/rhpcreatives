@@ -27,7 +27,7 @@ export async function POST(req: Request) {
       }
 
       if (isCodeUsed(normalized)) {
-        return NextResponse.json({ valid: false, message: 'Kode voucher sudah pernah dipakai' })
+        return NextResponse.json({ valid: false, message: 'Kode Early Bird kamu udah kepake nih! Satu kode cuma bisa dipakai sekali ya bestie 😅' })
       }
 
       return NextResponse.json({
@@ -55,7 +55,7 @@ export async function POST(req: Request) {
       }
 
       if (hasUserUsedReferral(session.user.id)) {
-        return NextResponse.json({ valid: false, message: 'Kamu sudah pernah pakai kode referral sebelumnya' })
+        return NextResponse.json({ valid: false, message: 'Kamu udah pernah pakai kode referral sebelumnya ya! Kode referral cuma buat order pertama 😊' })
       }
 
       return NextResponse.json({

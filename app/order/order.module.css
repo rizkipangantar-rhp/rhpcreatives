@@ -343,6 +343,7 @@
 }
 
 .summaryDiscount { color: #4ade80; }
+.priceStrike { text-decoration: line-through; opacity: 0.5; }
 
 .summaryTotal {
   font-family: var(--font-display);

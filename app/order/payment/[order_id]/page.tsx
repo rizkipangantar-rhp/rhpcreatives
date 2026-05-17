@@ -201,24 +201,20 @@ export default function PaymentPage() {
   }, [order_id, router])
 
   function triggerAdminWA(paidOrder: Order, lang: string) {
-    const fmt = (n: number) => `Rp${n.toLocaleString('id-ID')}`
+    const fmtPrice = (n: number) => `Rp${n.toLocaleString('id-ID')}`
     const svc = lang === 'id' ? paidOrder.serviceNameId : paidOrder.serviceNameEn
     const pkg = lang === 'id' ? paidOrder.packageNameId : paidOrder.packageNameEn
-    const method = paidOrder.paymentMethod ?? '-'
-    const msg = [
-      '💰 PEMBAYARAN MASUK!',
-      '',
+    const parts = [
+      `🔔 ORDER BARU!`,
       `Order ID: ${paidOrder.orderId}`,
-      `Layanan: ${svc} — ${pkg}`,
+      `Layanan: ${svc}`,
+      `Paket: ${pkg}`,
+      `Total: ${fmtPrice(paidOrder.totalPrice)}`,
       `Nama: ${paidOrder.name}`,
-      `Email: ${paidOrder.email}`,
       `WA: ${paidOrder.wa}`,
-      `Total: ${fmt(paidOrder.totalPrice)}`,
-      `Metode: ${method}`,
-      paidOrder.voucherCode ? `Voucher: ${paidOrder.voucherCode}` : '',
-      paidOrder.notes ? `Catatan: ${paidOrder.notes}` : '',
-    ].filter(Boolean).join('\n')
-
+      `Keterangan: ${paidOrder.notes ?? '-'}`,
+    ]
+    const msg = parts.join(' | ')
     window.open(`https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(msg)}`, '_blank')
   }
 

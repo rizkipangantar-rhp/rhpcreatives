@@ -273,6 +273,10 @@ export type Tr = {
     designSub: string
     designItems: string[]
     designCta: string
+    viewPackageBtn: string
+    orderNowBtn: string
+    hotBadge: string
+    viewAllBtn: string
   }
   services: {
     label: string
@@ -337,6 +341,7 @@ export type Tr = {
     badge: string
     title: string
     sub: string
+    cta: string
   }
   floatingBadge: {
     text: string
@@ -504,7 +509,7 @@ export const t: Record<Lang, Tr> = {
       waLabel: 'Nomor WhatsApp',
       waPlaceholder: '08xxxxxxxxxx',
       notesLabel: 'Catatan Tambahan',
-      notesPlaceholder: 'Ceritain kebutuhan kamu di sini (opsional)',
+      notesPlaceholder: 'Tulis request khusus kamu di sini... (misal: tema warna, tanggal acara, nama yang mau dicantumkan, dll)',
       voucherLabel: 'Kode Voucher',
       voucherPlaceholder: 'EBIRD-XXXXX',
       voucherApply: 'Terapkan',
@@ -523,9 +528,9 @@ export const t: Record<Lang, Tr> = {
       selectFirst: 'Pilih layanan dan paket dulu',
       errorGeneral: 'Gagal membuat transaksi. Coba lagi.',
       confirmTitle: 'Cek dulu ya, bestie! ✨',
-      confirmSub: 'Pastiin orderan kamu udah bener sebelum bayar',
-      confirmGasken: 'Gasken Bayar! →',
-      confirmWa: 'Konsultasi WA dulu',
+      confirmSub: 'Eh bestie, mau langsung gasken atau konsultasi dulu? Tenang, kamu juga bisa tulis keterangan/request khusus di halaman pembayaran kok! 📝',
+      confirmGasken: 'Langsung Gasken Bayar 🚀',
+      confirmWa: 'Konsultasi Dulu via WA 💬',
     },
     orderSuccess: {
       title: 'Yay! Order Berhasil! 🎉',
@@ -611,7 +616,7 @@ export const t: Record<Lang, Tr> = {
       backToOrder: '← Buat Order Baru',
       countdownLabel: 'Sisa waktu bayar',
       notesLabel: 'Catatan / Request Kamu',
-      notesPlaceholder: 'Tulis catatan atau request spesifik kamu di sini (opsional)',
+      notesPlaceholder: 'Tulis request khusus kamu di sini... (misal: tema warna, tanggal acara, nama yang mau dicantumkan, dll)',
       notesSaving: 'Menyimpan...',
       notesSaved: 'Tersimpan ✓',
     },
@@ -693,6 +698,10 @@ export const t: Record<Lang, Tr> = {
       designSub: 'Desain Instagram estetis dan edit foto rapi untuk tampilan yang selalu on point.',
       designItems: ['Desain Instagram', 'Edit Foto'],
       designCta: 'Lihat Detail & Harga →',
+      viewPackageBtn: 'Lihat Paket →',
+      orderNowBtn: 'Order Sekarang →',
+      hotBadge: '🔥 Terlaris',
+      viewAllBtn: 'Lihat Semua Paket & Harga →',
     },
     services: {
       label: 'Apa yang Kami Kerjain',
@@ -1001,6 +1010,7 @@ export const t: Record<Lang, Tr> = {
       badge: '🔥 Early Bird Aktif',
       title: 'Diskon 25% Buat 20 Klien Pertama',
       sub: 'Harga di bawah belum termasuk diskon Early Bird. Segera order sebelum kehabisan!',
+      cta: 'Klaim Sekarang →',
     },
     floatingBadge: {
       text: '🔥 Early Bird 25% OFF',
@@ -1020,14 +1030,14 @@ export const t: Record<Lang, Tr> = {
       submitBtn: 'Klaim Voucher Sekarang 🎉',
       submitting: 'Memproses...',
       successTitle: 'Yeay! Voucher Berhasil Diklaim! 🎊',
-      successSub: 'Tunjukkan kode ini saat order via WhatsApp ke RHP Creatives.',
+      successSub: 'Masukkan kode ini di kolom voucher saat kamu order ya! Diskon 25% langsung berlaku.',
       voucherLabel: 'Kode Voucher Kamu',
       copyBtn: 'Salin Kode',
       copied: 'Tersalin!',
       shareWaBtn: 'Share via WhatsApp →',
-      orderWaBtn: 'Order Sekarang via WhatsApp →',
+      orderWaBtn: 'Order Sekarang →',
       howTitle: 'Cara Pakai Voucher',
-      howText: 'Hubungi RHP Creatives via WhatsApp, sebutkan layanan yang kamu mau, dan tunjukkan kode voucher ini. Diskon 25% langsung diterapkan!',
+      howText: 'Klik Order Sekarang di bawah, masukkan kode voucher ini di halaman order. Diskon 25% langsung diterapkan!',
       alreadyTitle: 'Kamu Sudah Punya Voucher! 🎉',
       alreadySub: 'Voucher Early Bird kamu sudah aktif. Gunakan kode ini saat order.',
       claimedAtLabel: 'Diklaim pada',
@@ -1208,7 +1218,7 @@ export const t: Record<Lang, Tr> = {
       waLabel: 'WhatsApp Number',
       waPlaceholder: '08xxxxxxxxxx',
       notesLabel: 'Additional Notes',
-      notesPlaceholder: 'Tell us what you need (optional)',
+      notesPlaceholder: 'Add your special requests here... (e.g. color theme, event date, name to include, etc)',
       voucherLabel: 'Voucher Code',
       voucherPlaceholder: 'EBIRD-XXXXX',
       voucherApply: 'Apply',
@@ -1227,9 +1237,9 @@ export const t: Record<Lang, Tr> = {
       selectFirst: 'Select a service and package first',
       errorGeneral: 'Failed to create transaction. Please try again.',
       confirmTitle: 'Double-check, bestie! ✨',
-      confirmSub: 'Make sure your order details are correct before paying',
-      confirmGasken: 'Pay Now! →',
-      confirmWa: 'Chat WA first',
+      confirmSub: 'Hey bestie, ready to pay or wanna chat first? You can also add special notes on the payment page btw! 📝',
+      confirmGasken: 'Pay Now! 🚀',
+      confirmWa: 'Chat WA First 💬',
     },
     orderSuccess: {
       title: 'Order Placed! 🎉',
@@ -1315,7 +1325,7 @@ export const t: Record<Lang, Tr> = {
       backToOrder: '← Place New Order',
       countdownLabel: 'Time remaining',
       notesLabel: 'Your Notes / Request',
-      notesPlaceholder: 'Write any specific notes or requests here (optional)',
+      notesPlaceholder: 'Add your special requests here... (e.g. color theme, event date, name to include, etc)',
       notesSaving: 'Saving...',
       notesSaved: 'Saved ✓',
     },
@@ -1397,6 +1407,10 @@ export const t: Record<Lang, Tr> = {
       designSub: 'Aesthetic Instagram content and clean photo edits that keep you on point.',
       designItems: ['Instagram Design', 'Photo Editing'],
       designCta: 'View Details & Pricing →',
+      viewPackageBtn: 'View Packages →',
+      orderNowBtn: 'Order Now →',
+      hotBadge: '🔥 Trending',
+      viewAllBtn: 'View All Packages & Pricing →',
     },
     services: {
       label: 'What We Do',
@@ -1705,6 +1719,7 @@ export const t: Record<Lang, Tr> = {
       badge: '🔥 Early Bird Active',
       title: '25% Off for the First 20 Clients',
       sub: "Prices below don't include the Early Bird discount. Order before slots run out!",
+      cta: 'Claim Now →',
     },
     floatingBadge: {
       text: '🔥 Early Bird 25% OFF',
@@ -1724,14 +1739,14 @@ export const t: Record<Lang, Tr> = {
       submitBtn: 'Claim Voucher Now 🎉',
       submitting: 'Processing...',
       successTitle: 'Woohoo! Voucher Claimed! 🎊',
-      successSub: 'Show this code when ordering via WhatsApp to RHP Creatives.',
+      successSub: 'Enter this code in the voucher field when you order! 25% discount applies instantly.',
       voucherLabel: 'Your Voucher Code',
       copyBtn: 'Copy Code',
       copied: 'Copied!',
       shareWaBtn: 'Share via WhatsApp →',
-      orderWaBtn: 'Order Now via WhatsApp →',
+      orderWaBtn: 'Order Now →',
       howTitle: 'How to Use Your Voucher',
-      howText: 'Contact RHP Creatives via WhatsApp, mention the service you want, and show this voucher code. Your 25% discount applies instantly!',
+      howText: 'Click Order Now below, enter this voucher code on the order page. Your 25% discount applies instantly!',
       alreadyTitle: 'You Already Have a Voucher! 🎉',
       alreadySub: 'Your Early Bird voucher is active. Use this code when ordering.',
       claimedAtLabel: 'Claimed on',

@@ -67,6 +67,7 @@ export default function OrderPage() {
   const [voucherDiscount, setVoucherDiscount] = useState(0)
   const [voucherType, setVoucherType] = useState<'ebird' | 'referral' | ''>('')
   const [voucherStatus, setVoucherStatus] = useState<'idle' | 'valid' | 'invalid' | 'checking'>('idle')
+  const [voucherErrorMsg, setVoucherErrorMsg] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [showConfirm, setShowConfirm] = useState(false)
@@ -102,9 +103,18 @@ export default function OrderPage() {
 
   const discountLabel = voucherType === 'referral' ? p.discountReferral : p.discount
 
+  // Auto-validate voucher after 1s debounce
+  useEffect(() => {
+    if (!voucherCode.trim()) return
+    const t = setTimeout(applyVoucher, 1_000)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [voucherCode])
+
   async function applyVoucher() {
     if (!voucherCode.trim()) return
     setVoucherStatus('checking')
+    setVoucherErrorMsg('')
     try {
       const res = await fetch('/api/payment/voucher', {
         method: 'POST',
@@ -120,9 +130,11 @@ export default function OrderPage() {
         setVoucherDiscount(0)
         setVoucherType('')
         setVoucherStatus('invalid')
+        setVoucherErrorMsg(data.message || p.voucherInvalid)
       }
     } catch {
       setVoucherStatus('invalid')
+      setVoucherErrorMsg(p.voucherInvalid)
     }
   }
 
@@ -224,7 +236,7 @@ export default function OrderPage() {
                 className={styles.modalSecondary}
                 onClick={() => setShowConfirm(false)}
               >
-                💬 {p.confirmWa}
+                {p.confirmWa}
               </a>
             </div>
           </div>
@@ -324,7 +336,7 @@ export default function OrderPage() {
                   <input
                     className={`${styles.input} ${styles.voucherInput} ${voucherStatus === 'valid' ? styles.inputValid : ''} ${voucherStatus === 'invalid' ? styles.inputInvalid : ''}`}
                     value={voucherCode}
-                    onChange={e => { setVoucherCode(e.target.value); setVoucherStatus('idle'); setVoucherDiscount(0); setVoucherType('') }}
+                    onChange={e => { setVoucherCode(e.target.value); setVoucherStatus('idle'); setVoucherDiscount(0); setVoucherType(''); setVoucherErrorMsg('') }}
                     placeholder={p.voucherPlaceholder}
                   />
                   <button
@@ -340,7 +352,7 @@ export default function OrderPage() {
                     {voucherType === 'referral' ? p.voucherAppliedReferral : p.voucherApplied}
                   </p>
                 )}
-                {voucherStatus === 'invalid' && <p className={styles.voucherError}>{p.voucherInvalid}</p>}
+                {voucherStatus === 'invalid' && <p className={styles.voucherError}>{voucherErrorMsg || p.voucherInvalid}</p>}
               </section>
             )}
           </div>
@@ -361,7 +373,7 @@ export default function OrderPage() {
                   <div className={styles.summaryDivider} />
                   <div className={styles.summaryRow}>
                     <span>{p.originalPrice}</span>
-                    <span>{fmt(originalPrice)}</span>
+                    <span className={voucherDiscount > 0 ? styles.priceStrike : ''}>{fmt(originalPrice)}</span>
                   </div>
                   {voucherDiscount > 0 && (
                     <div className={`${styles.summaryRow} ${styles.summaryDiscount}`}>

@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import Link from 'next/link'
 import { useLanguage } from '@/context/LanguageContext'
 import styles from './claim.module.css'
 
@@ -11,11 +12,14 @@ type ClaimEntry = {
 }
 const QUOTA = 20
 
-const WA_NUMBER = '6285179992598'
-
-function waOrderUrl(code: string, service: string) {
-  const msg = `Halo RHP Creatives! Aku mau order *${service}* nih dan punya voucher Early Bird.\nKode voucher: *${code}*\nTolong diproses ya, makasih! 😊`
-  return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`
+const SERVICE_TO_PAKET: Record<string, string> = {
+  'Undangan Online': 'undangan-simpel',
+  'Online Invitation': 'undangan-simpel',
+  'Landing Page': 'landing-santuy',
+  'Desain Instagram': 'ig-satu-post',
+  'Instagram Design': 'ig-satu-post',
+  'Edit Foto': 'foto-poles-dikit',
+  'Photo Editing': 'foto-poles-dikit',
 }
 
 function waShareUrl(code: string) {
@@ -257,9 +261,9 @@ export default function KlaimEarlyBirdPage() {
           </div>
 
           <div className={styles.ctaGroup}>
-            <a href={waOrderUrl(claim.voucherCode, claim.service)} target="_blank" rel="noopener noreferrer" className={styles.primaryCta}>
+            <Link href={`/order?paket=${SERVICE_TO_PAKET[claim.service] ?? ''}`} className={styles.primaryCta}>
               {c.orderWaBtn}
-            </a>
+            </Link>
             <a href={waShareUrl(claim.voucherCode)} target="_blank" rel="noopener noreferrer" className={styles.secondaryCta}>
               {c.shareWaBtn}
             </a>
@@ -282,9 +286,9 @@ export default function KlaimEarlyBirdPage() {
           <VoucherBox code={claim.voucherCode} label={c.voucherLabel} copyBtn={c.copyBtn} copied={c.copied} />
 
           <div className={styles.ctaGroup}>
-            <a href={waOrderUrl(claim.voucherCode, claim.service)} target="_blank" rel="noopener noreferrer" className={styles.primaryCta}>
+            <Link href={`/order?paket=${SERVICE_TO_PAKET[claim.service] ?? ''}`} className={styles.primaryCta}>
               {c.orderWaBtn}
-            </a>
+            </Link>
             <a href={waShareUrl(claim.voucherCode)} target="_blank" rel="noopener noreferrer" className={styles.secondaryCta}>
               {c.shareWaBtn}
             </a>
