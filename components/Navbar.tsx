@@ -51,6 +51,7 @@ export default function Navbar() {
   const closeMenu = () => setMenuOpen(false)
 
   return (
+    <>
     <nav className={styles.nav}>
       <Link href="/" className={styles.logo} onClick={closeMenu}>
         RHP<span>Creatives</span>
@@ -132,65 +133,68 @@ export default function Navbar() {
         </button>
       </div>
 
+    </nav>
+
       {menuOpen && (
         <div className={styles.mobileMenu}>
-            <div className={styles.mobilePanelTop}>
-              <span className={styles.mobileLogo}>RHP<span>Creatives</span></span>
-              <button className={styles.closeBtn} onClick={closeMenu}>✕</button>
-            </div>
+          <div className={styles.mobilePanelTop}>
+            <span className={styles.mobileLogo}>RHP<span>Creatives</span></span>
+            <button className={styles.closeBtn} onClick={closeMenu}>✕</button>
+          </div>
 
-            {session && (
-              <div className={styles.mobileUser}>
-                <div className={styles.mobileAvatarWrap}>
-                  <Avatar src={session.user?.image} name={session.user?.name} size={36} className={styles.avatarImg} />
-                </div>
-                <div>
-                  <p className={styles.mobileUserName}>{session.user?.name}</p>
-                  <p className={styles.mobileUserEmail}>{session.user?.email}</p>
-                </div>
+          {session && (
+            <div className={styles.mobileUser}>
+              <div className={styles.mobileAvatarWrap}>
+                <Avatar src={session.user?.image} name={session.user?.name} size={36} className={styles.avatarImg} />
               </div>
-            )}
-
-            <ul className={styles.mobileLinks}>
-              {NAV_LINKS.map(({ key, href }) => (
-                <li key={key}>
-                  <Link
-                    href={href}
-                    className={`${pathname === href ? styles.mobileLinkActive : ''} ${key === 'promo' ? styles.mobileLinkPromo : ''}`}
-                    onClick={closeMenu}
-                  >
-                    {tr.nav[key]}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            <div className={styles.mobileCta}>
-              <button className={styles.mobileLangToggle} onClick={toggle}>
-                {lang === 'id' ? 'ID → Switch to English' : 'EN → Ganti ke Indonesia'}
-              </button>
-              {session ? (
-                <>
-                  <Link href="/dashboard/profil" className={styles.mobileLoginBtn} onClick={closeMenu}>
-                    {tr.nav.profileLink}
-                  </Link>
-                  <button
-                    className={styles.mobileLogoutBtn}
-                    onClick={() => { closeMenu(); signOut({ callbackUrl: '/' }) }}
-                  >
-                    {tr.nav.logout}
-                  </button>
-                </>
-              ) : (
-                <Link href="/login" className={styles.mobileLoginBtn} onClick={closeMenu}>
-                  {tr.nav.login}
-                </Link>
-              )}
-              <Link href="#order" className={styles.mobileCtaBtn} onClick={closeMenu}>
-                {tr.nav.cta}
-              </Link>
+              <div>
+                <p className={styles.mobileUserName}>{session.user?.name}</p>
+                <p className={styles.mobileUserEmail}>{session.user?.email}</p>
+              </div>
             </div>
+          )}
+
+          <ul className={styles.mobileLinks}>
+            {NAV_LINKS.map(({ key, href }) => (
+              <li key={key}>
+                <Link
+                  href={href}
+                  className={`${pathname === href ? styles.mobileLinkActive : ''} ${key === 'promo' ? styles.mobileLinkPromo : ''}`}
+                  onClick={closeMenu}
+                >
+                  {tr.nav[key]}
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          <div className={styles.mobileCta}>
+            <button className={styles.mobileLangToggle} onClick={toggle}>
+              {lang === 'id' ? 'ID → Switch to English' : 'EN → Ganti ke Indonesia'}
+            </button>
+            {session ? (
+              <>
+                <Link href="/dashboard/profil" className={styles.mobileLoginBtn} onClick={closeMenu}>
+                  {tr.nav.profileLink}
+                </Link>
+                <button
+                  className={styles.mobileLogoutBtn}
+                  onClick={() => { closeMenu(); signOut({ callbackUrl: '/' }) }}
+                >
+                  {tr.nav.logout}
+                </button>
+              </>
+            ) : (
+              <Link href="/login" className={styles.mobileLoginBtn} onClick={closeMenu}>
+                {tr.nav.login}
+              </Link>
+            )}
+            <Link href="#order" className={styles.mobileCtaBtn} onClick={closeMenu}>
+              {tr.nav.cta}
+            </Link>
+          </div>
         </div>
       )}
-    </nav>
+    </>
   )
 }
