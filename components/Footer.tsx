@@ -16,8 +16,8 @@ export default function Footer() {
         <a href="https://wa.me/6285179992598" target="_blank" rel="noopener noreferrer" className={styles.contact}>
           WhatsApp: +62 851 7999 2598
         </a>
-        <a href="mailto:rhpcreatives@gmail.com" className={styles.contact}>
-          rhpcreatives@gmail.com
+        <a href="mailto:rhpcreativesid@gmail.com" className={styles.contact}>
+          rhpcreativesid@gmail.com
         </a>
       </div>
       <p className={styles.copy}>{f.copy}</p>
