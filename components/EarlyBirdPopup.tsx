@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { useLanguage } from '@/context/LanguageContext'
 import styles from './EarlyBirdPopup.module.css'
 
@@ -11,6 +12,8 @@ export default function EarlyBirdPopup() {
   const { tr } = useLanguage()
   const p = tr.earlyBirdPopup
   const pathname = usePathname()
+  const router = useRouter()
+  const { status } = useSession()
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
@@ -21,6 +24,11 @@ export default function EarlyBirdPopup() {
 
   function close() {
     setVisible(false)
+  }
+
+  function handleCta() {
+    close()
+    router.push(status === 'authenticated' ? '/layanan-digital' : '/login')
   }
 
   if (!visible) return null
@@ -49,15 +57,9 @@ export default function EarlyBirdPopup() {
           </div>
         </div>
 
-        <a
-          href="https://wa.me/6285179992598"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.cta}
-          onClick={close}
-        >
+        <button className={styles.cta} onClick={handleCta}>
           {p.cta}
-        </a>
+        </button>
         <button className={styles.dismiss} onClick={close}>{p.dismiss}</button>
       </div>
     </div>

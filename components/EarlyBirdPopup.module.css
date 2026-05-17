@@ -115,6 +115,9 @@
 
 .cta {
   display: block;
+  width: 100%;
+  border: none;
+  cursor: pointer;
   background: var(--grad);
   color: #fff;
   font-family: var(--font-display);
