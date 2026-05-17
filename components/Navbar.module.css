@@ -162,29 +162,31 @@
   position: fixed;
   inset: 0;
   z-index: 200;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .mobileOverlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.75);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  z-index: 0;
 }
 
 .mobilePanel {
-  position: absolute;
-  top: 0; right: 0; bottom: 0;
+  position: relative;
+  z-index: 1;
   width: min(320px, 100vw);
+  height: 100%;
   background: #0d0d1e;
-  border-left: 1px solid var(--border);
+  border-left: 1px solid rgba(255,255,255,0.08);
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  animation: slideInRight 0.28s ease-out;
+  animation: slideInRight 0.25s ease-out;
   overflow-y: auto;
-  box-shadow: -8px 0 40px rgba(0,0,0,0.6);
+  box-shadow: -12px 0 48px rgba(0,0,0,0.7);
 }
 
 @keyframes slideInRight {
