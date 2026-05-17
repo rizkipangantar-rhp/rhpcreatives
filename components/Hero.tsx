@@ -1,18 +1,18 @@
 'use client'
+import { useState } from 'react'
 import Link from 'next/link'
-import { useSession } from 'next-auth/react'
 import { useLanguage } from '@/context/LanguageContext'
+import ServicePickerModal from './ServicePickerModal'
 import styles from './Hero.module.css'
 
 export default function Hero() {
   const { tr } = useLanguage()
   const h = tr.hero
-  const { status } = useSession()
-
-  const orderHref = status === 'unauthenticated' ? '/login?callbackUrl=/order' : '/order'
+  const [showModal, setShowModal] = useState(false)
 
   return (
     <section className={styles.hero}>
+      {showModal && <ServicePickerModal onClose={() => setShowModal(false)} />}
       <div className={styles.content}>
         <div className={styles.tag}>{h.tag}</div>
         <h1>
@@ -21,7 +21,7 @@ export default function Hero() {
         </h1>
         <p className={styles.sub}>{h.sub}</p>
         <div className={styles.actions}>
-          <Link href={orderHref} className={styles.btnPrimary}>{h.cta1}</Link>
+          <button onClick={() => setShowModal(true)} className={styles.btnPrimary}>{h.cta1}</button>
           <Link href="#layanan" className={styles.btnOutline}>{h.cta2}</Link>
         </div>
         <div className={styles.stats}>

@@ -278,6 +278,13 @@ export type Tr = {
     hotBadge: string
     viewAllBtn: string
   }
+  serviceModal: {
+    title: string
+    sub: string
+    hotBadge: string
+    viewAll: string
+    consultWa: string
+  }
   services: {
     label: string
     title: string
@@ -702,6 +709,13 @@ export const t: Record<Lang, Tr> = {
       orderNowBtn: 'Order Sekarang →',
       hotBadge: '🔥 Terlaris',
       viewAllBtn: 'Lihat Semua Paket & Harga →',
+    },
+    serviceModal: {
+      title: 'Mau bikin apa hari ini? 🔥',
+      sub: 'Pilih layanan yang kamu butuhin, nanti kita gasken bareng!',
+      hotBadge: '⭐ Terlaris',
+      viewAll: 'Lihat semua paket & harga lengkap →',
+      consultWa: 'Mau konsultasi dulu? Chat WA →',
     },
     services: {
       label: 'Apa yang Kami Kerjain',
@@ -1411,6 +1425,13 @@ export const t: Record<Lang, Tr> = {
       orderNowBtn: 'Order Now →',
       hotBadge: '🔥 Trending',
       viewAllBtn: 'View All Packages & Pricing →',
+    },
+    serviceModal: {
+      title: 'What are we making today? 🔥',
+      sub: "Pick what you need and let's get it done!",
+      hotBadge: '⭐ Popular',
+      viewAll: 'See all packages & full pricing →',
+      consultWa: 'Need to consult first? Chat WA →',
     },
     services: {
       label: 'What We Do',
