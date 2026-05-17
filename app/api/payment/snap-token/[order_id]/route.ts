@@ -30,7 +30,8 @@ export async function GET(
     const pkg = findPackageById(order.packageId)
     const svc = findServiceById(order.serviceId)
 
-    const midtransOrderId = `${order_id}-cc-${Date.now()}`
+    const ts = Date.now().toString(36).slice(-6)
+    const midtransOrderId = `${order_id}-cc-${ts}`
 
     const result = await createCCSnapToken({
       orderId: midtransOrderId,

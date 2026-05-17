@@ -45,8 +45,14 @@ export async function POST(req: Request) {
     const pkg = findPackageById(order.packageId)
     const svc = findServiceById(order.serviceId)
 
-    const suffix = `${method}${bank ? `-${bank}` : ''}-${Date.now()}`
-    const midtransOrderId = `${orderId}-${suffix}`
+    // Midtrans order_id max = 50 chars. Use short method codes + 6-char base36 timestamp.
+    const methodCode: Record<string, string> = {
+      bank_transfer: 'bt', qris: 'qr', gopay: 'gp', shopeepay: 'sp',
+    }
+    const ts = Date.now().toString(36).slice(-6)
+    const midtransOrderId = `${orderId}-${methodCode[method] ?? method}${bank ? `-${bank}` : ''}-${ts}`
+
+    console.log('[charge] midtransOrderId:', midtransOrderId, '(', midtransOrderId.length, 'chars)')
 
     const chargeBase = {
       midtransOrderId,

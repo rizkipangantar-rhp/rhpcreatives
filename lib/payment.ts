@@ -64,21 +64,25 @@ export type TransactionStatus = {
   expiry_time?: string
 }
 
-function getSnap() {
+function readKeys() {
   const serverKey = (process.env.MIDTRANS_SERVER_KEY ?? '').trim()
   const clientKey = (process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY ?? '').trim()
   const isProduction = process.env.MIDTRANS_IS_PRODUCTION === 'true'
+  console.log('[midtrans] serverKey prefix:', serverKey ? serverKey.substring(0, 15) : '(EMPTY!)')
+  console.log('[midtrans] clientKey prefix:', clientKey ? clientKey.substring(0, 15) : '(EMPTY!)')
+  console.log('[midtrans] isProduction:', isProduction)
   if (!serverKey) throw new Error('MIDTRANS_SERVER_KEY is not set in environment')
   if (!clientKey) throw new Error('NEXT_PUBLIC_MIDTRANS_CLIENT_KEY is not set in environment')
+  return { serverKey, clientKey, isProduction }
+}
+
+function getSnap() {
+  const { serverKey, clientKey, isProduction } = readKeys()
   return new midtransClient.Snap({ isProduction, serverKey, clientKey })
 }
 
 function getCoreApi() {
-  const serverKey = (process.env.MIDTRANS_SERVER_KEY ?? '').trim()
-  const clientKey = (process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY ?? '').trim()
-  const isProduction = process.env.MIDTRANS_IS_PRODUCTION === 'true'
-  if (!serverKey) throw new Error('MIDTRANS_SERVER_KEY is not set in environment')
-  if (!clientKey) throw new Error('NEXT_PUBLIC_MIDTRANS_CLIENT_KEY is not set in environment')
+  const { serverKey, clientKey, isProduction } = readKeys()
   return new midtransClient.CoreApi({ isProduction, serverKey, clientKey })
 }
 
