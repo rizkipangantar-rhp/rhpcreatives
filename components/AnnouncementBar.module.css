@@ -101,7 +101,23 @@
   background: rgba(255,255,255,0.15);
 }
 
+.ctaLink {
+  display: inline-block;
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.ctaLink:hover { background: rgba(255,255,255,0.32); }
+
 @media (max-width: 640px) {
   .textFull { display: none; }
-  .textShort { display: inline; }
+  .textShort { display: inline; color: #fff; text-decoration: none; }
+  .ctaLink { display: none; }
 }

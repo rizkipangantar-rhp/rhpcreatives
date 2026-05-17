@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import { useLanguage } from '@/context/LanguageContext'
 import styles from './AnnouncementBar.module.css'
 
@@ -53,7 +54,8 @@ export default function AnnouncementBar() {
     <div ref={barRef} className={styles.bar}>
       <div className={styles.shimmer} />
       <span className={styles.textFull}>{p.text}</span>
-      <span className={styles.textShort}>🔥 Early Bird 25% OFF</span>
+      <Link href="/promo/klaim-early-bird" className={styles.textShort}>🔥 Early Bird 25% OFF — Klaim →</Link>
+      <Link href="/promo/klaim-early-bird" className={styles.ctaLink}>Klaim →</Link>
       <span className={styles.countdown}>
         <span className={styles.unit}>{pad(time.d)}<span className={styles.label}>{p.days}</span></span>
         <span className={styles.sep}>:</span>

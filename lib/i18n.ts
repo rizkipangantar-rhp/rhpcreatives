@@ -208,6 +208,41 @@ export type Tr = {
     text: string
     sub: string
   }
+  claimPage: {
+    title: string
+    sub: string
+    slotsLeft: string
+    formTitle: string
+    nameLabel: string
+    emailLabel: string
+    waLabel: string
+    waPlaceholder: string
+    serviceLabel: string
+    serviceOptions: string[]
+    submitBtn: string
+    submitting: string
+    successTitle: string
+    successSub: string
+    voucherLabel: string
+    copyBtn: string
+    copied: string
+    shareWaBtn: string
+    orderWaBtn: string
+    howTitle: string
+    howText: string
+    alreadyTitle: string
+    alreadySub: string
+    claimedAtLabel: string
+    quotaFullTitle: string
+    quotaFullSub: string
+    waitlistTitle: string
+    waitlistEmailLabel: string
+    waitlistWaLabel: string
+    waitlistWaPlaceholder: string
+    waitlistSubmit: string
+    waitlistSuccess: string
+    loading: string
+  }
   promo: {
     earlyBird: {
       label: string
@@ -676,6 +711,41 @@ export const t: Record<Lang, Tr> = {
     floatingBadge: {
       text: '🔥 Early Bird 25% OFF',
       sub: 'Cuma 20 slot',
+    },
+    claimPage: {
+      title: 'Klaim Voucher Early Bird 🎉',
+      sub: 'Diskon 25% khusus buat kamu. Klaim sekarang sebelum kehabisan!',
+      slotsLeft: 'slot tersisa dari 20',
+      formTitle: 'Isi Data Kamu',
+      nameLabel: 'Nama Lengkap',
+      emailLabel: 'Email',
+      waLabel: 'Nomor WhatsApp',
+      waPlaceholder: '08xxxxxxxxxx',
+      serviceLabel: 'Layanan yang Diminati',
+      serviceOptions: ['Undangan Online', 'Landing Page', 'Desain Instagram', 'Edit Foto', 'Paket Bundling'],
+      submitBtn: 'Klaim Voucher Sekarang 🎉',
+      submitting: 'Memproses...',
+      successTitle: 'Yeay! Voucher Berhasil Diklaim! 🎊',
+      successSub: 'Tunjukkan kode ini saat order via WhatsApp ke RHP Creatives.',
+      voucherLabel: 'Kode Voucher Kamu',
+      copyBtn: 'Salin Kode',
+      copied: 'Tersalin!',
+      shareWaBtn: 'Share via WhatsApp →',
+      orderWaBtn: 'Order Sekarang via WhatsApp →',
+      howTitle: 'Cara Pakai Voucher',
+      howText: 'Hubungi RHP Creatives via WhatsApp, sebutkan layanan yang kamu mau, dan tunjukkan kode voucher ini. Diskon 25% langsung diterapkan!',
+      alreadyTitle: 'Kamu Sudah Punya Voucher! 🎉',
+      alreadySub: 'Voucher Early Bird kamu sudah aktif. Gunakan kode ini saat order.',
+      claimedAtLabel: 'Diklaim pada',
+      quotaFullTitle: 'Yah, Kuota Early Bird Habis 😢',
+      quotaFullSub: 'Semua 20 slot Early Bird sudah terisi. Daftar waitlist dan kami kabari kalau ada slot terbuka atau promo berikutnya!',
+      waitlistTitle: 'Daftar Waitlist',
+      waitlistEmailLabel: 'Email',
+      waitlistWaLabel: 'Nomor WhatsApp',
+      waitlistWaPlaceholder: '08xxxxxxxxxx',
+      waitlistSubmit: 'Daftar Waitlist',
+      waitlistSuccess: 'Kamu sudah masuk waitlist! Kami akan kabari segera 🔔',
+      loading: 'Memuat...',
     },
     promo: {
       earlyBird: {
@@ -1185,6 +1255,41 @@ export const t: Record<Lang, Tr> = {
     floatingBadge: {
       text: '🔥 Early Bird 25% OFF',
       sub: '20 slots only',
+    },
+    claimPage: {
+      title: 'Claim Your Early Bird Voucher 🎉',
+      sub: '25% off just for you. Claim now before slots run out!',
+      slotsLeft: 'slots remaining out of 20',
+      formTitle: 'Fill in Your Details',
+      nameLabel: 'Full Name',
+      emailLabel: 'Email',
+      waLabel: 'WhatsApp Number',
+      waPlaceholder: '08xxxxxxxxxx',
+      serviceLabel: 'Service You\'re Interested In',
+      serviceOptions: ['Online Invitation', 'Landing Page', 'Instagram Design', 'Photo Editing', 'Bundle Package'],
+      submitBtn: 'Claim Voucher Now 🎉',
+      submitting: 'Processing...',
+      successTitle: 'Woohoo! Voucher Claimed! 🎊',
+      successSub: 'Show this code when ordering via WhatsApp to RHP Creatives.',
+      voucherLabel: 'Your Voucher Code',
+      copyBtn: 'Copy Code',
+      copied: 'Copied!',
+      shareWaBtn: 'Share via WhatsApp →',
+      orderWaBtn: 'Order Now via WhatsApp →',
+      howTitle: 'How to Use Your Voucher',
+      howText: 'Contact RHP Creatives via WhatsApp, mention the service you want, and show this voucher code. Your 25% discount applies instantly!',
+      alreadyTitle: 'You Already Have a Voucher! 🎉',
+      alreadySub: 'Your Early Bird voucher is active. Use this code when ordering.',
+      claimedAtLabel: 'Claimed on',
+      quotaFullTitle: 'Early Bird Slots Are Full 😢',
+      quotaFullSub: "All 20 Early Bird slots have been taken. Join the waitlist and we'll notify you when the next promo drops!",
+      waitlistTitle: 'Join the Waitlist',
+      waitlistEmailLabel: 'Email',
+      waitlistWaLabel: 'WhatsApp Number',
+      waitlistWaPlaceholder: '08xxxxxxxxxx',
+      waitlistSubmit: 'Join Waitlist',
+      waitlistSuccess: "You're on the waitlist! We'll notify you soon 🔔",
+      loading: 'Loading...',
     },
     promo: {
       earlyBird: {

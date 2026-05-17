@@ -1,0 +1,349 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--bar-h) + 80px) 1rem 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Confetti ── */
+.confetti {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.confettiPiece {
+  position: absolute;
+  top: -20px;
+  animation: fall linear forwards;
+}
+
+@keyframes fall {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+
+/* ── Card ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border-hi);
+  border-radius: var(--r-xl);
+  padding: 2.5rem 2rem;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 80px rgba(139,92,246,0.15), 0 24px 60px rgba(0,0,0,0.4);
+}
+
+.topBadge {
+  display: inline-block;
+  background: var(--grad);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.25rem 0.9rem;
+  border-radius: 999px;
+  margin-bottom: 1rem;
+}
+
+.successIcon, .sadIcon {
+  font-size: 3.5rem;
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.sub {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.claimedAt {
+  font-size: 0.82rem;
+  color: var(--dim);
+  margin-top: -0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Slot bar ── */
+.slotRow {
+  margin-bottom: 1.75rem;
+}
+
+.slotDots {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--surface3);
+  border: 1.5px solid rgba(139,92,246,0.3);
+}
+
+.dotTaken {
+  background: var(--purple);
+  border-color: var(--purple);
+}
+
+.slotText {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.slotNum {
+  font-weight: 700;
+  color: var(--pink);
+}
+
+/* ── Form ── */
+.formTitle {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 1.25rem;
+  text-align: left;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  text-align: left;
+}
+
+.formError {
+  background: rgba(236,72,153,0.1);
+  border: 1px solid rgba(236,72,153,0.3);
+  color: var(--pink-light);
+  font-size: 0.85rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--r-sm);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.field label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.field input,
+.field select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 0.65rem 0.85rem;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: var(--purple);
+}
+
+.field select option {
+  background: var(--surface2);
+}
+
+.readOnly {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.submitBtn {
+  background: var(--grad);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--r);
+  padding: 0.9rem 1.5rem;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 0.25rem;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.submitBtn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+.submitBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Voucher box ── */
+.voucherWrap {
+  background: linear-gradient(135deg, rgba(139,92,246,0.18) 0%, rgba(236,72,153,0.18) 100%);
+  border: 2px dashed rgba(139,92,246,0.45);
+  border-radius: var(--r-lg);
+  padding: 1.5rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.voucherLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+}
+
+.voucherCode {
+  font-family: 'Courier New', monospace;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: 0.12em;
+  margin-bottom: 0.85rem;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.copyBtn {
+  background: var(--surface3);
+  border: 1px solid var(--border-hi);
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.45rem 1.1rem;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.copyBtn:hover { background: var(--surface2); }
+
+/* ── How to box ── */
+.howBox {
+  background: var(--surface2);
+  border-radius: var(--r);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.howTitle {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+
+.howText {
+  font-size: 0.83rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ── CTA group ── */
+.ctaGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.primaryCta {
+  display: block;
+  background: var(--grad);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.85rem 1.5rem;
+  border-radius: var(--r);
+  text-decoration: none;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.primaryCta:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.secondaryCta {
+  display: block;
+  background: var(--surface2);
+  border: 1px solid var(--border-hi);
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--r);
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.secondaryCta:hover { background: var(--surface3); }
+
+/* ── Waitlist success ── */
+.waitlistSuccess {
+  background: rgba(16,185,129,0.12);
+  border: 1px solid rgba(16,185,129,0.3);
+  color: #6ee7b7;
+  font-size: 0.9rem;
+  padding: 1rem;
+  border-radius: var(--r);
+  margin-top: 0.5rem;
+}
+
+/* ── Loading ── */
+.loadingWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: var(--muted);
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--purple);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 540px) {
+  .card { padding: 2rem 1.25rem; }
+  .title { font-size: 1.35rem; }
+  .voucherCode { font-size: 1.6rem; }
+}

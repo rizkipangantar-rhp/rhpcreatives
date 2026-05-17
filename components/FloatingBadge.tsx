@@ -1,4 +1,5 @@
 'use client'
+import Link from 'next/link'
 import { useLanguage } from '@/context/LanguageContext'
 import styles from './FloatingBadge.module.css'
 
@@ -7,14 +8,14 @@ export default function FloatingBadge() {
   const f = tr.floatingBadge
 
   return (
-    <a
-      href="#order"
+    <Link
+      href="/promo/klaim-early-bird"
       className={styles.badge}
       aria-label={f.text}
     >
       <span className={styles.pulse} />
       <span className={styles.text}>{f.text}</span>
       <span className={styles.sub}>{f.sub}</span>
-    </a>
+    </Link>
   )
 }

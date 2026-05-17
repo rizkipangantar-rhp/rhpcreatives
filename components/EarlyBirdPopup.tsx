@@ -28,7 +28,11 @@ export default function EarlyBirdPopup() {
 
   function handleCta() {
     close()
-    router.push(status === 'authenticated' ? '/layanan-digital' : '/login')
+    if (status === 'authenticated') {
+      router.push('/promo/klaim-early-bird')
+    } else {
+      router.push('/login?callbackUrl=%2Fpromo%2Fklaim-early-bird')
+    }
   }
 
   if (!visible) return null
