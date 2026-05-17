@@ -91,26 +91,20 @@
   margin-inline: auto;
 }
 
-/* ── Bento Grid — Digital (3 items) ── */
+/* ── Grid — Digital (2 items) ── */
 .gridDigital {
   display: grid;
-  grid-template-columns: 5fr 7fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
-  min-height: 520px;
   max-width: 1200px;
   margin-inline: auto;
   margin-bottom: 10px;
 }
 
-.gridDigital .card:nth-child(1) {
-  grid-row: 1 / 3;
-}
-
-/* ── Bento Grid — Design (3 items) ── */
+/* ── Grid — Design (2 items) ── */
 .gridDesign {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   max-width: 1200px;
   margin-inline: auto;
@@ -230,16 +224,7 @@
 /* ── Responsive ── */
 @media (max-width: 900px) {
   .services { padding: 5rem 1.5rem; }
-  .gridDigital {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
-    min-height: unset;
-  }
-  .gridDigital .card:nth-child(1) { grid-row: auto; }
-  .gridDesign { grid-template-columns: 1fr 1fr; }
-  .header { flex-direction: column; align-items: flex-start; }
-}
-
-@media (max-width: 540px) {
+  .gridDigital { grid-template-columns: 1fr; }
   .gridDesign { grid-template-columns: 1fr; }
+  .header { flex-direction: column; align-items: flex-start; }
 }

@@ -19,11 +19,6 @@ const STEP_ICONS = [
   </svg>,
 ]
 
-const BENEFIT_ICON = (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <polyline points="20 6 9 17 4 12" />
-  </svg>
-)
 
 export default function PromoContent() {
   const { tr } = useLanguage()
@@ -138,58 +133,6 @@ export default function PromoContent() {
         </div>
       </section>
 
-      {/* ── Affiliate ── */}
-      <section className={styles.affiliateSection}>
-        <div className={styles.sectionLabel}>{promo.affiliate.label}</div>
-        <h2 className={styles.sectionTitle}>{promo.affiliate.title}</h2>
-        <p className={styles.sectionSub}>{promo.affiliate.sub}</p>
-
-        <div className={styles.affiliateGrid}>
-          {promo.affiliate.tiers.map((tier, i) => (
-            <div key={tier.name} className={`${styles.affiliateTier} ${i === 2 ? styles.affiliateTierTop : ''}`}>
-              {i === 2 && <div className={styles.affiliateBadge}>Pro</div>}
-              <div className={styles.affiliateTierName}>{tier.name}</div>
-              <div className={styles.affiliateTierRange}>{tier.range}</div>
-              <div className={styles.affiliateTierCommission}>{tier.commission}</div>
-            </div>
-          ))}
-        </div>
-
-        <div className={styles.affiliateDetails}>
-          <div className={styles.affiliateBenefits}>
-            <div className={styles.benefitLabel}>{promo.affiliate.benefitLabel}</div>
-            <ul className={styles.benefitList}>
-              {promo.affiliate.benefits.map((b) => (
-                <li key={b}>
-                  <span className={styles.benefitIcon}>{BENEFIT_ICON}</span>
-                  {b}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className={styles.affiliatePayout}>
-            <div className={styles.payoutCard}>
-              <div className={styles.payoutLabel}>Pencairan Minimum</div>
-              <div className={styles.payoutValue}>{promo.affiliate.payoutMin}</div>
-            </div>
-            <div className={styles.payoutCard}>
-              <div className={styles.payoutLabel}>Jadwal Pencairan</div>
-              <div className={styles.payoutValue}>{promo.affiliate.payoutDate}</div>
-            </div>
-          </div>
-        </div>
-
-        <div className={styles.affiliateCtaWrap}>
-          <a
-            href="https://wa.me/6285179992598"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.affiliateCta}
-          >
-            {promo.affiliate.cta}
-          </a>
-        </div>
-      </section>
     </>
   )
 }
