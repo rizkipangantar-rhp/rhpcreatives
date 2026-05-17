@@ -30,7 +30,10 @@ export default function Testimonials({ showHeader = true }: TestimonialsProps) {
               <div>
                 <div className={styles.name}>{item.name}</div>
                 <div className={styles.role}>{item.role}</div>
-                <div className={styles.stars}>★★★★★</div>
+                <div className={styles.stars}>
+                  {'★'.repeat(item.rating)}
+                  {'☆'.repeat(5 - item.rating)}
+                </div>
               </div>
             </div>
           </div>
