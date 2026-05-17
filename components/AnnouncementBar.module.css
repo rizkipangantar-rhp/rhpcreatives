@@ -7,8 +7,9 @@
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  flex-wrap: wrap;
-  padding: 0.5rem 3rem 0.5rem 1rem;
+  flex-wrap: nowrap;
+  padding: 0 3rem 0 1rem;
+  height: 44px;
   background: linear-gradient(90deg, #6d28d9 0%, #9333ea 40%, #ec4899 80%, #6d28d9 100%);
   background-size: 200% 100%;
   font-size: 0.8rem;
@@ -32,7 +33,12 @@
   to   { background-position: -200% 0; }
 }
 
-.text {
+.textFull {
+  white-space: nowrap;
+}
+
+.textShort {
+  display: none;
   white-space: nowrap;
 }
 
@@ -93,4 +99,9 @@
 .close:hover {
   color: #fff;
   background: rgba(255,255,255,0.15);
+}
+
+@media (max-width: 640px) {
+  .textFull { display: none; }
+  .textShort { display: inline; }
 }

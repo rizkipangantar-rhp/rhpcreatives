@@ -28,7 +28,7 @@ export default function AnnouncementBar() {
 
   useLayoutEffect(() => {
     function sync() {
-      const h = barRef.current?.offsetHeight ?? 44
+      const h = barRef.current?.offsetHeight ?? 0
       document.documentElement.style.setProperty('--bar-h', `${h}px`)
     }
     sync()
@@ -52,7 +52,8 @@ export default function AnnouncementBar() {
   return (
     <div ref={barRef} className={styles.bar}>
       <div className={styles.shimmer} />
-      <span className={styles.text}>{p.text}</span>
+      <span className={styles.textFull}>{p.text}</span>
+      <span className={styles.textShort}>🔥 Early Bird 25% OFF</span>
       <span className={styles.countdown}>
         <span className={styles.unit}>{pad(time.d)}<span className={styles.label}>{p.days}</span></span>
         <span className={styles.sep}>:</span>

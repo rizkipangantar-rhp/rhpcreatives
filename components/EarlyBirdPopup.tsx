@@ -15,13 +15,11 @@ export default function EarlyBirdPopup() {
 
   useEffect(() => {
     if (pathname !== '/') return
-    if (sessionStorage.getItem('eb_popup_seen')) return
     const timer = setTimeout(() => setVisible(true), 2_000)
     return () => clearTimeout(timer)
   }, [pathname])
 
   function close() {
-    sessionStorage.setItem('eb_popup_seen', '1')
     setVisible(false)
   }
 
