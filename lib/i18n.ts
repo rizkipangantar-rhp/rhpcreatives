@@ -103,6 +103,91 @@ export type Tr = {
     howToLabel: string
     steps: string[]
     logoutBtn: string
+    tabReferral: string
+    tabOrders: string
+    noOrders: string
+    orderDate: string
+    orderStatus: string
+    orderAmount: string
+    viewOrder: string
+    statusPending: string
+    statusPaid: string
+    statusProcessing: string
+    statusCompleted: string
+    statusCancelled: string
+  }
+  orderPage: {
+    tag: string
+    title: string
+    sub: string
+    step1: string
+    step2: string
+    step3: string
+    step4: string
+    nameLabel: string
+    namePlaceholder: string
+    emailLabel: string
+    waLabel: string
+    waPlaceholder: string
+    notesLabel: string
+    notesPlaceholder: string
+    voucherLabel: string
+    voucherPlaceholder: string
+    voucherApply: string
+    voucherApplied: string
+    voucherInvalid: string
+    summaryLabel: string
+    originalPrice: string
+    discount: string
+    total: string
+    payBtn: string
+    paying: string
+    loginPrompt: string
+    loginBtn: string
+    selectFirst: string
+    errorGeneral: string
+  }
+  orderSuccess: {
+    title: string
+    sub: string
+    orderIdLabel: string
+    serviceLabel: string
+    packageLabel: string
+    amountLabel: string
+    statusLabel: string
+    statusPending: string
+    statusPaid: string
+    statusProcessing: string
+    statusCompleted: string
+    statusCancelled: string
+    waBtn: string
+    homeBtn: string
+    orderHistoryBtn: string
+    notFoundTitle: string
+    notFoundSub: string
+  }
+  adminOrders: {
+    title: string
+    sub: string
+    filterAll: string
+    filterPending: string
+    filterPaid: string
+    filterProcessing: string
+    filterCompleted: string
+    filterCancelled: string
+    exportCsv: string
+    colId: string
+    colCustomer: string
+    colService: string
+    colAmount: string
+    colStatus: string
+    colDate: string
+    noOrders: string
+    updateStatus: string
+    accessDenied: string
+    loading: string
+    totalOrders: string
+    totalRevenue: string
   }
   hero: {
     tag: string
@@ -343,6 +428,91 @@ export const t: Record<Lang, Tr> = {
         'Kalian berdua otomatis dapat diskon!',
       ],
       logoutBtn: 'Keluar',
+      tabReferral: 'Referral & Stats',
+      tabOrders: 'Riwayat Order',
+      noOrders: 'Belum ada order. Yuk order sekarang!',
+      orderDate: 'Tanggal',
+      orderStatus: 'Status',
+      orderAmount: 'Total',
+      viewOrder: 'Lihat Detail',
+      statusPending: 'Menunggu Bayar',
+      statusPaid: 'Sudah Dibayar',
+      statusProcessing: 'Diproses',
+      statusCompleted: 'Selesai',
+      statusCancelled: 'Dibatalkan',
+    },
+    orderPage: {
+      tag: '✦ Pesan Layanan',
+      title: 'Pesan Layanan RHP Creatives',
+      sub: 'Pilih layanan, isi data, dan bayar langsung. Gampang banget!',
+      step1: 'Pilih Layanan',
+      step2: 'Pilih Paket',
+      step3: 'Info Kamu',
+      step4: 'Voucher (Opsional)',
+      nameLabel: 'Nama Lengkap',
+      namePlaceholder: 'Nama kamu',
+      emailLabel: 'Email',
+      waLabel: 'Nomor WhatsApp',
+      waPlaceholder: '08xxxxxxxxxx',
+      notesLabel: 'Catatan Tambahan',
+      notesPlaceholder: 'Ceritain kebutuhan kamu di sini (opsional)',
+      voucherLabel: 'Kode Voucher',
+      voucherPlaceholder: 'EBIRD-XXXXX',
+      voucherApply: 'Terapkan',
+      voucherApplied: '✓ Voucher berhasil! Diskon 25% diterapkan',
+      voucherInvalid: '✗ Kode voucher tidak valid',
+      summaryLabel: 'Ringkasan Order',
+      originalPrice: 'Harga asli',
+      discount: 'Diskon Early Bird',
+      total: 'Total Bayar',
+      payBtn: 'Bayar Sekarang →',
+      paying: 'Memproses...',
+      loginPrompt: 'Login dulu buat lanjut bayar ya!',
+      loginBtn: 'Login Sekarang →',
+      selectFirst: 'Pilih layanan dan paket dulu',
+      errorGeneral: 'Gagal membuat transaksi. Coba lagi.',
+    },
+    orderSuccess: {
+      title: 'Yay! Order Berhasil! 🎉',
+      sub: 'Order kamu udah masuk. Tim kami akan segera follow up via WhatsApp.',
+      orderIdLabel: 'Order ID',
+      serviceLabel: 'Layanan',
+      packageLabel: 'Paket',
+      amountLabel: 'Total Bayar',
+      statusLabel: 'Status',
+      statusPending: 'Menunggu Pembayaran',
+      statusPaid: 'Sudah Dibayar',
+      statusProcessing: 'Sedang Diproses',
+      statusCompleted: 'Selesai',
+      statusCancelled: 'Dibatalkan',
+      waBtn: 'Hubungi via WhatsApp →',
+      homeBtn: 'Kembali ke Beranda',
+      orderHistoryBtn: 'Lihat Semua Order',
+      notFoundTitle: 'Order Tidak Ditemukan',
+      notFoundSub: 'Order dengan ID ini tidak ada atau kamu tidak punya akses.',
+    },
+    adminOrders: {
+      title: 'Admin — Daftar Order',
+      sub: 'Kelola semua order yang masuk',
+      filterAll: 'Semua',
+      filterPending: 'Menunggu',
+      filterPaid: 'Dibayar',
+      filterProcessing: 'Diproses',
+      filterCompleted: 'Selesai',
+      filterCancelled: 'Dibatalkan',
+      exportCsv: 'Export CSV',
+      colId: 'Order ID',
+      colCustomer: 'Pelanggan',
+      colService: 'Layanan',
+      colAmount: 'Total',
+      colStatus: 'Status',
+      colDate: 'Tanggal',
+      noOrders: 'Belum ada order',
+      updateStatus: 'Update Status',
+      accessDenied: 'Akses ditolak. Kamu bukan admin.',
+      loading: 'Memuat...',
+      totalOrders: 'Total Order',
+      totalRevenue: 'Total Pendapatan',
     },
     hero: {
       tag: '✦ Jasa Digital & Desain Kreatif',
@@ -887,6 +1057,91 @@ export const t: Record<Lang, Tr> = {
         'You both automatically get a discount!',
       ],
       logoutBtn: 'Sign Out',
+      tabReferral: 'Referral & Stats',
+      tabOrders: 'Order History',
+      noOrders: "No orders yet. Let's place one!",
+      orderDate: 'Date',
+      orderStatus: 'Status',
+      orderAmount: 'Amount',
+      viewOrder: 'View Details',
+      statusPending: 'Awaiting Payment',
+      statusPaid: 'Paid',
+      statusProcessing: 'Processing',
+      statusCompleted: 'Completed',
+      statusCancelled: 'Cancelled',
+    },
+    orderPage: {
+      tag: '✦ Place an Order',
+      title: 'Order RHP Creatives Services',
+      sub: 'Pick a service, fill in your details, and pay instantly. Super easy!',
+      step1: 'Choose Service',
+      step2: 'Choose Package',
+      step3: 'Your Info',
+      step4: 'Voucher (Optional)',
+      nameLabel: 'Full Name',
+      namePlaceholder: 'Your name',
+      emailLabel: 'Email',
+      waLabel: 'WhatsApp Number',
+      waPlaceholder: '08xxxxxxxxxx',
+      notesLabel: 'Additional Notes',
+      notesPlaceholder: 'Tell us what you need (optional)',
+      voucherLabel: 'Voucher Code',
+      voucherPlaceholder: 'EBIRD-XXXXX',
+      voucherApply: 'Apply',
+      voucherApplied: '✓ Voucher applied! 25% discount activated',
+      voucherInvalid: '✗ Invalid voucher code',
+      summaryLabel: 'Order Summary',
+      originalPrice: 'Original price',
+      discount: 'Early Bird Discount',
+      total: 'Total',
+      payBtn: 'Pay Now →',
+      paying: 'Processing...',
+      loginPrompt: 'Please login to continue with payment!',
+      loginBtn: 'Login Now →',
+      selectFirst: 'Select a service and package first',
+      errorGeneral: 'Failed to create transaction. Please try again.',
+    },
+    orderSuccess: {
+      title: 'Order Placed! 🎉',
+      sub: "Your order is in. Our team will follow up via WhatsApp shortly.",
+      orderIdLabel: 'Order ID',
+      serviceLabel: 'Service',
+      packageLabel: 'Package',
+      amountLabel: 'Amount Paid',
+      statusLabel: 'Status',
+      statusPending: 'Awaiting Payment',
+      statusPaid: 'Paid',
+      statusProcessing: 'Processing',
+      statusCompleted: 'Completed',
+      statusCancelled: 'Cancelled',
+      waBtn: 'Chat via WhatsApp →',
+      homeBtn: 'Back to Home',
+      orderHistoryBtn: 'View All Orders',
+      notFoundTitle: 'Order Not Found',
+      notFoundSub: "This order doesn't exist or you don't have access to it.",
+    },
+    adminOrders: {
+      title: 'Admin — Order List',
+      sub: 'Manage all incoming orders',
+      filterAll: 'All',
+      filterPending: 'Pending',
+      filterPaid: 'Paid',
+      filterProcessing: 'Processing',
+      filterCompleted: 'Completed',
+      filterCancelled: 'Cancelled',
+      exportCsv: 'Export CSV',
+      colId: 'Order ID',
+      colCustomer: 'Customer',
+      colService: 'Service',
+      colAmount: 'Amount',
+      colStatus: 'Status',
+      colDate: 'Date',
+      noOrders: 'No orders yet',
+      updateStatus: 'Update Status',
+      accessDenied: 'Access denied. You are not an admin.',
+      loading: 'Loading...',
+      totalOrders: 'Total Orders',
+      totalRevenue: 'Total Revenue',
     },
     hero: {
       tag: '✦ Digital & Creative Design Services',

@@ -66,6 +66,10 @@ export function addClaim(entry: Omit<ClaimEntry, 'voucherCode' | 'claimedAt'>): 
   return claim
 }
 
+export function findClaimByCode(code: string): ClaimEntry | undefined {
+  return read().claims.find(c => c.voucherCode === code)
+}
+
 export function addWaitlist(email: string, wa: string): void {
   const data = read()
   if (!data.waitlist.find(w => w.email.toLowerCase() === email.toLowerCase())) {
