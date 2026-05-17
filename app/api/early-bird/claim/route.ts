@@ -9,8 +9,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
 
-  const { name, wa, service } = await req.json()
-  if (!name?.trim() || !wa?.trim() || !service?.trim()) {
+  const { name, service } = await req.json()
+  if (!name?.trim() || !service?.trim()) {
     return NextResponse.json({ error: 'missing_fields' }, { status: 400 })
   }
 
@@ -19,7 +19,6 @@ export async function POST(req: Request) {
       userId: session.user.id,
       name: name.trim(),
       email: session.user.email,
-      wa: wa.trim(),
       service: service.trim(),
     })
     return NextResponse.json({ claim })

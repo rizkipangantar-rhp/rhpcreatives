@@ -366,14 +366,14 @@ export type Tr = {
     formTitle: string
     nameLabel: string
     emailLabel: string
-    waLabel: string
-    waPlaceholder: string
     serviceLabel: string
     serviceOptions: string[]
     submitBtn: string
     submitting: string
     successTitle: string
     successSub: string
+    expiryWarning: string
+    expiresAtLabel: string
     voucherLabel: string
     copyBtn: string
     copied: string
@@ -384,6 +384,9 @@ export type Tr = {
     alreadyTitle: string
     alreadySub: string
     claimedAtLabel: string
+    expiredTitle: string
+    expiredSub: string
+    reclaimBtn: string
     quotaFullTitle: string
     quotaFullSub: string
     waitlistTitle: string
@@ -489,9 +492,9 @@ export const t: Record<Lang, Tr> = {
       howToLabel: 'Cara Pakai Referral',
       steps: [
         'Salin kode referral kamu di atas',
-        'Bagikan ke teman yang mau order jasa RHP Creatives',
-        'Teman daftar & sebutkan kode saat order via WhatsApp',
-        'Kalian berdua otomatis dapat diskon!',
+        'Share ke temen yang butuh jasa RHP Creatives',
+        'Temenmu pakai kode ini saat order di website kita',
+        'Kalian berdua langsung dapat diskon!',
       ],
       logoutBtn: 'Keluar',
       tabReferral: 'Referral & Stats',
@@ -1047,14 +1050,14 @@ export const t: Record<Lang, Tr> = {
       formTitle: 'Isi Data Kamu',
       nameLabel: 'Nama Lengkap',
       emailLabel: 'Email',
-      waLabel: 'Nomor WhatsApp',
-      waPlaceholder: '08xxxxxxxxxx',
       serviceLabel: 'Layanan yang Diminati',
       serviceOptions: ['Undangan Online', 'Landing Page', 'Desain Instagram', 'Edit Foto', 'Paket Bundling'],
       submitBtn: 'Klaim Voucher Sekarang 🎉',
       submitting: 'Memproses...',
       successTitle: 'Yeay! Voucher Berhasil Diklaim! 🎊',
       successSub: 'Masukkan kode ini di kolom voucher saat kamu order ya! Diskon 25% langsung berlaku.',
+      expiryWarning: '⏰ Voucher ini hangus dalam 24 jam kalau belum dipakai. Gasken sekarang bestie!',
+      expiresAtLabel: 'Berlaku sampai',
       voucherLabel: 'Kode Voucher Kamu',
       copyBtn: 'Salin Kode',
       copied: 'Tersalin!',
@@ -1063,10 +1066,13 @@ export const t: Record<Lang, Tr> = {
       howTitle: 'Cara Pakai Voucher',
       howText: 'Klik Order Sekarang di bawah, masukkan kode voucher ini di halaman order. Diskon 25% langsung diterapkan!',
       alreadyTitle: 'Kamu Sudah Punya Voucher! 🎉',
-      alreadySub: 'Voucher Early Bird kamu sudah aktif. Gunakan kode ini saat order.',
+      alreadySub: 'Voucher Early Bird kamu masih aktif. Gunakan kode ini saat order ya.',
       claimedAtLabel: 'Diklaim pada',
+      expiredTitle: 'Voucher Kamu Hangus 😭',
+      expiredSub: 'Sayang banget, voucher expired karena belum dipakai dalam 24 jam. Masih ada slot tersisa? Klaim ulang aja bestie!',
+      reclaimBtn: 'Klaim Ulang Voucher →',
       quotaFullTitle: 'Yah, Kuota Early Bird Habis 😢',
-      quotaFullSub: 'Semua 20 slot Early Bird sudah terisi. Daftar waitlist dan kami kabari kalau ada slot terbuka atau promo berikutnya!',
+      quotaFullSub: 'Semua 20 slot Early Bird sudah terisi. Daftar waitlist dan kami kabari kalau ada slot terbuka!',
       waitlistTitle: 'Daftar Waitlist',
       waitlistEmailLabel: 'Email',
       waitlistWaLabel: 'Nomor WhatsApp',
@@ -1142,12 +1148,12 @@ export const t: Record<Lang, Tr> = {
         inviteeDesc: 'Temen yang kamu ajak dapet diskon 10% untuk order pertamanya. Auto happy, auto order. Berlaku permanen.',
         howTitle: 'Gimana Caranya?',
         steps: [
-          'Hubungi kami dan minta kode referral unikmu',
+          'Login dan salin kode referralmu di halaman Profil',
           'Share ke temen yang butuh jasa kita',
-          'Temenmu order pakai kode referral',
-          'Diskon otomatis masuk buat kalian berdua',
+          'Temenmu order pakai kode referral di website kita',
+          'Diskon langsung masuk buat kalian berdua!',
         ],
-        cta: 'Minta Kode Referral →',
+        cta: 'Lihat Kode Referralmu →',
       },
     },
   },
@@ -1210,9 +1216,9 @@ export const t: Record<Lang, Tr> = {
       howToLabel: 'How to Use Referral',
       steps: [
         'Copy your referral code above',
-        'Share it with friends who want RHP Creatives services',
-        'Friend registers & mentions the code when ordering via WhatsApp',
-        'You both automatically get a discount!',
+        'Share it with friends who need RHP Creatives services',
+        'Your friend enters the code when ordering on our website',
+        'You both get a discount instantly!',
       ],
       logoutBtn: 'Sign Out',
       tabReferral: 'Referral & Stats',
@@ -1768,14 +1774,14 @@ export const t: Record<Lang, Tr> = {
       formTitle: 'Fill in Your Details',
       nameLabel: 'Full Name',
       emailLabel: 'Email',
-      waLabel: 'WhatsApp Number',
-      waPlaceholder: '08xxxxxxxxxx',
-      serviceLabel: 'Service You\'re Interested In',
+      serviceLabel: "Service You're Interested In",
       serviceOptions: ['Online Invitation', 'Landing Page', 'Instagram Design', 'Photo Editing', 'Bundle Package'],
       submitBtn: 'Claim Voucher Now 🎉',
       submitting: 'Processing...',
       successTitle: 'Woohoo! Voucher Claimed! 🎊',
       successSub: 'Enter this code in the voucher field when you order! 25% discount applies instantly.',
+      expiryWarning: "⏰ This voucher expires in 24 hours if not used. Don't sleep on it bestie!",
+      expiresAtLabel: 'Valid until',
       voucherLabel: 'Your Voucher Code',
       copyBtn: 'Copy Code',
       copied: 'Copied!',
@@ -1784,10 +1790,13 @@ export const t: Record<Lang, Tr> = {
       howTitle: 'How to Use Your Voucher',
       howText: 'Click Order Now below, enter this voucher code on the order page. Your 25% discount applies instantly!',
       alreadyTitle: 'You Already Have a Voucher! 🎉',
-      alreadySub: 'Your Early Bird voucher is active. Use this code when ordering.',
+      alreadySub: 'Your Early Bird voucher is still active. Use this code when ordering.',
       claimedAtLabel: 'Claimed on',
+      expiredTitle: 'Your Voucher Expired 😭',
+      expiredSub: "Yikes! Your voucher expired because it wasn't used within 24 hours. Slots still available? Re-claim it bestie!",
+      reclaimBtn: 'Re-claim Voucher →',
       quotaFullTitle: 'Early Bird Slots Are Full 😢',
-      quotaFullSub: "All 20 Early Bird slots have been taken. Join the waitlist and we'll notify you when the next promo drops!",
+      quotaFullSub: "All 20 Early Bird slots have been taken. Join the waitlist and we'll notify you when a slot opens up!",
       waitlistTitle: 'Join the Waitlist',
       waitlistEmailLabel: 'Email',
       waitlistWaLabel: 'WhatsApp Number',
@@ -1863,12 +1872,12 @@ export const t: Record<Lang, Tr> = {
         inviteeDesc: "Your friend gets 10% off their first order at RHP Creatives. Auto happy. Valid permanently.",
         howTitle: 'How It Works',
         steps: [
-          'Hit us up and get your unique referral code',
+          'Login and copy your referral code from the Profile page',
           'Share it with friends who need our services',
-          'Your friend orders using your referral code',
-          'Discounts hit for both of you automatically',
+          'Your friend orders using your referral code on our website',
+          'Discounts hit for both of you instantly!',
         ],
-        cta: 'Get Referral Code →',
+        cta: 'See Your Referral Code →',
       },
     },
   },

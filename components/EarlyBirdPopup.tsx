@@ -17,14 +17,14 @@ export default function EarlyBirdPopup() {
   const [slotsLeft, setSlotsLeft] = useState(17)
   const [hasClaim, setHasClaim] = useState<boolean | null>(null)
 
-  // Check if authenticated user already claimed — suppress popup if so
+  // Check if authenticated user already has an active claim — suppress popup if so
   useEffect(() => {
     if (status === 'loading') return
     if (status === 'unauthenticated') { setHasClaim(false); return }
     fetch('/api/early-bird/status')
-      .then(r => r.json())
+      .then(r => r.ok ? r.json() : Promise.reject())
       .then(data => setHasClaim(!!data.claim))
-      .catch(() => setHasClaim(false))
+      .catch(() => {}) // keep null on error so popup stays suppressed
   }, [status])
 
   useEffect(() => {

@@ -4,12 +4,13 @@ import { getDataPath } from '@/lib/data-path'
 
 const DB_PATH = () => getDataPath('early-bird.json')
 export const QUOTA = 20
+export const EXPIRY_MS = 24 * 60 * 60 * 1000 // 24 hours
 
 export type ClaimEntry = {
   userId: string
   name: string
   email: string
-  wa: string
+  wa?: string
   service: string
   voucherCode: string
   claimedAt: string
@@ -52,19 +53,42 @@ function generateCode(): string {
   return `EBIRD-${suffix}`
 }
 
-export function getQuota() {
-  const { claims } = read()
-  return { total: QUOTA, used: claims.length, remaining: QUOTA - claims.length }
+export function isClaimExpired(claim: ClaimEntry): boolean {
+  if (claim.usedAt) return false // used vouchers never expire
+  return Date.now() - new Date(claim.claimedAt).getTime() > EXPIRY_MS
 }
 
+export function getQuota() {
+  const { claims } = read()
+  // Only non-expired claims occupy a slot (used claims always count)
+  const activeCount = claims.filter(c => !isClaimExpired(c)).length
+  return { total: QUOTA, used: activeCount, remaining: QUOTA - activeCount }
+}
+
+/** Returns the claim only if it is active (not expired or already used). */
 export function findClaim(userId: string): ClaimEntry | undefined {
+  const claim = read().claims.find(c => c.userId === userId)
+  if (!claim || isClaimExpired(claim)) return undefined
+  return claim
+}
+
+/** Returns the raw claim regardless of expiry status — for checking expiry state. */
+export function findRawClaim(userId: string): ClaimEntry | undefined {
   return read().claims.find(c => c.userId === userId)
 }
 
 export function addClaim(entry: Omit<ClaimEntry, 'voucherCode' | 'claimedAt'>): ClaimEntry {
   const data = read()
-  if (data.claims.length >= QUOTA) throw new Error('quota_full')
-  if (data.claims.find(c => c.userId === entry.userId)) throw new Error('already_claimed')
+  const existingIdx = data.claims.findIndex(c => c.userId === entry.userId)
+  if (existingIdx !== -1) {
+    if (isClaimExpired(data.claims[existingIdx])) {
+      data.claims.splice(existingIdx, 1) // remove expired claim — allow re-claim
+    } else {
+      throw new Error('already_claimed')
+    }
+  }
+  const activeCount = data.claims.filter(c => !isClaimExpired(c)).length
+  if (activeCount >= QUOTA) throw new Error('quota_full')
   const claim: ClaimEntry = { ...entry, voucherCode: generateCode(), claimedAt: new Date().toISOString() }
   data.claims.push(claim)
   write(data)

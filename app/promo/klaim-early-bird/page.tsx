@@ -7,10 +7,11 @@ import { useLanguage } from '@/context/LanguageContext'
 import styles from './claim.module.css'
 
 type ClaimEntry = {
-  userId: string; name: string; email: string; wa: string
+  userId: string; name: string; email: string
   service: string; voucherCode: string; claimedAt: string
 }
 const QUOTA = 20
+const EXPIRY_MS = 24 * 60 * 60 * 1000
 
 const SERVICE_TO_PAKET: Record<string, string> = {
   'Undangan Online': 'undangan-simpel',
@@ -25,6 +26,13 @@ const SERVICE_TO_PAKET: Record<string, string> = {
 function waShareUrl(code: string) {
   const msg = `Bestie, aku baru aja klaim voucher Early Bird RHP Creatives diskon 25%! Kode: *${code}*. Buruan klaim juga sebelum habis 🔥 → rhpcreatives.com/promo/klaim-early-bird`
   return `https://wa.me/?text=${encodeURIComponent(msg)}`
+}
+
+function formatExpiry(claimedAt: string, lang: string): string {
+  const expiresAt = new Date(new Date(claimedAt).getTime() + EXPIRY_MS)
+  return expiresAt.toLocaleString(lang === 'id' ? 'id-ID' : 'en-US', {
+    day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit',
+  })
 }
 
 // ── Confetti ────────────────────────────────────────────────────────────────
@@ -92,10 +100,10 @@ function SlotBar({ used, slotsLeft }: { used: number; slotsLeft: string }) {
 }
 
 // ── Main page ────────────────────────────────────────────────────────────────
-type View = 'loading' | 'form' | 'success' | 'already' | 'full'
+type View = 'loading' | 'form' | 'success' | 'already' | 'expired' | 'full'
 
 export default function KlaimEarlyBirdPage() {
-  const { tr } = useLanguage()
+  const { tr, lang } = useLanguage()
   const c = tr.claimPage
   const { data: session, status: authStatus } = useSession()
   const router = useRouter()
@@ -107,7 +115,6 @@ export default function KlaimEarlyBirdPage() {
 
   // form state
   const [name, setName] = useState('')
-  const [wa, setWa] = useState('')
   const [service, setService] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [formError, setFormError] = useState('')
@@ -136,6 +143,8 @@ export default function KlaimEarlyBirdPage() {
         if (data.claim) {
           setClaim(data.claim)
           setView('already')
+        } else if (data.claimExpired) {
+          setView('expired')
         } else if (data.quota.remaining <= 0) {
           setView('full')
         } else {
@@ -147,12 +156,12 @@ export default function KlaimEarlyBirdPage() {
   async function handleClaim(e: React.FormEvent) {
     e.preventDefault()
     setFormError('')
-    if (!wa.trim() || !service) { setFormError('Isi semua field dulu ya!'); return }
+    if (!service) { setFormError('Pilih layanan dulu ya!'); return }
     setSubmitting(true)
     const res = await fetch('/api/early-bird/claim', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, wa, service }),
+      body: JSON.stringify({ name, service }),
     })
     const data = await res.json()
     setSubmitting(false)
@@ -215,20 +224,9 @@ export default function KlaimEarlyBirdPage() {
             </div>
 
             <div className={styles.field}>
-              <label>{c.waLabel}</label>
-              <input
-                type="tel"
-                placeholder={c.waPlaceholder}
-                value={wa}
-                onChange={e => setWa(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className={styles.field}>
               <label>{c.serviceLabel}</label>
               <select value={service} onChange={e => setService(e.target.value)} required>
-                <option value="">— Pilih layanan —</option>
+                <option value="">Pilih layanan</option>
                 {c.serviceOptions.map(opt => (
                   <option key={opt} value={opt}>{opt}</option>
                 ))}
@@ -253,6 +251,8 @@ export default function KlaimEarlyBirdPage() {
           <h1 className={styles.title}>{c.successTitle}</h1>
           <p className={styles.sub}>{c.successSub}</p>
 
+          <div className={styles.expiryWarning}>{c.expiryWarning}</div>
+
           <VoucherBox code={claim.voucherCode} label={c.voucherLabel} copyBtn={c.copyBtn} copied={c.copied} />
 
           <div className={styles.howBox}>
@@ -274,7 +274,8 @@ export default function KlaimEarlyBirdPage() {
   }
 
   if (view === 'already' && claim) {
-    const claimedDate = new Date(claim.claimedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+    const claimedDate = new Date(claim.claimedAt).toLocaleDateString(lang === 'id' ? 'id-ID' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' })
+    const expiryStr = formatExpiry(claim.claimedAt, lang)
     return (
       <main className={styles.page}>
         <div className={styles.card}>
@@ -282,6 +283,9 @@ export default function KlaimEarlyBirdPage() {
           <h1 className={styles.title}>{c.alreadyTitle}</h1>
           <p className={styles.sub}>{c.alreadySub}</p>
           <p className={styles.claimedAt}>{c.claimedAtLabel}: <strong>{claimedDate}</strong></p>
+          <p className={styles.claimedAt}>{c.expiresAtLabel}: <strong>{expiryStr}</strong></p>
+
+          <div className={styles.expiryWarning}>{c.expiryWarning}</div>
 
           <VoucherBox code={claim.voucherCode} label={c.voucherLabel} copyBtn={c.copyBtn} copied={c.copied} />
 
@@ -292,6 +296,28 @@ export default function KlaimEarlyBirdPage() {
             <a href={waShareUrl(claim.voucherCode)} target="_blank" rel="noopener noreferrer" className={styles.secondaryCta}>
               {c.shareWaBtn}
             </a>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  if (view === 'expired') {
+    return (
+      <main className={styles.page}>
+        <div className={styles.card}>
+          <div className={styles.sadIcon}>😭</div>
+          <h1 className={styles.title}>{c.expiredTitle}</h1>
+          <p className={styles.sub}>{c.expiredSub}</p>
+          <SlotBar used={quota.used} slotsLeft={c.slotsLeft} />
+          <div className={styles.ctaGroup}>
+            {quota.remaining > 0 ? (
+              <button className={styles.primaryCta} onClick={() => setView('form')}>
+                {c.reclaimBtn}
+              </button>
+            ) : (
+              <p className={styles.sub}>{c.quotaFullSub}</p>
+            )}
           </div>
         </div>
       </main>
