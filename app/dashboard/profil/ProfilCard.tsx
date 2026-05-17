@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { signOut } from 'next-auth/react'
 import type { Session } from 'next-auth'
+import { useLanguage } from '@/context/LanguageContext'
 import styles from './profil.module.css'
 
 function generateReferralCode(email: string): string {
@@ -48,6 +49,9 @@ function AvatarDisplay({ src, name }: { src?: string | null; name?: string | nul
 
 export default function ProfilCard({ session }: { session: Session }) {
   const { user } = session
+  const { tr } = useLanguage()
+  const p = tr.profile
+
   const referralCode = generateReferralCode(user.email ?? user.name ?? 'user')
   const [copied, setCopied] = useState(false)
 
@@ -64,27 +68,26 @@ export default function ProfilCard({ session }: { session: Session }) {
       <div className={styles.bgBlob2} />
 
       <div className={styles.container}>
-        {/* Profile card */}
         <div className={styles.profileCard}>
           <div className={styles.avatarWrap}>
             <AvatarDisplay src={user.image} name={user.name} />
           </div>
           <div className={styles.profileInfo}>
-            <h1 className={styles.name}>{user.name ?? 'Pengguna'}</h1>
+            <h1 className={styles.name}>{user.name ?? 'User'}</h1>
             <p className={styles.email}>{user.email}</p>
           </div>
           <button
             className={styles.logoutBtn}
             onClick={() => signOut({ callbackUrl: '/' })}
           >
-            Keluar
+            {p.logoutBtn}
           </button>
         </div>
 
         <div className={styles.grid}>
-          {/* Referral code card */}
+          {/* Referral code */}
           <div className={styles.card}>
-            <div className={styles.cardLabel}>Kode Referral Kamu</div>
+            <div className={styles.cardLabel}>{p.referralLabel}</div>
             <div className={styles.referralCode}>{referralCode}</div>
             <button className={`${styles.copyBtn} ${copied ? styles.copyBtnSuccess : ''}`} onClick={copyCode}>
               {copied ? (
@@ -92,7 +95,7 @@ export default function ProfilCard({ session }: { session: Session }) {
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
-                  Tersalin!
+                  {p.copied}
                 </>
               ) : (
                 <>
@@ -100,75 +103,61 @@ export default function ProfilCard({ session }: { session: Session }) {
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                     <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
                   </svg>
-                  Salin Kode
+                  {p.copyBtn}
                 </>
               )}
             </button>
-            <p className={styles.cardNote}>
-              Bagikan kode ini ke teman-teman kamu
-            </p>
+            <p className={styles.cardNote}>{p.shareNote}</p>
           </div>
 
-          {/* Reward info card */}
+          {/* Reward info */}
           <div className={styles.card}>
-            <div className={styles.cardLabel}>Reward Referral</div>
+            <div className={styles.cardLabel}>{p.rewardLabel}</div>
             <div className={styles.rewardList}>
               <div className={styles.rewardItem}>
                 <div className={styles.rewardBadge}>15%</div>
                 <div>
-                  <p className={styles.rewardTitle}>Kamu (pengajak)</p>
-                  <p className={styles.rewardDesc}>Diskon 15% untuk order berikutnya</p>
+                  <p className={styles.rewardTitle}>{p.referrerTitle}</p>
+                  <p className={styles.rewardDesc}>{p.referrerDesc}</p>
                 </div>
               </div>
               <div className={styles.rewardDivider} />
               <div className={styles.rewardItem}>
                 <div className={`${styles.rewardBadge} ${styles.rewardBadgePink}`}>10%</div>
                 <div>
-                  <p className={styles.rewardTitle}>Teman kamu (diajak)</p>
-                  <p className={styles.rewardDesc}>Diskon 10% untuk order pertamanya</p>
+                  <p className={styles.rewardTitle}>{p.inviteeTitle}</p>
+                  <p className={styles.rewardDesc}>{p.inviteeDesc}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Stats card */}
+          {/* Stats */}
           <div className={styles.card}>
-            <div className={styles.cardLabel}>Statistik Referral</div>
+            <div className={styles.cardLabel}>{p.statsLabel}</div>
             <div className={styles.statGrid}>
               <div className={styles.stat}>
                 <span className={styles.statValue}>0</span>
-                <span className={styles.statLabel}>Orang pakai kode</span>
+                <span className={styles.statLabel}>{p.statPeople}</span>
               </div>
               <div className={styles.stat}>
                 <span className={styles.statValue}>Rp 0</span>
-                <span className={styles.statLabel}>Total reward didapat</span>
+                <span className={styles.statLabel}>{p.statReward}</span>
               </div>
             </div>
-            <p className={styles.cardNote}>
-              Statistik update otomatis saat teman menggunakan kode referral kamu
-            </p>
+            <p className={styles.cardNote}>{p.statsNote}</p>
           </div>
 
-          {/* How to use card */}
+          {/* How to use */}
           <div className={styles.card}>
-            <div className={styles.cardLabel}>Cara Pakai Referral</div>
+            <div className={styles.cardLabel}>{p.howToLabel}</div>
             <ol className={styles.stepList}>
-              <li className={styles.step}>
-                <span className={styles.stepNum}>1</span>
-                <span>Salin kode referral kamu di atas</span>
-              </li>
-              <li className={styles.step}>
-                <span className={styles.stepNum}>2</span>
-                <span>Bagikan ke teman yang mau order jasa RHP Creatives</span>
-              </li>
-              <li className={styles.step}>
-                <span className={styles.stepNum}>3</span>
-                <span>Teman daftar & sebutkan kode saat order via WhatsApp</span>
-              </li>
-              <li className={styles.step}>
-                <span className={styles.stepNum}>4</span>
-                <span>Kalian berdua otomatis dapat diskon!</span>
-              </li>
+              {p.steps.map((step, i) => (
+                <li key={i} className={styles.step}>
+                  <span className={styles.stepNum}>{i + 1}</span>
+                  <span>{step}</span>
+                </li>
+              ))}
             </ol>
           </div>
         </div>

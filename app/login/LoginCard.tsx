@@ -3,12 +3,15 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { useLanguage } from '@/context/LanguageContext'
 import styles from './login.module.css'
 
 export default function LoginCard() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') ?? '/'
+  const { tr } = useLanguage()
+  const a = tr.auth
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -28,7 +31,7 @@ export default function LoginCard() {
     })
     setLoading(false)
     if (res?.error) {
-      setError('Email atau password salah.')
+      setError(a.errorInvalid)
     } else {
       router.push(callbackUrl)
     }
@@ -51,8 +54,8 @@ export default function LoginCard() {
           <Link href="/" className={styles.brandLogo}>
             RHP<span>Creatives</span>
           </Link>
-          <h1 className={styles.title}>Welcome back</h1>
-          <p className={styles.sub}>Masuk ke akun kamu untuk lanjut</p>
+          <h1 className={styles.title}>{a.loginTitle}</h1>
+          <p className={styles.sub}>{a.loginSub}</p>
         </div>
 
         <button
@@ -66,12 +69,12 @@ export default function LoginCard() {
             <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
             <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
           </svg>
-          {googleLoading ? 'Menghubungkan...' : 'Lanjutkan dengan Google'}
+          {googleLoading ? a.googleConnecting : a.googleBtn}
         </button>
 
         <div className={styles.divider}>
           <span />
-          <span className={styles.dividerText}>atau</span>
+          <span className={styles.dividerText}>{a.orDivider}</span>
           <span />
         </div>
 
@@ -79,11 +82,11 @@ export default function LoginCard() {
           {error && <p className={styles.error}>{error}</p>}
 
           <div className={styles.field}>
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">{a.emailLabel}</label>
             <input
               id="email"
               type="email"
-              placeholder="kamu@email.com"
+              placeholder={a.emailPlaceholder}
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
@@ -92,11 +95,11 @@ export default function LoginCard() {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">{a.passwordLabel}</label>
             <input
               id="password"
               type="password"
-              placeholder="••••••••"
+              placeholder={a.passwordPlaceholder}
               value={password}
               onChange={e => setPassword(e.target.value)}
               required
@@ -105,13 +108,13 @@ export default function LoginCard() {
           </div>
 
           <button type="submit" className={styles.submitBtn} disabled={loading}>
-            {loading ? 'Masuk...' : 'Masuk'}
+            {loading ? a.loggingIn : a.submitLogin}
           </button>
         </form>
 
         <p className={styles.footer}>
-          Belum punya akun?{' '}
-          <Link href="/register">Daftar sekarang</Link>
+          {a.noAccount}{' '}
+          <Link href="/register">{a.registerLink}</Link>
         </p>
       </div>
     </main>

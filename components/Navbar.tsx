@@ -99,14 +99,14 @@ export default function Navbar() {
                     className={styles.dropdownLink}
                     onClick={() => setDropdownOpen(false)}
                   >
-                    Profil & Referral
+                    {tr.nav.profileLink}
                   </Link>
                   <div className={styles.dropdownDivider} />
                   <button
                     className={styles.dropdownLogout}
                     onClick={() => { setDropdownOpen(false); signOut({ callbackUrl: '/' }) }}
                   >
-                    Keluar
+                    {tr.nav.logout}
                   </button>
                 </div>
               </>
@@ -114,7 +114,7 @@ export default function Navbar() {
           </div>
         ) : (
           <Link href="/login" className={styles.loginLink}>
-            Masuk
+            {tr.nav.login}
           </Link>
         )}
 
@@ -173,18 +173,18 @@ export default function Navbar() {
               {session ? (
                 <>
                   <Link href="/dashboard/profil" className={styles.mobileLoginBtn} onClick={closeMenu}>
-                    Profil & Referral
+                    {tr.nav.profileLink}
                   </Link>
                   <button
                     className={styles.mobileLogoutBtn}
                     onClick={() => { closeMenu(); signOut({ callbackUrl: '/' }) }}
                   >
-                    Keluar
+                    {tr.nav.logout}
                   </button>
                 </>
               ) : (
                 <Link href="/login" className={styles.mobileLoginBtn} onClick={closeMenu}>
-                  Masuk
+                  {tr.nav.login}
                 </Link>
               )}
               <Link href="#order" className={styles.mobileCtaBtn} onClick={closeMenu}>

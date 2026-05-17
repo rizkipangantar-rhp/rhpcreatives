@@ -59,6 +59,55 @@ export type Tr = {
     promo: string
     about: string
     cta: string
+    login: string
+    logout: string
+    profileLink: string
+  }
+  auth: {
+    loginTitle: string
+    loginSub: string
+    googleBtn: string
+    googleConnecting: string
+    orDivider: string
+    emailLabel: string
+    emailPlaceholder: string
+    passwordLabel: string
+    passwordPlaceholder: string
+    submitLogin: string
+    loggingIn: string
+    errorInvalid: string
+    noAccount: string
+    registerLink: string
+    registerTitle: string
+    registerSub: string
+    nameLabel: string
+    namePlaceholder: string
+    confirmLabel: string
+    confirmPlaceholder: string
+    passwordMin: string
+    submitRegister: string
+    registering: string
+    passwordMismatch: string
+    hasAccount: string
+    loginLink: string
+  }
+  profile: {
+    referralLabel: string
+    copyBtn: string
+    copied: string
+    shareNote: string
+    rewardLabel: string
+    referrerTitle: string
+    referrerDesc: string
+    inviteeTitle: string
+    inviteeDesc: string
+    statsLabel: string
+    statPeople: string
+    statReward: string
+    statsNote: string
+    howToLabel: string
+    steps: string[]
+    logoutBtn: string
   }
   hero: {
     tag: string
@@ -198,6 +247,60 @@ export const t: Record<Lang, Tr> = {
       promo: 'Promo',
       about: 'Tentang',
       cta: 'Order Sekarang →',
+      login: 'Masuk',
+      logout: 'Keluar',
+      profileLink: 'Profil & Referral',
+    },
+    auth: {
+      loginTitle: 'Selamat datang kembali',
+      loginSub: 'Masuk ke akun kamu untuk lanjut',
+      googleBtn: 'Lanjutkan dengan Google',
+      googleConnecting: 'Menghubungkan...',
+      orDivider: 'atau',
+      emailLabel: 'Email',
+      emailPlaceholder: 'kamu@email.com',
+      passwordLabel: 'Password',
+      passwordPlaceholder: '••••••••',
+      submitLogin: 'Masuk',
+      loggingIn: 'Masuk...',
+      errorInvalid: 'Email atau password salah.',
+      noAccount: 'Belum punya akun?',
+      registerLink: 'Daftar sekarang',
+      registerTitle: 'Buat akun baru',
+      registerSub: 'Daftar gratis, mulai sekarang',
+      nameLabel: 'Nama lengkap',
+      namePlaceholder: 'Nama kamu',
+      confirmLabel: 'Konfirmasi password',
+      confirmPlaceholder: 'Ulangi password',
+      passwordMin: 'Min. 8 karakter',
+      submitRegister: 'Daftar sekarang',
+      registering: 'Mendaftarkan...',
+      passwordMismatch: 'Password dan konfirmasi password tidak cocok.',
+      hasAccount: 'Sudah punya akun?',
+      loginLink: 'Masuk di sini',
+    },
+    profile: {
+      referralLabel: 'Kode Referral Kamu',
+      copyBtn: 'Salin Kode',
+      copied: 'Tersalin!',
+      shareNote: 'Bagikan kode ini ke teman-teman kamu',
+      rewardLabel: 'Reward Referral',
+      referrerTitle: 'Kamu (pengajak)',
+      referrerDesc: 'Diskon 15% untuk order berikutnya',
+      inviteeTitle: 'Teman kamu (diajak)',
+      inviteeDesc: 'Diskon 10% untuk order pertamanya',
+      statsLabel: 'Statistik Referral',
+      statPeople: 'Orang pakai kode',
+      statReward: 'Total reward didapat',
+      statsNote: 'Statistik update otomatis saat teman menggunakan kode referral kamu',
+      howToLabel: 'Cara Pakai Referral',
+      steps: [
+        'Salin kode referral kamu di atas',
+        'Bagikan ke teman yang mau order jasa RHP Creatives',
+        'Teman daftar & sebutkan kode saat order via WhatsApp',
+        'Kalian berdua otomatis dapat diskon!',
+      ],
+      logoutBtn: 'Keluar',
     },
     hero: {
       tag: '✦ Jasa Digital & Desain Kreatif',
@@ -685,6 +788,60 @@ export const t: Record<Lang, Tr> = {
       promo: 'Promo',
       about: 'About',
       cta: 'Order Now →',
+      login: 'Sign In',
+      logout: 'Sign Out',
+      profileLink: 'Profile & Referral',
+    },
+    auth: {
+      loginTitle: 'Welcome back',
+      loginSub: 'Sign in to your account to continue',
+      googleBtn: 'Continue with Google',
+      googleConnecting: 'Connecting...',
+      orDivider: 'or',
+      emailLabel: 'Email',
+      emailPlaceholder: 'you@email.com',
+      passwordLabel: 'Password',
+      passwordPlaceholder: '••••••••',
+      submitLogin: 'Sign In',
+      loggingIn: 'Signing in...',
+      errorInvalid: 'Invalid email or password.',
+      noAccount: "Don't have an account?",
+      registerLink: 'Register now',
+      registerTitle: 'Create a new account',
+      registerSub: 'Free to join, start now',
+      nameLabel: 'Full name',
+      namePlaceholder: 'Your name',
+      confirmLabel: 'Confirm password',
+      confirmPlaceholder: 'Repeat password',
+      passwordMin: 'Min. 8 characters',
+      submitRegister: 'Create account',
+      registering: 'Creating account...',
+      passwordMismatch: 'Password and confirmation do not match.',
+      hasAccount: 'Already have an account?',
+      loginLink: 'Sign in here',
+    },
+    profile: {
+      referralLabel: 'Your Referral Code',
+      copyBtn: 'Copy Code',
+      copied: 'Copied!',
+      shareNote: 'Share this code with your friends',
+      rewardLabel: 'Referral Rewards',
+      referrerTitle: 'You (the referrer)',
+      referrerDesc: '15% discount on your next order',
+      inviteeTitle: 'Your friend (the invitee)',
+      inviteeDesc: '10% discount on their first order',
+      statsLabel: 'Referral Stats',
+      statPeople: 'People used your code',
+      statReward: 'Total reward earned',
+      statsNote: 'Stats update automatically when a friend uses your referral code',
+      howToLabel: 'How to Use Referral',
+      steps: [
+        'Copy your referral code above',
+        'Share it with friends who want RHP Creatives services',
+        'Friend registers & mentions the code when ordering via WhatsApp',
+        'You both automatically get a discount!',
+      ],
+      logoutBtn: 'Sign Out',
     },
     hero: {
       tag: '✦ Digital & Creative Design Services',

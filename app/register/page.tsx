@@ -3,10 +3,14 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useLanguage } from '@/context/LanguageContext'
 import styles from './register.module.css'
 
 export default function RegisterPage() {
   const router = useRouter()
+  const { tr } = useLanguage()
+  const a = tr.auth
+
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -19,7 +23,7 @@ export default function RegisterPage() {
     setError('')
 
     if (password !== confirm) {
-      setError('Password dan konfirmasi password tidak cocok.')
+      setError(a.passwordMismatch)
       return
     }
 
@@ -32,12 +36,11 @@ export default function RegisterPage() {
     const data = await res.json()
 
     if (!res.ok) {
-      setError(data.error ?? 'Pendaftaran gagal.')
+      setError(data.error ?? 'Error')
       setLoading(false)
       return
     }
 
-    // Auto sign-in after registration
     const signin = await signIn('credentials', {
       email,
       password,
@@ -65,19 +68,19 @@ export default function RegisterPage() {
           <Link href="/" className={styles.brandLogo}>
             RHP<span>Creatives</span>
           </Link>
-          <h1 className={styles.title}>Buat akun baru</h1>
-          <p className={styles.sub}>Daftar gratis, mulai sekarang</p>
+          <h1 className={styles.title}>{a.registerTitle}</h1>
+          <p className={styles.sub}>{a.registerSub}</p>
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
           {error && <p className={styles.error}>{error}</p>}
 
           <div className={styles.field}>
-            <label htmlFor="name">Nama lengkap</label>
+            <label htmlFor="name">{a.nameLabel}</label>
             <input
               id="name"
               type="text"
-              placeholder="Nama kamu"
+              placeholder={a.namePlaceholder}
               value={name}
               onChange={e => setName(e.target.value)}
               required
@@ -86,11 +89,11 @@ export default function RegisterPage() {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">{a.emailLabel}</label>
             <input
               id="email"
               type="email"
-              placeholder="kamu@email.com"
+              placeholder={a.emailPlaceholder}
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
@@ -99,11 +102,11 @@ export default function RegisterPage() {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">{a.passwordLabel}</label>
             <input
               id="password"
               type="password"
-              placeholder="Min. 8 karakter"
+              placeholder={a.passwordMin}
               value={password}
               onChange={e => setPassword(e.target.value)}
               required
@@ -113,11 +116,11 @@ export default function RegisterPage() {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="confirm">Konfirmasi password</label>
+            <label htmlFor="confirm">{a.confirmLabel}</label>
             <input
               id="confirm"
               type="password"
-              placeholder="Ulangi password"
+              placeholder={a.confirmPlaceholder}
               value={confirm}
               onChange={e => setConfirm(e.target.value)}
               required
@@ -126,13 +129,13 @@ export default function RegisterPage() {
           </div>
 
           <button type="submit" className={styles.submitBtn} disabled={loading}>
-            {loading ? 'Mendaftarkan...' : 'Daftar sekarang'}
+            {loading ? a.registering : a.submitRegister}
           </button>
         </form>
 
         <p className={styles.footer}>
-          Sudah punya akun?{' '}
-          <Link href="/login">Masuk di sini</Link>
+          {a.hasAccount}{' '}
+          <Link href="/login">{a.loginLink}</Link>
         </p>
       </div>
     </main>
