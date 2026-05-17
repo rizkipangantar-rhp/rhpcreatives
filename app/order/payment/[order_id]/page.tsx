@@ -1,6 +1,6 @@
 'use client'
-import { useState, useEffect, useRef, useCallback, use } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { useLanguage } from '@/context/LanguageContext'
 import styles from './payment.module.css'
@@ -62,7 +62,10 @@ function fmt(price: number) {
 }
 
 function useCountdown(expiryIso: string | undefined) {
-  const [remaining, setRemaining] = useState(0)
+  const [remaining, setRemaining] = useState<number>(() => {
+    if (!expiryIso) return 0
+    return Math.max(0, new Date(expiryIso).getTime() - Date.now())
+  })
 
   useEffect(() => {
     const target = expiryIso ? new Date(expiryIso).getTime() : 0
@@ -81,7 +84,10 @@ function useCountdown(expiryIso: string | undefined) {
   const s = Math.floor((remaining % 60000) / 1000)
   const display = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
 
-  return { remaining, display, expired: remaining === 0 && !!expiryIso }
+  // Only mark as expired if expiry is defined AND actual time has passed (guards against brief 0-remaining flash on mount)
+  const expired = !!expiryIso && remaining === 0 && Date.now() >= new Date(expiryIso).getTime()
+
+  return { display, expired }
 }
 
 declare global {
@@ -97,8 +103,9 @@ declare global {
   }
 }
 
-export default function PaymentPage({ params }: { params: Promise<{ order_id: string }> }) {
-  const { order_id } = use(params)
+export default function PaymentPage() {
+  const params = useParams()
+  const order_id = params.order_id as string
   const { tr, lang } = useLanguage()
   const p = tr.paymentPage
   const router = useRouter()

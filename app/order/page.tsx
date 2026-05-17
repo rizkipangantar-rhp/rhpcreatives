@@ -6,7 +6,6 @@ import Link from 'next/link'
 import { useLanguage } from '@/context/LanguageContext'
 import styles from './order.module.css'
 
-
 type ServiceOption = { id: string; nameId: string; nameEn: string; icon: string }
 type PackageOption = { id: string; nameId: string; nameEn: string; price: number; periodId: string; periodEn: string }
 
