@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/context/LanguageContext'
 import styles from './ServicePickerModal.module.css'
@@ -29,7 +30,7 @@ export default function ServicePickerModal({ onClose }: { onClose: () => void })
     router.push(href)
   }
 
-  return (
+  return createPortal(
     <div className={styles.overlay} onClick={onClose}>
       <div
         className={styles.modal}
@@ -85,6 +86,7 @@ export default function ServicePickerModal({ onClose }: { onClose: () => void })
           </a>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

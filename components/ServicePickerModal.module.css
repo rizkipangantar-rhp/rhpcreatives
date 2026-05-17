@@ -4,8 +4,8 @@
 }
 
 @keyframes spPopIn {
-  from { opacity: 0; transform: scale(0.92) translateY(12px) }
-  to   { opacity: 1; transform: scale(1) translateY(0) }
+  from { opacity: 0; transform: translate(-50%, -48%) scale(0.92) }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1) }
 }
 
 @keyframes spSlideUp {
@@ -13,34 +13,34 @@
   to   { transform: translateY(0) }
 }
 
-/* ── Overlay ── */
+/* ── Overlay — full-screen backdrop ── */
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.72);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  animation: spOverlayIn 0.2s ease;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: spOverlayIn 0.2s ease both;
 }
 
-/* ── Modal (desktop center) ── */
+/* ── Modal — desktop center ── */
 .modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+  width: calc(100% - 3rem);
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
   background: var(--surface);
   border: 1px solid rgba(139, 92, 246, 0.2);
   border-radius: 1.5rem;
   padding: 1.75rem;
-  width: 100%;
-  max-width: 480px;
-  position: relative;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(139, 92, 246, 0.1);
   animation: spPopIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(139, 92, 246, 0.1);
-  max-height: 90vh;
-  overflow-y: auto;
 }
 
 /* ── Close button ── */
@@ -62,7 +62,7 @@
   transition: background 0.15s, color 0.15s;
   flex-shrink: 0;
 }
-.closeBtn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+.closeBtn:hover { background: rgba(255, 255, 255, 0.08); color: var(--text); }
 
 /* ── Header ── */
 .title {
@@ -189,20 +189,20 @@
 }
 .waLink:hover { opacity: 0.75; }
 
-/* ── Mobile: bottom drawer ── */
+/* ── Mobile: bottom sheet ── */
 @media (max-width: 640px) {
-  .overlay {
-    align-items: flex-end;
-    padding: 0;
-  }
-
   .modal {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform: none;
+    width: 100%;
     max-width: 100%;
     border-radius: 1.5rem 1.5rem 0 0;
     padding: 1.5rem 1.25rem 2.5rem;
-    animation: spSlideUp 0.32s cubic-bezier(0.34, 1.2, 0.64, 1) both;
     max-height: 85vh;
-    overflow-y: auto;
+    animation: spSlideUp 0.32s cubic-bezier(0.34, 1.2, 0.64, 1) both;
   }
 
   .title { font-size: 1.2rem; }
