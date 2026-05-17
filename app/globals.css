@@ -41,6 +41,9 @@
 
   /* transitions */
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* announcement bar height — JS overrides on mount/dismiss */
+  --bar-h: 44px;
 }
 
 html { scroll-behavior: smooth; }

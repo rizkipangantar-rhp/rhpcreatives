@@ -1,0 +1,96 @@
+.bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.5rem 3rem 0.5rem 1rem;
+  background: linear-gradient(90deg, #6d28d9 0%, #9333ea 40%, #ec4899 80%, #6d28d9 100%);
+  background-size: 200% 100%;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  overflow: hidden;
+}
+
+.shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.18) 50%, transparent 60%);
+  background-size: 200% 100%;
+  animation: shimmer 2.4s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+.text {
+  white-space: nowrap;
+}
+
+.countdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  background: rgba(0,0,0,0.25);
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.unit {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  min-width: 1.8rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.label {
+  font-size: 0.5rem;
+  font-weight: 400;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sep {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  margin: 0 0.05rem;
+  align-self: flex-start;
+  padding-top: 0.05rem;
+}
+
+.close {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.8);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0.35rem 0.5rem;
+  line-height: 1;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.close:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.15);
+}

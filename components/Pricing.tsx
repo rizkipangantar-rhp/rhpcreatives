@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { useLanguage } from '@/context/LanguageContext'
 import styles from './Pricing.module.css'
+import PricingBanner from './PricingBanner'
 
 interface PricingProps {
   filter?: 'digital' | 'design' | 'all'
@@ -24,6 +25,8 @@ export default function Pricing({ filter = 'all', showHeader = true }: PricingPr
           <p className={styles.sub}>{p.sub}</p>
         </div>
       )}
+
+      <PricingBanner />
 
       {showDigital && (
         <div className={styles.category}>

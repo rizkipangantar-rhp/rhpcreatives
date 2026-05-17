@@ -185,6 +185,29 @@ export type Tr = {
     statsLabel: string
     stats: StatItem[]
   }
+  promoBar: {
+    text: string
+    days: string
+    hrs: string
+    mins: string
+    secs: string
+  }
+  earlyBirdPopup: {
+    headline: string
+    sub: string
+    slotsLeft: string
+    cta: string
+    dismiss: string
+  }
+  pricingBanner: {
+    badge: string
+    title: string
+    sub: string
+  }
+  floatingBadge: {
+    text: string
+    sub: string
+  }
   promo: {
     earlyBird: {
       label: string
@@ -630,6 +653,29 @@ export const t: Record<Lang, Tr> = {
         { num: '100%', label: 'Kepuasan Klien' },
         { num: '24 Jam', label: 'Waktu Respons' },
       ],
+    },
+    promoBar: {
+      text: '🔥 Early Bird 25% OFF — Cuma buat 20 klien pertama! Jangan sampe nyesel ya bestie',
+      days: 'hari',
+      hrs: 'jam',
+      mins: 'menit',
+      secs: 'detik',
+    },
+    earlyBirdPopup: {
+      headline: 'Bestie, kamu dateng di waktu yang tepat! 🎉',
+      sub: 'Early Bird promo lagi jalan nih — diskon 25% buat 20 klien pertama doang. No cap, ini real.',
+      slotsLeft: 'slot tersisa',
+      cta: 'Gasken Order Sekarang →',
+      dismiss: 'Ntar dulu deh',
+    },
+    pricingBanner: {
+      badge: '🔥 Early Bird Aktif',
+      title: 'Diskon 25% Buat 20 Klien Pertama',
+      sub: 'Harga di bawah belum termasuk diskon Early Bird. Segera order sebelum kehabisan!',
+    },
+    floatingBadge: {
+      text: '🔥 Early Bird 25% OFF',
+      sub: 'Cuma 20 slot',
     },
     promo: {
       earlyBird: {
@@ -1116,6 +1162,29 @@ export const t: Record<Lang, Tr> = {
         { num: '100%', label: 'Client Satisfaction' },
         { num: '24h', label: 'Response Time' },
       ],
+    },
+    promoBar: {
+      text: "🔥 Early Bird 25% OFF — First 20 clients only! Don't sleep on this bestie",
+      days: 'days',
+      hrs: 'hrs',
+      mins: 'mins',
+      secs: 'secs',
+    },
+    earlyBirdPopup: {
+      headline: 'Bestie, you came at the right time! 🎉',
+      sub: 'Early Bird promo is live — 25% off for the first 20 clients only. No cap, this is real.',
+      slotsLeft: 'slots left',
+      cta: 'Order Now →',
+      dismiss: 'Maybe later',
+    },
+    pricingBanner: {
+      badge: '🔥 Early Bird Active',
+      title: '25% Off for the First 20 Clients',
+      sub: "Prices below don't include the Early Bird discount. Order before slots run out!",
+    },
+    floatingBadge: {
+      text: '🔥 Early Bird 25% OFF',
+      sub: '20 slots only',
     },
     promo: {
       earlyBird: {
