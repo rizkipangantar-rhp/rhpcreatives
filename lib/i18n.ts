@@ -291,7 +291,7 @@ export const t: Record<Lang, Tr> = {
       titleBefore: 'Tampil ',
       titleEm: 'Keren',
       titleAfter: ' di Dunia Digital? Gas!',
-      sub: 'RHP Creatives siap bantu kamu dari nol — undangan online, landing page, feed IG aesthetic, sampai edit foto buat lamaran. Gasken!',
+      sub: 'RHP Creatives siap bantu kamu dari nol: undangan online, landing page, feed IG aesthetic, sampai edit foto buat lamaran. Gasken!',
       cta1: 'Mulai Sekarang ↗',
       cta2: 'Lihat Harga →',
       stat1Label: 'Layanan Tersedia',
@@ -306,17 +306,17 @@ export const t: Record<Lang, Tr> = {
       layananDigital: {
         label: 'Layanan Digital',
         title: 'Digital Solution yang Sat-Set',
-        sub: 'Undangan online atau landing page — kamu tinggal cerita kebutuhan, kita yang eksekusi. Hasilnya? Auto kece.',
+        sub: 'Undangan online atau landing page, kamu tinggal cerita kebutuhan dan kita yang eksekusi. Hasilnya? Auto kece.',
       },
       layananDesain: {
         label: 'Layanan Desain',
         title: 'Desain yang Bikin Orang Stop Scroll',
-        sub: 'Feed IG aesthetic, edit foto rapi — semua bisa. Tinggal duduk, relax, hasilnya langsung masuk.',
+        sub: 'Feed IG aesthetic, edit foto rapi. Semua bisa! Tinggal duduk, relax, hasilnya langsung masuk.',
       },
       testimoni: {
         label: 'Testimoni',
         title: 'Kata Mereka yang Udah Coba',
-        sub: 'Bukan lebay, bukan dibayar — ini cerita nyata dari klien RHP Creatives. Judge sendiri deh.',
+        sub: 'Bukan lebay, bukan dibayar. Ini cerita nyata dari klien RHP Creatives. Judge sendiri deh.',
       },
       promo: {
         label: 'Promo & Penawaran',
@@ -326,7 +326,7 @@ export const t: Record<Lang, Tr> = {
       about: {
         label: 'Tentang Kami',
         title: 'Halo, Kami RHP Creatives 👋',
-        sub: 'Tim kreatif muda yang obsesi bikin karya kece — biar bisnis dan personal kamu keliatan profesional di dunia digital.',
+        sub: 'Tim kreatif muda yang obsesi bikin karya kece supaya bisnis dan personal kamu keliatan profesional di dunia digital.',
       },
     },
     homeOverview: {
@@ -345,7 +345,7 @@ export const t: Record<Lang, Tr> = {
     services: {
       label: 'Apa yang Kami Kerjain',
       title: 'Layanan RHP Creatives',
-      sub: 'Dari digital sampai desain — semua ada, semua kece, semua worth it.',
+      sub: 'Dari digital sampai desain, semua ada, semua kece, semua worth it.',
       headerCta: 'Konsultasi Gratis ↗',
       digitalLabel: '✦ Layanan Digital',
       designLabel: '✦ Layanan Desain',
@@ -353,7 +353,7 @@ export const t: Record<Lang, Tr> = {
         {
           num: '01',
           name: 'Undangan Online',
-          desc: 'Mau nikahan, ultah, atau gathering? Undangan online kamu bakal keliatan premium banget — tinggal share link, tamu langsung impressed.',
+          desc: 'Mau nikahan, ultah, atau gathering? Undangan online kamu bakal keliatan premium banget. Tinggal share link, tamu langsung impressed.',
           features: ['Desain personal sesuai tema kamu', 'RSVP & countdown otomatis', 'Peta Google Maps langsung'],
         },
         {
@@ -373,7 +373,7 @@ export const t: Record<Lang, Tr> = {
         {
           num: '04',
           name: 'Edit Foto — Ganti Background & Pas Foto',
-          desc: 'Foto KTP panik? Background foto asal-asalan? Tenang — kita beresin. Hasilnya foto kamu bakal keliatan profesional beneran.',
+          desc: 'Foto KTP panik? Background foto asal-asalan? Tenang, kita beresin semuanya. Hasilnya foto kamu bakal keliatan profesional beneran.',
           features: ['Ganti background foto', 'Rapikan & poles tampilan', 'Output resolusi tinggi'],
         },
       ],
@@ -381,7 +381,7 @@ export const t: Record<Lang, Tr> = {
     pricing: {
       label: 'Harga Transparan',
       title: 'Paket & Harga Layanan',
-      sub: 'Harga bisa disesuaikan sama kebutuhanmu. Hubungi kami dulu kalau mau tanya-tanya — gratis!',
+      sub: 'Harga bisa disesuaikan sama kebutuhanmu. Hubungi kami dulu kalau mau tanya-tanya, gratis kok!',
       digitalLabel: '✦ Layanan Digital',
       designLabel: '✦ Layanan Desain',
       note: '* Semua harga estimasi. Konsultasikan kebutuhan kamu buat harga final yang sesuai.',
@@ -518,7 +518,7 @@ export const t: Record<Lang, Tr> = {
     testimonials: {
       label: 'Kata Klien Kami',
       title: 'Kata Mereka yang Udah Coba',
-      sub: 'Bukan endorsement berbayar — ini cerita asli dari orang-orang yang udah percayain karyanya ke RHP Creatives.',
+      sub: 'Bukan endorsement berbayar. Ini cerita asli dari orang-orang yang udah percayain karyanya ke RHP Creatives.',
       items: [
         {
           initials: 'SR',
@@ -599,26 +599,26 @@ export const t: Record<Lang, Tr> = {
       trust: ['Kualitas Terjamin', 'Pengerjaan Sat-Set', 'Revisi Included', 'Harga Transparan'],
     },
     footer: {
-      tagline: 'Jasa Digital & Desain Kreatif — Sat-Set & Worth It',
+      tagline: 'Jasa Digital & Desain Kreatif · Sat-Set & Worth It',
       copy: '© 2026 RHP Creatives. Hak cipta dilindungi.',
     },
     about: {
       profileLabel: 'Profil',
       profileTitle: 'RHP Creatives',
       profileText:
-        'RHP Creatives adalah jasa kreatif digital yang fokus pada layanan desain dan digital. Kita hadir buat bantu individu, UMKM, dan bisnis tampil profesional dan berkesan di dunia digital — dengan pendekatan yang personal, komunikasi yang enak, dan harga yang gak bikin kantong bolong.',
+        'RHP Creatives adalah jasa kreatif digital yang fokus pada layanan desain dan digital. Kita hadir buat bantu individu, UMKM, dan bisnis tampil profesional dan berkesan di dunia digital. Pendekatannya personal, komunikasinya enak, dan harganya gak bikin kantong bolong.',
       visionTitle: 'Visi',
       visionText:
         'Jadi mitra kreatif digital terpercaya yang bantu bisnis dan personal Indonesia tampil kece dan kompetitif di era digital.',
       missionTitle: 'Misi',
       missionText:
-        'Kasih layanan digital dan desain berkualitas tinggi dengan harga terjangkau, pengerjaan cepat, dan pelayanan yang ramah — supaya tiap klien ngerasa puas dan terlayani dengan baik.',
+        'Kasih layanan digital dan desain berkualitas tinggi dengan harga terjangkau, pengerjaan cepat, dan pelayanan yang ramah supaya tiap klien ngerasa puas dan terlayani dengan baik.',
       whyLabel: 'Keunggulan',
       whyTitle: 'Kenapa Pilih Kami?',
       whyItems: [
-        { title: 'Harga Gak Nguras Kantong', desc: 'Paket harga transparan yang cocok buat semua — dari UMKM sampai startup yang baru grow.' },
+        { title: 'Harga Gak Nguras Kantong', desc: 'Paket harga transparan yang cocok buat semua, dari UMKM sampai startup yang baru grow.' },
         { title: 'Pengerjaan Sat-Set', desc: 'Kita ngehargain waktu kamu. Tiap proyek dikerjain efisien tanpa ngorbanin kualitas.' },
-        { title: 'Revisi Tanpa Drama', desc: 'Kepuasan kamu prioritas kita. Revisi udah termasuk di tiap paket — gak perlu khawatir.' },
+        { title: 'Revisi Tanpa Drama', desc: 'Kepuasan kamu prioritas kita. Revisi udah termasuk di tiap paket, gak perlu khawatir.' },
         { title: 'Komunikasi yang Enak', desc: 'Tim kita selalu siap bales pertanyaan dan kebutuhan kamu dengan cepet dan ramah.' },
         { title: 'Desain Custom Beneran', desc: 'Gak ada template generik di sini. Tiap proyek dikerjain sesuai kebutuhan dan vibes unik kamu.' },
         { title: 'Kualitas Gak Kompromi', desc: 'Setiap output lewat proses quality check buat mastiin hasilnya selalu worth it.' },
@@ -638,14 +638,14 @@ export const t: Record<Lang, Tr> = {
         discount: '25%',
         quota: '20 Klien Pertama',
         dp: 'DP 50%',
-        desc: 'Diskon 25% untuk semua layanan — cuma buat 20 klien pertama. Yang dateng duluan, yang untung duluan. Berlaku 1 bulan sejak launch. DP minimal 50% saat konfirmasi.',
+        desc: 'Diskon 25% untuk semua layanan, cuma buat 20 klien pertama. Yang dateng duluan, yang untung duluan. Berlaku 1 bulan sejak launch. DP minimal 50% saat konfirmasi.',
         badge: '🔥 PROMO AKTIF',
         cta: 'Klaim Sebelum Kehabisan →',
       },
       bundling: {
         label: 'Sayang Banget Kalo Dilewatin',
         title: 'Paket Bundling',
-        sub: 'Gabungin beberapa layanan sekaligus dan hemat lebih banyak. Literally the smarter choice — why pay more?',
+        sub: 'Gabungin beberapa layanan sekaligus dan hemat lebih banyak. Literally the smarter choice, why pay more?',
         savingsLabel: 'hemat',
         items: [
           {
@@ -689,7 +689,7 @@ export const t: Record<Lang, Tr> = {
       referral: {
         label: 'Ajak Teman, Dapet Diskon',
         title: 'Program Referral',
-        sub: 'Rekomendasiin RHP Creatives ke temen kamu — kalian berdua langsung dapat diskon. Win-win banget!',
+        sub: 'Rekomendasiin RHP Creatives ke temen kamu dan kalian berdua langsung dapat diskon. Win-win banget!',
         referrerTitle: 'Kamu yang Ngajak',
         referrerDiscount: '15%',
         referrerDesc: 'Tiap temenmu order pertama lewat referral kamu, kamu langsung dapet diskon 15% untuk order berikutnya. Berlaku permanen.',
@@ -777,7 +777,7 @@ export const t: Record<Lang, Tr> = {
       titleBefore: 'Look ',
       titleEm: 'Amazing',
       titleAfter: " Online? Let's Go!",
-      sub: "RHP Creatives gets you from zero to polished — online invitations, landing pages, aesthetic IG feeds, and photo edits. Let's get it!",
+      sub: "RHP Creatives gets you from zero to polished: online invitations, landing pages, aesthetic IG feeds, and photo edits. Let's get it!",
       cta1: 'Start Now ↗',
       cta2: 'See Pricing →',
       stat1Label: 'Services Available',
@@ -792,17 +792,17 @@ export const t: Record<Lang, Tr> = {
       layananDigital: {
         label: 'Digital Services',
         title: 'Digital Solutions That Hit Different',
-        sub: 'Online invitation or landing page — you talk, we build. The result? Straight-up impressive.',
+        sub: 'Online invitation or landing page, you talk and we build. The result? Straight-up impressive.',
       },
       layananDesain: {
         label: 'Design Services',
         title: 'Design That Makes People Stop Scrolling',
-        sub: 'Aesthetic IG feed, clean photo edits — all in one place. Sit back, relax, results incoming.',
+        sub: 'Aesthetic IG feed, clean photo edits. All in one place. Sit back, relax, results incoming.',
       },
       testimoni: {
         label: 'Testimonials',
         title: 'Real Talk from Real Clients',
-        sub: "Not sponsored, not filtered — these are genuine experiences from RHP Creatives clients. See for yourself.",
+        sub: "Not sponsored, not filtered. These are genuine experiences from RHP Creatives clients. See for yourself.",
       },
       promo: {
         label: 'Promos & Deals',
@@ -812,7 +812,7 @@ export const t: Record<Lang, Tr> = {
       about: {
         label: 'About Us',
         title: "Hey, We're RHP Creatives 👋",
-        sub: 'A young creative team obsessed with making cool stuff — so your business looks professional in the digital world.',
+        sub: 'A young creative team obsessed with making cool stuff so your business looks professional in the digital world.',
       },
     },
     homeOverview: {
@@ -831,7 +831,7 @@ export const t: Record<Lang, Tr> = {
     services: {
       label: 'What We Do',
       title: 'RHP Creatives Services',
-      sub: 'From digital to design — we got you, we got quality, we got vibes.',
+      sub: 'From digital to design, we got you, we got quality, we got vibes.',
       headerCta: 'Free Consultation ↗',
       digitalLabel: '✦ Digital Services',
       designLabel: '✦ Design Services',
@@ -839,7 +839,7 @@ export const t: Record<Lang, Tr> = {
         {
           num: '01',
           name: 'Online Invitation',
-          desc: "Wedding, birthday, or family gathering? Your online invitation will look premium — just share the link and watch guests get impressed.",
+          desc: "Wedding, birthday, or family gathering? Your online invitation will look premium. Just share the link and watch guests get impressed.",
           features: ['Personalized design for your vibe', 'Auto RSVP & countdown', 'Google Maps drop-in'],
         },
         {
@@ -859,7 +859,7 @@ export const t: Record<Lang, Tr> = {
         {
           num: '04',
           name: 'Photo Edit — Background Swap & ID Photo',
-          desc: "Bad ID photo? Random background? No stress — we fix it all. Your photo will look clean and professional, for real.",
+          desc: "Bad ID photo? Random background? No stress, we fix it all. Your photo will look clean and professional, for real.",
           features: ['Background swap', 'Clean up & polish your look', 'High-resolution output'],
         },
       ],
@@ -867,7 +867,7 @@ export const t: Record<Lang, Tr> = {
     pricing: {
       label: 'Transparent Pricing',
       title: 'Service Packages & Pricing',
-      sub: 'Prices can be adjusted to your needs. Hit us up first if you have questions — it\'s free!',
+      sub: "Prices can be adjusted to your needs. Hit us up first if you have questions, it's free!",
       digitalLabel: '✦ Digital Services',
       designLabel: '✦ Design Services',
       note: '* All prices are estimates. Chat with us for a final quote tailored to your needs.',
@@ -1004,7 +1004,7 @@ export const t: Record<Lang, Tr> = {
     testimonials: {
       label: 'What Our Clients Say',
       title: 'Real Talk from Real Clients',
-      sub: "Not sponsored, not filtered — these are genuine experiences from people who trusted RHP Creatives with their work.",
+      sub: "Not sponsored, not filtered. These are genuine experiences from people who trusted RHP Creatives with their work.",
       items: [
         {
           initials: 'SR',
@@ -1081,31 +1081,31 @@ export const t: Record<Lang, Tr> = {
     cta: {
       label: "Let's Get It!",
       title: 'Ready to Look Amazing Online?',
-      sub: "Free consultation, zero commitment. Tell us what you need and we'll make it happen — fast.",
+      sub: "Free consultation, zero commitment. Tell us what you need and we'll make it happen, fast.",
       trust: ['Quality Guaranteed', 'Fast Turnaround', 'Revisions Included', 'Transparent Pricing'],
     },
     footer: {
-      tagline: 'Digital & Creative Design Services — Fast & Worth It',
+      tagline: 'Digital & Creative Design Services · Fast & Worth It',
       copy: '© 2026 RHP Creatives. All rights reserved.',
     },
     about: {
       profileLabel: 'Profile',
       profileTitle: 'RHP Creatives',
       profileText:
-        "RHP Creatives is a digital creative service focused on design and digital solutions. We help individuals, SMEs, and businesses look professional and memorable in the digital world — with a personal approach, easy communication, and pricing that won't break the bank.",
+        "RHP Creatives is a digital creative service focused on design and digital solutions. We help individuals, SMEs, and businesses look professional and memorable in the digital world, with a personal approach, easy communication, and pricing that won't break the bank.",
       visionTitle: 'Vision',
       visionText:
         'To be a trusted digital creative partner that helps Indonesian businesses and individuals look professional and competitive in the digital era.',
       missionTitle: 'Mission',
       missionText:
-        "Deliver high-quality digital and design services at affordable prices, with fast turnaround and friendly communication — so every client feels genuinely satisfied.",
+        "Deliver high-quality digital and design services at affordable prices, with fast turnaround and friendly communication so every client feels genuinely satisfied.",
       whyLabel: 'Our Edge',
       whyTitle: 'Why Choose Us?',
       whyItems: [
-        { title: "Pricing That Won't Hurt", desc: 'Transparent packages that work for everyone — from side hustles to growing startups.' },
+        { title: "Pricing That Won't Hurt", desc: 'Transparent packages that work for everyone, from side hustles to growing startups.' },
         { title: 'Fast Turnaround', desc: "We respect your time. Every project is handled efficiently without sacrificing quality." },
-        { title: 'Revisions Without the Drama', desc: "Your satisfaction is the priority. Revisions are included in every package — no stress." },
-        { title: 'Easy Communication', desc: 'Our team is always ready to respond quickly and warmly — no corporate nonsense.' },
+        { title: 'Revisions Without the Drama', desc: "Your satisfaction is the priority. Revisions are included in every package, no stress." },
+        { title: 'Easy Communication', desc: 'Our team is always ready to respond quickly and warmly. No corporate nonsense.' },
         { title: 'Actually Custom Design', desc: "No generic templates here. Every project is built to match your unique needs and vibe." },
         { title: 'Quality That Slaps', desc: 'Every output goes through a quality check to make sure the result is always worth it.' },
       ],
@@ -1124,14 +1124,14 @@ export const t: Record<Lang, Tr> = {
         discount: '25%',
         quota: 'First 20 Clients',
         dp: '50% DP',
-        desc: "25% off all services — but only for the first 20 clients. First come, first served. Valid for 1 month from launch. Minimum 50% down payment upon confirmation.",
+        desc: "25% off all services, but only for the first 20 clients. First come, first served. Valid for 1 month from launch. Minimum 50% down payment upon confirmation.",
         badge: '🔥 PROMO ACTIVE',
         cta: "Claim Before It's Gone →",
       },
       bundling: {
         label: 'Too Good to Pass Up',
         title: 'Bundle Packages',
-        sub: 'Stack multiple services and save more. Literally the smarter choice — why pay full price?',
+        sub: 'Stack multiple services and save more. Literally the smarter choice, why pay full price?',
         savingsLabel: 'save',
         items: [
           {
@@ -1175,7 +1175,7 @@ export const t: Record<Lang, Tr> = {
       referral: {
         label: 'Refer Friends, Get Discounts',
         title: 'Referral Program',
-        sub: "Send your friend to RHP Creatives — you both get a discount. Win-win, no brainer.",
+        sub: "Send your friend to RHP Creatives and you both get a discount. Win-win, no brainer.",
         referrerTitle: 'You (the One Who Shares)',
         referrerDiscount: '15%',
         referrerDesc: "Every time a friend makes their first order through your referral, you score a 15% discount on your next order. Valid permanently.",
