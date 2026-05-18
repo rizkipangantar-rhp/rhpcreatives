@@ -37,6 +37,9 @@ export type Order = {
   paymentQrUrl?: string
   paymentDeepLink?: string
   paymentExpiry?: string
+  adminNotes?: string
+  resultUrl?: string
+  statusHistory?: Array<{ status: OrderStatus; note: string; changedAt: string }>
   createdAt: string
   updatedAt: string
 }
@@ -111,6 +114,29 @@ export function updateOrderSnapToken(orderId: string, snapToken: string): boolea
   const idx = db.orders.findIndex(o => o.orderId === orderId)
   if (idx === -1) return false
   db.orders[idx].snapToken = snapToken
+  db.orders[idx].updatedAt = new Date().toISOString()
+  write(db)
+  return true
+}
+
+export function updateOrderAdminData(orderId: string, data: { adminNotes?: string; resultUrl?: string }): boolean {
+  const db = read()
+  const idx = db.orders.findIndex(o => o.orderId === orderId)
+  if (idx === -1) return false
+  if (data.adminNotes !== undefined) db.orders[idx].adminNotes = data.adminNotes
+  if (data.resultUrl !== undefined) db.orders[idx].resultUrl = data.resultUrl
+  db.orders[idx].updatedAt = new Date().toISOString()
+  write(db)
+  return true
+}
+
+export function addOrderStatusHistory(orderId: string, status: OrderStatus, note: string): boolean {
+  const db = read()
+  const idx = db.orders.findIndex(o => o.orderId === orderId)
+  if (idx === -1) return false
+  if (!db.orders[idx].statusHistory) db.orders[idx].statusHistory = []
+  db.orders[idx].statusHistory!.push({ status, note, changedAt: new Date().toISOString() })
+  db.orders[idx].status = status
   db.orders[idx].updatedAt = new Date().toISOString()
   write(db)
   return true

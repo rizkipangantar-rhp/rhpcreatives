@@ -21,6 +21,7 @@ export type StoredUser = {
   referredBy?: string                 // referral code of who referred this user
   referralRewardsAvailable: number    // 15% rewards ready to use
   referralRewardsUsed: number
+  suspended?: boolean
 }
 
 const DB_PATH = () => getDataPath('users.json')
@@ -156,6 +157,15 @@ export function setUserReferredBy(userId: string, referralCode: string): void {
   const idx = users.findIndex(u => u.id === userId)
   if (idx !== -1) {
     users[idx].referredBy = referralCode
+    writeUsers(users)
+  }
+}
+
+export function setUserSuspended(userId: string, suspended: boolean): void {
+  const users = readUsers()
+  const idx = users.findIndex(u => u.id === userId)
+  if (idx !== -1) {
+    users[idx].suspended = suspended
     writeUsers(users)
   }
 }

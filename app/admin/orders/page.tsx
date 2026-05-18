@@ -1,47 +1,67 @@
 'use client'
-import { useEffect, useState } from 'react'
-import { useLanguage } from '@/context/LanguageContext'
-import styles from './admin-orders.module.css'
+import { useEffect, useState, useMemo } from 'react'
+import Link from 'next/link'
+import s from '@/components/admin/admin.module.css'
 
 type OrderStatus = 'pending' | 'paid' | 'processing' | 'completed' | 'cancelled'
 
 type Order = {
   orderId: string
-  userId: string
   name: string
   email: string
   wa: string
   serviceNameId: string
   packageNameId: string
+  notes?: string
+  voucherCode?: string
+  discountType?: string
   originalPrice: number
   discountAmount: number
   totalPrice: number
-  voucherCode?: string
-  notes?: string
   status: OrderStatus
   createdAt: string
 }
 
 const STATUS_OPTIONS: OrderStatus[] = ['pending', 'paid', 'processing', 'completed', 'cancelled']
+const STATUS_LABELS: Record<string, string> = {
+  pending: 'Menunggu', paid: 'Dibayar', processing: 'Diproses',
+  completed: 'Selesai', cancelled: 'Batal',
+}
+const SERVICE_OPTIONS = [
+  { value: '', label: 'Semua Layanan' },
+  { value: 'Undangan', label: 'Undangan' },
+  { value: 'Landing Page', label: 'Landing Page' },
+  { value: 'Desain IG', label: 'Desain IG' },
+  { value: 'Edit Foto', label: 'Edit Foto' },
+]
 
-function fmt(price: number) {
-  return `Rp${price.toLocaleString('id-ID')}`
+function fmt(n: number) { return `Rp${n.toLocaleString('id-ID')}` }
+function fmtDate(iso: string) {
+  return new Date(iso).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
-function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+function StatusBadge({ status }: { status: string }) {
+  const cls: Record<string, string> = {
+    pending: s.badgePending, paid: s.badgePaid, processing: s.badgeProcessing,
+    completed: s.badgeCompleted, cancelled: s.badgeCancelled,
+  }
+  return <span className={`${s.badge} ${cls[status] ?? s.badgePending}`}>{STATUS_LABELS[status] ?? status}</span>
 }
 
 function exportCsv(orders: Order[]) {
-  const header = ['Order ID', 'Nama', 'Email', 'WA', 'Layanan', 'Paket', 'Total', 'Voucher', 'Status', 'Tanggal']
+  const header = ['Order ID', 'Tanggal', 'Nama', 'Email', 'WA', 'Layanan', 'Paket', 'Keterangan', 'Voucher', 'Harga Asli', 'Diskon', 'Total Bayar', 'Status']
   const rows = orders.map(o => [
-    o.orderId, o.name, o.email, o.wa,
+    o.orderId,
+    new Date(o.createdAt).toLocaleString('id-ID'),
+    o.name, o.email, o.wa,
     o.serviceNameId, o.packageNameId,
-    o.totalPrice, o.voucherCode ?? '',
-    o.status, o.createdAt,
+    o.notes ?? '',
+    o.voucherCode ?? '',
+    o.originalPrice, o.discountAmount, o.totalPrice,
+    o.status,
   ])
-  const csv = [header, ...rows].map(r => r.map(v => `"${v}"`).join(',')).join('\n')
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+  const csv = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n')
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
@@ -51,191 +71,124 @@ function exportCsv(orders: Order[]) {
 }
 
 export default function AdminOrdersPage() {
-  const { tr } = useLanguage()
-  const p = tr.adminOrders
-  const sp = tr.orderSuccess
-
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
-  const [accessDenied, setAccessDenied] = useState(false)
-  const [filter, setFilter] = useState<OrderStatus | 'all'>('all')
-  const [updating, setUpdating] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState<OrderStatus | ''>('')
+  const [serviceFilter, setServiceFilter] = useState('')
+  const [sort, setSort] = useState<'newest' | 'oldest' | 'highest' | 'lowest'>('newest')
 
   useEffect(() => {
     fetch('/api/admin/orders')
-      .then(r => {
-        if (r.status === 403) { setAccessDenied(true); return null }
-        return r.json()
-      })
-      .then(data => { if (data) setOrders(data) })
-      .catch(() => setAccessDenied(true))
-      .finally(() => setLoading(false))
+      .then(r => r.json())
+      .then(d => { setOrders(Array.isArray(d) ? d : []); setLoading(false) })
+      .catch(() => setLoading(false))
   }, [])
 
-  async function updateStatus(orderId: string, status: OrderStatus) {
-    setUpdating(orderId)
-    try {
-      const res = await fetch(`/api/admin/orders/${orderId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status }),
-      })
-      if (res.ok) {
-        setOrders(prev => prev.map(o => o.orderId === orderId ? { ...o, status } : o))
-      }
-    } finally {
-      setUpdating(null)
+  const filtered = useMemo(() => {
+    let list = orders
+    if (search.trim()) {
+      const q = search.toLowerCase()
+      list = list.filter(o =>
+        o.orderId.toLowerCase().includes(q) ||
+        o.name.toLowerCase().includes(q) ||
+        o.email.toLowerCase().includes(q) ||
+        o.wa.includes(q)
+      )
     }
-  }
+    if (statusFilter) list = list.filter(o => o.status === statusFilter)
+    if (serviceFilter) list = list.filter(o => o.serviceNameId.includes(serviceFilter))
+    return [...list].sort((a, b) => {
+      if (sort === 'newest') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      if (sort === 'oldest') return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      if (sort === 'highest') return b.totalPrice - a.totalPrice
+      return a.totalPrice - b.totalPrice
+    })
+  }, [orders, search, statusFilter, serviceFilter, sort])
 
-  if (loading) {
-    return (
-      <main className={styles.page}>
-        <div className={styles.container}>
-          <div className={styles.loadingBox}><div className={styles.spinner} /></div>
-        </div>
-      </main>
-    )
-  }
+  const paidRevenue = orders.filter(o => ['paid', 'processing', 'completed'].includes(o.status)).reduce((s, o) => s + o.totalPrice, 0)
 
-  if (accessDenied) {
-    return (
-      <main className={styles.page}>
-        <div className={styles.container}>
-          <div className={styles.deniedCard}>
-            <span className={styles.deniedIcon}>🔒</span>
-            <p className={styles.deniedText}>{p.accessDenied}</p>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  const statusLabels: Record<string, string> = {
-    pending: sp.statusPending,
-    paid: sp.statusPaid,
-    processing: sp.statusProcessing,
-    completed: sp.statusCompleted,
-    cancelled: sp.statusCancelled,
-  }
-
-  const filtered = filter === 'all' ? orders : orders.filter(o => o.status === filter)
-
-  const totalRevenue = orders
-    .filter(o => ['paid', 'processing', 'completed'].includes(o.status))
-    .reduce((sum, o) => sum + o.totalPrice, 0)
-
-  const filters: Array<{ key: OrderStatus | 'all'; label: string; count: number }> = [
-    { key: 'all', label: p.filterAll, count: orders.length },
-    { key: 'pending', label: p.filterPending, count: orders.filter(o => o.status === 'pending').length },
-    { key: 'paid', label: p.filterPaid, count: orders.filter(o => o.status === 'paid').length },
-    { key: 'processing', label: p.filterProcessing, count: orders.filter(o => o.status === 'processing').length },
-    { key: 'completed', label: p.filterCompleted, count: orders.filter(o => o.status === 'completed').length },
-    { key: 'cancelled', label: p.filterCancelled, count: orders.filter(o => o.status === 'cancelled').length },
-  ]
+  if (loading) return <div className={s.loading}><div className={s.spinner} /></div>
 
   return (
-    <main className={styles.page}>
-      <div className={styles.blob1} />
-      <div className={styles.container}>
-        <div className={styles.header}>
-          <div>
-            <h1 className={styles.title}>{p.title}</h1>
-            <p className={styles.sub}>{p.sub}</p>
-          </div>
-          <button className={styles.exportBtn} onClick={() => exportCsv(filtered)}>
-            {p.exportCsv}
-          </button>
-        </div>
+    <div>
+      <div className={s.pageHeader}>
+        <h1 className={s.pageTitle}>Manajemen Order</h1>
+        <p className={s.pageSub}>{orders.length} total order · Pendapatan: <strong style={{ color: '#34d399' }}>{fmt(paidRevenue)}</strong></p>
+      </div>
 
-        {/* Stats */}
-        <div className={styles.statsRow}>
-          <div className={styles.stat}>
-            <span className={styles.statNum}>{orders.length}</span>
-            <span className={styles.statLabel}>{p.totalOrders}</span>
-          </div>
-          <div className={styles.stat}>
-            <span className={`${styles.statNum} ${styles.statGrad}`}>{fmt(totalRevenue)}</span>
-            <span className={styles.statLabel}>{p.totalRevenue}</span>
-          </div>
-        </div>
-
-        {/* Filter tabs */}
-        <div className={styles.filterRow}>
-          {filters.map(f => (
-            <button
-              key={f.key}
-              className={`${styles.filterBtn} ${filter === f.key ? styles.filterActive : ''}`}
-              onClick={() => setFilter(f.key)}
-            >
-              {f.label} <span className={styles.filterCount}>{f.count}</span>
-            </button>
-          ))}
+      <div className={s.card}>
+        {/* Filter bar */}
+        <div className={s.filterBar}>
+          <input
+            className={s.searchInput}
+            placeholder="Cari Order ID, nama, email, WA..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+          <select className={s.filterSelect} value={statusFilter} onChange={e => setStatusFilter(e.target.value as OrderStatus | '')}>
+            <option value="">Semua Status</option>
+            {STATUS_OPTIONS.map(st => <option key={st} value={st}>{STATUS_LABELS[st]}</option>)}
+          </select>
+          <select className={s.filterSelect} value={serviceFilter} onChange={e => setServiceFilter(e.target.value)}>
+            {SERVICE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select>
+          <select className={s.filterSelect} value={sort} onChange={e => setSort(e.target.value as typeof sort)}>
+            <option value="newest">Terbaru</option>
+            <option value="oldest">Terlama</option>
+            <option value="highest">Harga Tertinggi</option>
+            <option value="lowest">Harga Terendah</option>
+          </select>
+          <button className={s.btnExport} onClick={() => exportCsv(filtered)}>Export CSV</button>
         </div>
 
         {/* Table */}
-        {filtered.length === 0 ? (
-          <div className={styles.empty}>{p.noOrders}</div>
-        ) : (
-          <div className={styles.tableWrap}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>{p.colId}</th>
-                  <th>{p.colCustomer}</th>
-                  <th>{p.colService}</th>
-                  <th>{p.colAmount}</th>
-                  <th>{p.colStatus}</th>
-                  <th>{p.colDate}</th>
+        <div className={s.tableWrap}>
+          <table className={s.table}>
+            <thead><tr>
+              <th>Order ID</th>
+              <th>Tanggal</th>
+              <th>Customer</th>
+              <th>Layanan & Paket</th>
+              <th>Voucher</th>
+              <th>Harga Asli</th>
+              <th>Diskon</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Aksi</th>
+            </tr></thead>
+            <tbody>
+              {filtered.map(o => (
+                <tr key={o.orderId}>
+                  <td><span className={s.mono}>{o.orderId}</span></td>
+                  <td className={s.dim} style={{ whiteSpace: 'nowrap' }}>{fmtDate(o.createdAt)}</td>
+                  <td>
+                    <div className={s.bold}>{o.name}</div>
+                    <div className={s.dim}>{o.email}</div>
+                    <div className={s.dim}>{o.wa}</div>
+                  </td>
+                  <td>
+                    <div style={{ color: '#f1f5f9', fontSize: '0.82rem' }}>{o.serviceNameId}</div>
+                    <div className={s.dim}>{o.packageNameId}</div>
+                    {o.notes && <div className={s.dim} title={o.notes} style={{ maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.notes}</div>}
+                  </td>
+                  <td>{o.voucherCode ? <span className={s.mono} style={{ color: '#fbbf24' }}>{o.voucherCode}</span> : <span className={s.dim}>—</span>}</td>
+                  <td className={s.dim}>{fmt(o.originalPrice)}</td>
+                  <td className={s.textRed}>{o.discountAmount > 0 ? `-${fmt(o.discountAmount)}` : '—'}</td>
+                  <td className={s.textGreen} style={{ fontWeight: 600 }}>{fmt(o.totalPrice)}</td>
+                  <td><StatusBadge status={o.status} /></td>
+                  <td>
+                    <Link href={`/admin/orders/${o.orderId}`} className={s.btnGhost}>Detail →</Link>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {filtered.map(order => (
-                  <tr key={order.orderId}>
-                    <td>
-                      <span className={styles.orderId}>{order.orderId}</span>
-                      {order.voucherCode && <span className={styles.voucherBadge}>{order.voucherCode}</span>}
-                    </td>
-                    <td>
-                      <div className={styles.customerName}>{order.name}</div>
-                      <div className={styles.customerSub}>{order.email}</div>
-                      <a href={`https://wa.me/${order.wa.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className={styles.waLink}>
-                        {order.wa}
-                      </a>
-                    </td>
-                    <td>
-                      <div className={styles.serviceName}>{order.serviceNameId}</div>
-                      <div className={styles.packageName}>{order.packageNameId}</div>
-                      {order.notes && <div className={styles.notes} title={order.notes}>{order.notes.slice(0, 40)}{order.notes.length > 40 ? '…' : ''}</div>}
-                    </td>
-                    <td>
-                      <div className={styles.amount}>{fmt(order.totalPrice)}</div>
-                      {order.discountAmount > 0 && (
-                        <div className={styles.discount}>-{fmt(order.discountAmount)}</div>
-                      )}
-                    </td>
-                    <td>
-                      <select
-                        className={`${styles.statusSelect} ${styles[`status_${order.status}`]}`}
-                        value={order.status}
-                        disabled={updating === order.orderId}
-                        onChange={e => updateStatus(order.orderId, e.target.value as OrderStatus)}
-                      >
-                        {STATUS_OPTIONS.map(s => (
-                          <option key={s} value={s}>{statusLabels[s]}</option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <div className={styles.date}>{fmtDate(order.createdAt)}</div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+              ))}
+              {filtered.length === 0 && (
+                <tr><td colSpan={10} className={s.emptyState}>Tidak ada order ditemukan</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </main>
+    </div>
   )
 }

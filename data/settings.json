@@ -1,0 +1,8 @@
+{
+  "earlyBirdQuota": 20,
+  "earlyBirdActive": true,
+  "earlyBirdEndDate": "2026-06-16T00:00:00.000Z",
+  "waNumber": "6285179992598",
+  "maintenanceMode": false,
+  "newOrderWaNotif": true
+}
