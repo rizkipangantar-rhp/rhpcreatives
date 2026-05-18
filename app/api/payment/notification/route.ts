@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { updateOrderStatus, getOrderById, type OrderStatus } from '@/lib/orders'
-import { markCodeUsed } from '@/lib/early-bird'
-import { recordReferralUsage } from '@/lib/referral'
 
 export async function POST(req: Request) {
   try {
@@ -48,15 +46,6 @@ export async function POST(req: Request) {
     }
 
     updateOrderStatus(actualOrderId, newStatus)
-
-    if (newStatus === 'paid' && order.voucherCode) {
-      const code = order.voucherCode.toUpperCase()
-      if (code.startsWith('EBIRD-')) {
-        markCodeUsed(code, actualOrderId)
-      } else if (code.startsWith('RHP-')) {
-        recordReferralUsage(order.userId, code, actualOrderId)
-      }
-    }
 
     return NextResponse.json({ message: 'OK' })
   } catch (err) {

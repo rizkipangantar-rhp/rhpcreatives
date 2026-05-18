@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { getOrderById, updateOrderStatus, updateOrderPaymentInfo } from '@/lib/orders'
+import { getOrderById, updateOrderStatus } from '@/lib/orders'
 import { checkTransactionStatus } from '@/lib/payment'
 
 const ADMIN_EMAIL = 'rhpcreativesid@gmail.com'
@@ -34,7 +34,6 @@ export async function GET(
 
       if (s === 'settlement' || (s === 'capture' && fraud === 'accept')) {
         updateOrderStatus(order_id, 'paid')
-        updateOrderPaymentInfo(order_id, { status: 'paid' })
         const updated = getOrderById(order_id)
         return NextResponse.json(updated)
       } else if (s === 'expire' || s === 'cancel' || s === 'deny') {
