@@ -32,8 +32,11 @@ export default function Pricing({ filter = 'all', showHeader = true }: PricingPr
   const showDigital = filter === 'all' || filter === 'digital'
   const showDesign = filter === 'all' || filter === 'design'
 
+  const DIGITAL_IDS = ['undangan-online', 'landing-page']
+  const DESIGN_IDS  = ['desain-instagram', 'edit-foto']
+
   return (
-    <section className={styles.pricing}>
+    <section id="harga" className={styles.pricing}>
       {showHeader && (
         <div className={styles.header}>
           <div className={styles.label}>{p.label}</div>
@@ -47,8 +50,8 @@ export default function Pricing({ filter = 'all', showHeader = true }: PricingPr
       {showDigital && (
         <div className={styles.category}>
           <div className={styles.categoryLabel}>{p.digitalLabel}</div>
-          {p.digital.map((group) => (
-            <div key={group.name} className={styles.serviceGroup}>
+          {p.digital.map((group, idx) => (
+            <div key={group.name} id={DIGITAL_IDS[idx]} className={styles.serviceGroup}>
               <h3 className={styles.serviceGroupTitle}>{group.name}</h3>
               <div className={styles.tiersGrid}>
                 {group.tiers.map((tier) => (
@@ -100,8 +103,8 @@ export default function Pricing({ filter = 'all', showHeader = true }: PricingPr
       {showDesign && (
         <div className={styles.category}>
           <div className={styles.categoryLabel}>{p.designLabel}</div>
-          {p.design.map((group) => (
-            <div key={group.name} className={styles.serviceGroup}>
+          {p.design.map((group, idx) => (
+            <div key={group.name} id={DESIGN_IDS[idx]} className={styles.serviceGroup}>
               <h3 className={styles.serviceGroupTitle}>{group.name}</h3>
               <div className={styles.tiersGrid}>
                 {group.tiers.map((tier) => (
@@ -124,7 +127,7 @@ export default function Pricing({ filter = 'all', showHeader = true }: PricingPr
                         </li>
                       ))}
                     </ul>
-                    <Link href="#order" className={styles.btn}>{p.orderCta}</Link>
+                    <Link href={`/order?paket=${TIER_TO_PKG[tier.name] ?? ''}`} className={styles.btn}>{p.orderCta}</Link>
                   </div>
                 ))}
               </div>

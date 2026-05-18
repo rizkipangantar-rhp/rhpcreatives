@@ -108,6 +108,7 @@
   transform: translateY(-3px);
   box-shadow: 0 0 60px rgba(139,92,246,0.6), 0 16px 48px rgba(139,92,246,0.4);
 }
+.primary:active { opacity: 0.85; transform: scale(0.96); box-shadow: none; }
 
 .secondary {
   color: var(--muted);
@@ -126,6 +127,7 @@
   border-color: var(--border-hi);
   background: rgba(139,92,246,0.05);
 }
+.secondary:active { opacity: 0.8; transform: scale(0.97); }
 
 .trust {
   display: flex;

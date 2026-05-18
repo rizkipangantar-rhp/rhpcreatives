@@ -63,6 +63,7 @@
 .contact:hover {
   color: var(--purple-light);
 }
+.contact:active { opacity: 0.7; }
 
 .copy {
   grid-column: 1 / -1;

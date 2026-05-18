@@ -215,6 +215,7 @@
 }
 
 .submitBtn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+.submitBtn:active:not(:disabled) { opacity: 0.85; transform: scale(0.97); }
 .submitBtn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* ── Voucher box ── */
@@ -261,6 +262,7 @@
 }
 
 .copyBtn:hover { background: var(--surface2); }
+.copyBtn:active { opacity: 0.75; transform: scale(0.93); }
 
 /* ── How to box ── */
 .howBox {
@@ -305,6 +307,7 @@
   transition: opacity 0.2s, transform 0.2s;
 }
 .primaryCta:hover { opacity: 0.9; transform: translateY(-1px); }
+.primaryCta:active { opacity: 0.85; transform: scale(0.97); }
 
 .secondaryCta {
   display: block;
@@ -320,6 +323,7 @@
   transition: background 0.2s;
 }
 .secondaryCta:hover { background: var(--surface3); }
+.secondaryCta:active { opacity: 0.8; transform: scale(0.97); }
 
 /* ── Waitlist success ── */
 .waitlistSuccess {

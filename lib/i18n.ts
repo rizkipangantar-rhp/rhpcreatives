@@ -431,6 +431,26 @@ export type Tr = {
       cta: string
     }
   }
+  servicePage: {
+    digital: {
+      ctaPrimary: string
+      ctaSecondaryDesktop: string
+      ctaSecondaryMobile: string
+      chips: string[]
+    }
+    design: {
+      ctaPrimary: string
+      ctaSecondaryDesktop: string
+      ctaSecondaryMobile: string
+      chips: string[]
+    }
+    stickyBar: {
+      label: string
+      orderBtn: string
+      consultBtn: string
+      scrollBtn: string
+    }
+  }
 }
 
 export const t: Record<Lang, Tr> = {
@@ -1156,6 +1176,26 @@ export const t: Record<Lang, Tr> = {
         cta: 'Lihat Kode Referralmu →',
       },
     },
+    servicePage: {
+      digital: {
+        ctaPrimary: 'Lihat Paket & Harga ↓',
+        ctaSecondaryDesktop: 'Langsung Order →',
+        ctaSecondaryMobile: 'Lihat Paket ↓',
+        chips: ['💌 Undangan Online', '🚀 Landing Page'],
+      },
+      design: {
+        ctaPrimary: 'Lihat Paket & Harga ↓',
+        ctaSecondaryDesktop: 'Langsung Order →',
+        ctaSecondaryMobile: 'Lihat Paket ↓',
+        chips: ['✨ Desain Instagram', '📸 Edit Foto'],
+      },
+      stickyBar: {
+        label: 'Mau order?',
+        orderBtn: 'Langsung Order 🚀',
+        consultBtn: '💬 Konsultasi',
+        scrollBtn: 'Lihat Paket ↓',
+      },
+    },
   },
 
   en: {
@@ -1878,6 +1918,26 @@ export const t: Record<Lang, Tr> = {
           'Discounts hit for both of you instantly!',
         ],
         cta: 'See Your Referral Code →',
+      },
+    },
+    servicePage: {
+      digital: {
+        ctaPrimary: 'View Packages & Pricing ↓',
+        ctaSecondaryDesktop: 'Order Now →',
+        ctaSecondaryMobile: 'View Packages ↓',
+        chips: ['💌 Online Invitation', '🚀 Landing Page'],
+      },
+      design: {
+        ctaPrimary: 'View Packages & Pricing ↓',
+        ctaSecondaryDesktop: 'Order Now →',
+        ctaSecondaryMobile: 'View Packages ↓',
+        chips: ['✨ Instagram Design', '📸 Photo Editing'],
+      },
+      stickyBar: {
+        label: 'Ready to order?',
+        orderBtn: 'Order Now 🚀',
+        consultBtn: '💬 Consult',
+        scrollBtn: 'View Packages ↓',
       },
     },
   },

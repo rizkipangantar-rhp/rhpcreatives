@@ -48,6 +48,7 @@
   transition: color 0.2s, background 0.2s;
 }
 .closeBtn:hover { color: var(--text); background: var(--surface2); }
+.closeBtn:active { opacity: 0.7; transform: scale(0.88); }
 
 .badge {
   display: inline-block;
@@ -130,6 +131,7 @@
   transition: opacity 0.2s, transform 0.2s;
 }
 .cta:hover { opacity: 0.9; transform: translateY(-1px); }
+.cta:active { opacity: 0.85; transform: scale(0.97); }
 
 .dismiss {
   background: none;
@@ -141,3 +143,4 @@
   transition: color 0.2s;
 }
 .dismiss:hover { color: var(--muted); }
+.dismiss:active { opacity: 0.6; transform: scale(0.93); }

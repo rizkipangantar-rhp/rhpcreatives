@@ -63,6 +63,7 @@
   flex-shrink: 0;
 }
 .closeBtn:hover { background: rgba(255, 255, 255, 0.08); color: var(--text); }
+.closeBtn:active { opacity: 0.7; transform: scale(0.88); }
 
 /* ── Header ── */
 .title {
@@ -188,6 +189,7 @@
   transition: opacity 0.2s;
 }
 .waLink:hover { opacity: 0.75; }
+.waLink:active { opacity: 0.55; }
 
 /* ── Mobile: bottom sheet ── */
 @media (max-width: 640px) {

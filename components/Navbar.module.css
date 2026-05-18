@@ -60,6 +60,7 @@
   color: var(--text);
   background: rgba(255,255,255,0.05);
 }
+.links a:active { opacity: 0.7; background: rgba(255,255,255,0.09); }
 
 .linkActive {
   color: var(--purple-light) !important;
@@ -140,6 +141,7 @@
   transform: translateY(-1px);
   box-shadow: 0 4px 24px rgba(139,92,246,0.45);
 }
+.cta:active { opacity: 0.8; transform: scale(0.95); box-shadow: none; }
 
 /* ── Hamburger ── */
 .hamburger {
@@ -267,6 +269,7 @@
   border-color: var(--border-hi);
   color: var(--text);
 }
+.closeBtn:active { opacity: 0.7; transform: scale(0.88); }
 
 .mobileLinks {
   list-style: none;
@@ -296,6 +299,7 @@
   background: rgba(255,255,255,0.05);
   padding-left: 1.1rem;
 }
+.mobileLinks a:active { opacity: 0.7; background: rgba(255,255,255,0.09); }
 
 .mobileLinkActive {
   color: var(--purple-light) !important;
@@ -337,6 +341,7 @@
   color: var(--text);
   border-color: var(--purple);
 }
+.mobileLangToggle:active { opacity: 0.75; transform: scale(0.96); }
 
 .mobileCtaBtn {
   display: block;
@@ -354,6 +359,7 @@
 }
 
 .mobileCtaBtn:hover { opacity: 0.88; }
+.mobileCtaBtn:active { opacity: 0.8; transform: scale(0.97); }
 
 /* ── Auth UI ── */
 .loginLink {
@@ -402,6 +408,7 @@
 }
 
 .avatar:hover { border-color: var(--purple); }
+.avatar:active { opacity: 0.75; transform: scale(0.92); }
 
 .avatarImg {
   width: 100%;
@@ -487,6 +494,7 @@
   background: rgba(255,255,255,0.05);
   color: var(--text);
 }
+.dropdownLink:active { opacity: 0.7; background: rgba(255,255,255,0.09); }
 
 .dropdownLogout {
   display: block;
@@ -507,6 +515,7 @@
 .dropdownLogout:hover {
   background: rgba(236,72,153,0.08);
 }
+.dropdownLogout:active { opacity: 0.7; background: rgba(236,72,153,0.14); }
 
 /* ── Mobile auth ── */
 .mobileUser {
@@ -570,6 +579,7 @@
 }
 
 .mobileLoginBtn:hover { background: rgba(255,255,255,0.05); }
+.mobileLoginBtn:active { opacity: 0.75; transform: scale(0.97); }
 
 .mobileLogoutBtn {
   display: block;
@@ -588,6 +598,7 @@
 }
 
 .mobileLogoutBtn:hover { background: rgba(236,72,153,0.08); }
+.mobileLogoutBtn:active { opacity: 0.75; transform: scale(0.97); }
 
 /* ── Responsive ── */
 @media (max-width: 400px) {

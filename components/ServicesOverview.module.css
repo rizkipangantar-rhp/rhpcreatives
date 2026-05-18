@@ -169,6 +169,7 @@
   background: rgba(139,92,246,0.1);
   border-color: var(--purple);
 }
+.btnOutline:active { opacity: 0.8; transform: scale(0.95); }
 
 .btnPrimary {
   display: inline-flex;
@@ -187,6 +188,7 @@
 }
 
 .btnPrimary:hover { opacity: 0.88; }
+.btnPrimary:active { opacity: 0.8; transform: scale(0.95); }
 
 /* ── View All CTA ── */
 .viewAll {
@@ -214,6 +216,7 @@
   border-color: var(--purple);
   box-shadow: 0 0 20px rgba(139,92,246,0.15);
 }
+.viewAllBtn:active { opacity: 0.8; transform: scale(0.96); }
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
