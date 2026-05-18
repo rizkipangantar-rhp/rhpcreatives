@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
-import { findUserByEmail, findUserByReferralCode, createUser, setUserReferredBy } from '@/lib/users'
+import { findUserByEmail, findUserByReferralCode, createUser } from '@/lib/users'
 
 export async function POST(req: Request) {
   try {
@@ -20,16 +20,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Email sudah terdaftar.' }, { status: 409 })
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12)
-    const user = createUser({ name: name.trim(), email: normalizedEmail, hashedPassword })
-
+    // Validate referral code before creating user
+    let validatedReferredBy: string | undefined
     if (referralCode && typeof referralCode === 'string') {
       const normalized = referralCode.trim().toUpperCase()
       const referrer = findUserByReferralCode(normalized)
-      if (referrer && referrer.id !== user.id) {
-        setUserReferredBy(user.id, normalized)
+      if (referrer) {
+        validatedReferredBy = normalized
       }
     }
+
+    const hashedPassword = await bcrypt.hash(password, 12)
+    const user = createUser({
+      name: name.trim(),
+      email: normalizedEmail,
+      hashedPassword,
+      referredBy: validatedReferredBy,
+    })
 
     return NextResponse.json({ id: user.id, name: user.name, email: user.email }, { status: 201 })
   } catch {

@@ -378,6 +378,18 @@ export type Tr = {
     text: string
     sub: string
   }
+  firstLoginModal: {
+    title: string
+    sub: string
+    referralLabel: string
+    referralPlaceholder: string
+    referralChecking: string
+    referralValid: string
+    referralInvalid: string
+    skipBtn: string
+    saveBtn: string
+    saving: string
+  }
   claimPage: {
     title: string
     sub: string
@@ -1102,6 +1114,18 @@ export const t: Record<Lang, Tr> = {
     floatingBadge: {
       text: '🔥 Early Bird 25% OFF',
       sub: 'Cuma 20 slot',
+    },
+    firstLoginModal: {
+      title: 'Selamat datang di RHP Creatives! 🎉',
+      sub: 'Satu langkah lagi — punya kode referral dari teman? Masukkan sekarang untuk dapat diskon 10% di order pertamamu!',
+      referralLabel: 'Kode Referral (Opsional)',
+      referralPlaceholder: 'RHP-XXXXX',
+      referralChecking: 'Mengecek...',
+      referralValid: '✓ Kode valid! Diskon 10% siap buat kamu',
+      referralInvalid: '✗ Kode tidak ditemukan',
+      skipBtn: 'Lewati',
+      saveBtn: 'Simpan & Lanjut',
+      saving: 'Menyimpan...',
     },
     claimPage: {
       title: 'Klaim Voucher Early Bird 🎉',
@@ -1867,6 +1891,18 @@ export const t: Record<Lang, Tr> = {
     floatingBadge: {
       text: '🔥 Early Bird 25% OFF',
       sub: '20 slots only',
+    },
+    firstLoginModal: {
+      title: 'Welcome to RHP Creatives! 🎉',
+      sub: "One more step — got a referral code from a friend? Enter it now to get 10% off your first order!",
+      referralLabel: 'Referral Code (Optional)',
+      referralPlaceholder: 'RHP-XXXXX',
+      referralChecking: 'Checking...',
+      referralValid: '✓ Code valid! 10% discount ready for you',
+      referralInvalid: '✗ Code not found',
+      skipBtn: 'Skip',
+      saveBtn: 'Save & Continue',
+      saving: 'Saving...',
     },
     claimPage: {
       title: 'Claim Your Early Bird Voucher 🎉',

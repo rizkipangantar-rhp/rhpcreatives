@@ -7,6 +7,7 @@ import CTA from '@/components/CTA'
 import Footer from '@/components/Footer'
 import AnnouncementBar from '@/components/AnnouncementBar'
 import EarlyBirdPopup from '@/components/EarlyBirdPopup'
+import FirstLoginModal from '@/components/FirstLoginModal'
 import FloatingBadge from '@/components/FloatingBadge'
 
 export const metadata: Metadata = {
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <CTA />
             <Footer />
             <EarlyBirdPopup />
+            <FirstLoginModal />
             <FloatingBadge />
           </LanguageProvider>
         </AuthProvider>
