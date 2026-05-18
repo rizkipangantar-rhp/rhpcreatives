@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { findClaimByCode, isCodeUsed } from '@/lib/early-bird'
-import { findUserByReferralCode } from '@/lib/users'
+import { findUserByReferralCode, findUserById } from '@/lib/users'
 import { hasUserUsedReferral } from '@/lib/referral'
 
 export async function POST(req: Request) {
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
       })
     }
 
-    // Referral code
+    // Referral code (manual entry)
     if (normalized.startsWith('RHP-')) {
       const session = await getServerSession(authOptions)
       if (!session?.user?.id) {
@@ -52,6 +52,12 @@ export async function POST(req: Request) {
 
       if (referrer.id === session.user.id) {
         return NextResponse.json({ valid: false, message: 'Tidak bisa pakai kode referral sendiri' })
+      }
+
+      // Check if user is trying to use this as an invitee discount (first order only)
+      const currentUser = findUserById(session.user.id)
+      if (!currentUser) {
+        return NextResponse.json({ valid: false, message: 'User tidak ditemukan' })
       }
 
       if (hasUserUsedReferral(session.user.id)) {

@@ -51,6 +51,13 @@ function fmt(price: number) {
   return `Rp${price.toLocaleString('id-ID')}`
 }
 
+type DiscountStatus = {
+  inviteeDiscount: { available: boolean; code: string | null; percent: number }
+  referrerReward: { available: boolean; count: number; percent: number; code: string }
+}
+
+type DiscountOption = 'none' | 'referrer_reward' | 'invitee' | 'manual'
+
 export default function OrderPage() {
   const { tr, lang } = useLanguage()
   const p = tr.orderPage
@@ -63,11 +70,16 @@ export default function OrderPage() {
   const [email, setEmail] = useState('')
   const [wa, setWa] = useState('')
   const [notes, setNotes] = useState('')
+
+  // Discount state
+  const [discountStatus, setDiscountStatus] = useState<DiscountStatus | null>(null)
+  const [discountOption, setDiscountOption] = useState<DiscountOption>('none')
   const [voucherCode, setVoucherCode] = useState('')
   const [voucherDiscount, setVoucherDiscount] = useState(0)
   const [voucherType, setVoucherType] = useState<'ebird' | 'referral' | ''>('')
   const [voucherStatus, setVoucherStatus] = useState<'idle' | 'valid' | 'invalid' | 'checking'>('idle')
   const [voucherErrorMsg, setVoucherErrorMsg] = useState('')
+
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [showConfirm, setShowConfirm] = useState(false)
@@ -95,21 +107,54 @@ export default function OrderPage() {
     }
   }, [])
 
+  // Fetch auto-discount status once authenticated
+  useEffect(() => {
+    if (status !== 'authenticated') return
+    fetch('/api/referral/discount-status')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data) return
+        setDiscountStatus(data as DiscountStatus)
+        // Auto-select the best available discount
+        if (data.referrerReward?.available) {
+          setDiscountOption('referrer_reward')
+        } else if (data.inviteeDiscount?.available) {
+          setDiscountOption('invitee')
+        }
+      })
+      .catch(() => {})
+  }, [status])
+
   const selectedSvc = SERVICES.find(s => s.id === selectedService)
   const selectedPkg = selectedPackage ? (PACKAGES[selectedService] ?? []).find(p => p.id === selectedPackage) : null
   const originalPrice = selectedPkg?.price ?? 0
-  const discountAmount = Math.round(originalPrice * voucherDiscount)
+
+  // Compute discount based on selected option
+  let discountPercent = 0
+  let discountAmount = 0
+  let discountLabel = ''
+
+  if (discountOption === 'referrer_reward') {
+    discountPercent = 0.15
+    discountLabel = p.discountReferrerReward
+  } else if (discountOption === 'invitee') {
+    discountPercent = 0.10
+    discountLabel = p.discountReferral
+  } else if (discountOption === 'manual' && voucherStatus === 'valid') {
+    discountPercent = voucherDiscount
+    discountLabel = voucherType === 'referral' ? p.discountReferral : p.discount
+  }
+  discountAmount = Math.round(originalPrice * discountPercent)
   const totalPrice = originalPrice - discountAmount
 
-  const discountLabel = voucherType === 'referral' ? p.discountReferral : p.discount
-
-  // Auto-validate voucher after 1s debounce
+  // Auto-validate voucher after 1s debounce (only in manual mode)
   useEffect(() => {
+    if (discountOption !== 'manual') return
     if (!voucherCode.trim()) return
     const t = setTimeout(applyVoucher, 1_000)
     return () => clearTimeout(t)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [voucherCode])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [voucherCode, discountOption])
 
   async function applyVoucher() {
     if (!voucherCode.trim()) return
@@ -138,10 +183,35 @@ export default function OrderPage() {
     }
   }
 
+  function handleDiscountOptionChange(opt: DiscountOption) {
+    setDiscountOption(opt)
+    if (opt !== 'manual') {
+      setVoucherCode('')
+      setVoucherDiscount(0)
+      setVoucherType('')
+      setVoucherStatus('idle')
+      setVoucherErrorMsg('')
+    }
+  }
+
   async function handlePayment() {
     if (!selectedService || !selectedPackage || !name.trim() || !email.trim() || !wa.trim()) return
     setIsSubmitting(true)
     setError('')
+
+    let discountMode: string | undefined
+    let voucherToSend: string | undefined
+
+    if (discountOption === 'referrer_reward') {
+      discountMode = 'referrer_reward'
+    } else if (discountOption === 'invitee') {
+      discountMode = 'invitee'
+    } else if (discountOption === 'manual' && voucherStatus === 'valid' && voucherCode.trim()) {
+      discountMode = voucherType === 'ebird' ? 'ebird' : 'invitee'
+      voucherToSend = voucherCode.trim()
+    } else {
+      discountMode = 'none'
+    }
 
     try {
       const res = await fetch('/api/payment/create-transaction', {
@@ -153,7 +223,8 @@ export default function OrderPage() {
           email: email.trim(),
           wa: wa.trim(),
           notes: notes.trim() || undefined,
-          voucherCode: voucherStatus === 'valid' ? voucherCode.trim() : undefined,
+          discountMode,
+          voucherCode: voucherToSend,
         }),
       })
 
@@ -185,6 +256,8 @@ export default function OrderPage() {
     : 'https://wa.me/6285179992598?text=Halo%20RHP%20Creatives!%20Mau%20konsultasi%20dulu%20nih%20%F0%9F%91%8B'
 
   const canPay = selectedService && selectedPackage && name.trim() && email.trim() && wa.trim() && !isSubmitting
+
+  const hasAutoDiscount = !!(discountStatus?.inviteeDiscount?.available || discountStatus?.referrerReward?.available)
 
   return (
     <main className={styles.page}>
@@ -325,34 +398,106 @@ export default function OrderPage() {
               </section>
             )}
 
-            {/* Step 4 */}
+            {/* Step 4 — Discounts */}
             {selectedPackage && (
               <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>
                   <span className={styles.sectionNum}>4</span>
                   {p.step4}
                 </h2>
-                <div className={styles.voucherRow}>
-                  <input
-                    className={`${styles.input} ${styles.voucherInput} ${voucherStatus === 'valid' ? styles.inputValid : ''} ${voucherStatus === 'invalid' ? styles.inputInvalid : ''}`}
-                    value={voucherCode}
-                    onChange={e => { setVoucherCode(e.target.value); setVoucherStatus('idle'); setVoucherDiscount(0); setVoucherType(''); setVoucherErrorMsg('') }}
-                    placeholder={p.voucherPlaceholder}
-                  />
-                  <button
-                    className={styles.voucherBtn}
-                    onClick={applyVoucher}
-                    disabled={voucherStatus === 'checking' || !voucherCode.trim()}
-                  >
-                    {voucherStatus === 'checking' ? '...' : p.voucherApply}
-                  </button>
+
+                <div className={styles.discountOptions}>
+                  {/* Referrer reward option */}
+                  {discountStatus?.referrerReward?.available && (
+                    <label className={`${styles.discountOption} ${discountOption === 'referrer_reward' ? styles.discountOptionSelected : ''}`}>
+                      <input
+                        type="radio"
+                        name="discount"
+                        value="referrer_reward"
+                        checked={discountOption === 'referrer_reward'}
+                        onChange={() => handleDiscountOptionChange('referrer_reward')}
+                      />
+                      <div className={styles.discountOptionContent}>
+                        <span className={styles.discountOptionLabel}>{p.discountAutoReferrer}</span>
+                        <span className={styles.discountOptionBadge}>{p.discountAutoReferrerBadge} ×{discountStatus.referrerReward.count}</span>
+                      </div>
+                    </label>
+                  )}
+
+                  {/* Invitee discount option */}
+                  {discountStatus?.inviteeDiscount?.available && (
+                    <label className={`${styles.discountOption} ${discountOption === 'invitee' ? styles.discountOptionSelected : ''}`}>
+                      <input
+                        type="radio"
+                        name="discount"
+                        value="invitee"
+                        checked={discountOption === 'invitee'}
+                        onChange={() => handleDiscountOptionChange('invitee')}
+                      />
+                      <div className={styles.discountOptionContent}>
+                        <span className={styles.discountOptionLabel}>{p.discountAutoInvitee}</span>
+                        <span className={styles.discountOptionBadge}>{p.discountAutoInviteeBadge}</span>
+                      </div>
+                    </label>
+                  )}
+
+                  {/* Manual code entry */}
+                  <label className={`${styles.discountOption} ${discountOption === 'manual' ? styles.discountOptionSelected : ''}`}>
+                    <input
+                      type="radio"
+                      name="discount"
+                      value="manual"
+                      checked={discountOption === 'manual'}
+                      onChange={() => handleDiscountOptionChange('manual')}
+                    />
+                    <div className={styles.discountOptionContent}>
+                      <span className={styles.discountOptionLabel}>{p.discountManualLabel}</span>
+                    </div>
+                  </label>
+
+                  {/* No discount */}
+                  {hasAutoDiscount && (
+                    <label className={`${styles.discountOption} ${discountOption === 'none' ? styles.discountOptionSelected : ''}`}>
+                      <input
+                        type="radio"
+                        name="discount"
+                        value="none"
+                        checked={discountOption === 'none'}
+                        onChange={() => handleDiscountOptionChange('none')}
+                      />
+                      <div className={styles.discountOptionContent}>
+                        <span className={styles.discountOptionLabel}>{p.discountNone}</span>
+                      </div>
+                    </label>
+                  )}
                 </div>
-                {voucherStatus === 'valid' && (
+
+                {/* Manual code input */}
+                {discountOption === 'manual' && (
+                  <div className={styles.voucherRow}>
+                    <input
+                      className={`${styles.input} ${styles.voucherInput} ${voucherStatus === 'valid' ? styles.inputValid : ''} ${voucherStatus === 'invalid' ? styles.inputInvalid : ''}`}
+                      value={voucherCode}
+                      onChange={e => { setVoucherCode(e.target.value); setVoucherStatus('idle'); setVoucherDiscount(0); setVoucherType(''); setVoucherErrorMsg('') }}
+                      placeholder={p.voucherPlaceholder}
+                    />
+                    <button
+                      className={styles.voucherBtn}
+                      onClick={applyVoucher}
+                      disabled={voucherStatus === 'checking' || !voucherCode.trim()}
+                    >
+                      {voucherStatus === 'checking' ? '...' : p.voucherApply}
+                    </button>
+                  </div>
+                )}
+                {discountOption === 'manual' && voucherStatus === 'valid' && (
                   <p className={styles.voucherSuccess}>
                     {voucherType === 'referral' ? p.voucherAppliedReferral : p.voucherApplied}
                   </p>
                 )}
-                {voucherStatus === 'invalid' && <p className={styles.voucherError}>{voucherErrorMsg || p.voucherInvalid}</p>}
+                {discountOption === 'manual' && voucherStatus === 'invalid' && (
+                  <p className={styles.voucherError}>{voucherErrorMsg || p.voucherInvalid}</p>
+                )}
               </section>
             )}
           </div>
@@ -373,9 +518,9 @@ export default function OrderPage() {
                   <div className={styles.summaryDivider} />
                   <div className={styles.summaryRow}>
                     <span>{p.originalPrice}</span>
-                    <span className={voucherDiscount > 0 ? styles.priceStrike : ''}>{fmt(originalPrice)}</span>
+                    <span className={discountAmount > 0 ? styles.priceStrike : ''}>{fmt(originalPrice)}</span>
                   </div>
-                  {voucherDiscount > 0 && (
+                  {discountAmount > 0 && (
                     <div className={`${styles.summaryRow} ${styles.summaryDiscount}`}>
                       <span>{discountLabel}</span>
                       <span>-{fmt(discountAmount)}</span>

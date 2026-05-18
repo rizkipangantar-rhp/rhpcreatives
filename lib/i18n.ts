@@ -94,6 +94,7 @@ export type Tr = {
     copyBtn: string
     copied: string
     shareNote: string
+    shareWaBtn: string
     rewardLabel: string
     referrerTitle: string
     referrerDesc: string
@@ -103,6 +104,13 @@ export type Tr = {
     statPeople: string
     statReward: string
     statsNote: string
+    rewardsAvailableLabel: string
+    rewardsAvailableDesc: string
+    rewardsUsedLabel: string
+    historyLabel: string
+    historyEmpty: string
+    historyUsedBy: string
+    historyEarned: string
     howToLabel: string
     steps: string[]
     logoutBtn: string
@@ -134,6 +142,13 @@ export type Tr = {
     waPlaceholder: string
     notesLabel: string
     notesPlaceholder: string
+    discountSectionTitle: string
+    discountAutoReferrer: string
+    discountAutoReferrerBadge: string
+    discountAutoInvitee: string
+    discountAutoInviteeBadge: string
+    discountManualLabel: string
+    discountNone: string
     voucherLabel: string
     voucherPlaceholder: string
     voucherApply: string
@@ -144,6 +159,7 @@ export type Tr = {
     originalPrice: string
     discount: string
     discountReferral: string
+    discountReferrerReward: string
     total: string
     payBtn: string
     paying: string
@@ -507,25 +523,33 @@ export const t: Record<Lang, Tr> = {
       referralLabel: 'Kode Referral Kamu',
       copyBtn: 'Salin Kode',
       copied: 'Tersalin!',
-      shareNote: 'Bagikan kode ini ke teman-teman kamu',
+      shareNote: 'Bagikan ke teman yang butuh jasa RHP Creatives',
+      shareWaBtn: 'Share via WA',
       rewardLabel: 'Reward Referral',
-      referrerTitle: 'Kamu (pengajak)',
-      referrerDesc: 'Diskon 15% untuk order berikutnya',
-      inviteeTitle: 'Teman kamu (diajak)',
-      inviteeDesc: 'Diskon 10% untuk order pertamanya',
+      referrerTitle: 'Kamu (yang ngajak)',
+      referrerDesc: 'Dapat diskon 15% untuk SETIAP order berikutnya, tiap kali kode kamu dipakai orang lain',
+      inviteeTitle: 'Teman kamu (yang diajak)',
+      inviteeDesc: 'Dapat diskon 10% untuk order pertamanya. Berlaku permanen.',
       statsLabel: 'Statistik Referral',
       statPeople: 'Orang pakai kode',
       statReward: 'Total reward didapat',
       statsNote: 'Statistik update otomatis saat teman menggunakan kode referral kamu',
+      rewardsAvailableLabel: 'Reward Tersedia',
+      rewardsAvailableDesc: 'Diskon 15% per reward — otomatis berlaku saat kamu order berikutnya',
+      rewardsUsedLabel: 'Reward Terpakai',
+      historyLabel: 'Riwayat Penggunaan',
+      historyEmpty: 'Belum ada yang pakai kode referralmu. Share ke teman yuk!',
+      historyUsedBy: 'Dipakai oleh',
+      historyEarned: 'Reward didapat',
       howToLabel: 'Cara Pakai Referral',
       steps: [
         'Salin kode referral kamu di atas',
         'Share ke temen yang butuh jasa RHP Creatives',
-        'Temenmu pakai kode ini saat order di website kita',
-        'Kalian berdua langsung dapat diskon!',
+        'Temenmu pakai kode ini saat order pertama di website kita',
+        'Temenmu dapat diskon 10%, kamu dapat reward diskon 15%!',
       ],
       logoutBtn: 'Keluar',
-      tabReferral: 'Referral & Stats',
+      tabReferral: 'Referral & Reward',
       tabOrders: 'Riwayat Order',
       noOrders: 'Belum ada order. Yuk order sekarang!',
       orderDate: 'Tanggal',
@@ -545,7 +569,7 @@ export const t: Record<Lang, Tr> = {
       step1: 'Pilih Layanan',
       step2: 'Pilih Paket',
       step3: 'Info Kamu',
-      step4: 'Voucher (Opsional)',
+      step4: 'Diskon & Voucher',
       nameLabel: 'Nama Lengkap',
       namePlaceholder: 'Nama kamu',
       emailLabel: 'Email',
@@ -553,8 +577,15 @@ export const t: Record<Lang, Tr> = {
       waPlaceholder: '08xxxxxxxxxx',
       notesLabel: 'Catatan Tambahan',
       notesPlaceholder: 'Tulis request khusus kamu di sini... (misal: tema warna, tanggal acara, nama yang mau dicantumkan, dll)',
-      voucherLabel: 'Kode Voucher',
-      voucherPlaceholder: 'EBIRD-XXXXX',
+      discountSectionTitle: 'Pilih Diskon',
+      discountAutoReferrer: 'Reward Referral Kamu — Diskon 15%',
+      discountAutoReferrerBadge: '🎉 Tersedia',
+      discountAutoInvitee: 'Diajak Teman — Diskon 10%',
+      discountAutoInviteeBadge: '✨ Berlaku',
+      discountManualLabel: 'Punya kode voucher atau referral lain?',
+      discountNone: 'Tanpa diskon',
+      voucherLabel: 'Masukkan Kode',
+      voucherPlaceholder: 'EBIRD-XXXXX atau RHP-XXXXX',
       voucherApply: 'Terapkan',
       voucherApplied: '✓ Voucher Early Bird berhasil! Diskon 25% diterapkan',
       voucherAppliedReferral: '✓ Kode referral berhasil! Diskon 10% diterapkan',
@@ -562,7 +593,8 @@ export const t: Record<Lang, Tr> = {
       summaryLabel: 'Ringkasan Order',
       originalPrice: 'Harga asli',
       discount: 'Diskon Early Bird',
-      discountReferral: 'Diskon Referral',
+      discountReferral: 'Diskon Referral (Diajak)',
+      discountReferrerReward: 'Reward Referral (15%)',
       total: 'Total Bayar',
       payBtn: 'Bayar Sekarang →',
       paying: 'Memproses...',
@@ -1256,25 +1288,33 @@ export const t: Record<Lang, Tr> = {
       referralLabel: 'Your Referral Code',
       copyBtn: 'Copy Code',
       copied: 'Copied!',
-      shareNote: 'Share this code with your friends',
+      shareNote: 'Share with friends who need RHP Creatives services',
+      shareWaBtn: 'Share via WA',
       rewardLabel: 'Referral Rewards',
-      referrerTitle: 'You (the referrer)',
-      referrerDesc: '15% discount on your next order',
-      inviteeTitle: 'Your friend (the invitee)',
-      inviteeDesc: '10% discount on their first order',
+      referrerTitle: 'You (the one who shares)',
+      referrerDesc: 'Get 15% off for EVERY next order, each time someone uses your code',
+      inviteeTitle: 'Your friend (the lucky one)',
+      inviteeDesc: 'Gets 10% off their first order. Valid permanently.',
       statsLabel: 'Referral Stats',
       statPeople: 'People used your code',
       statReward: 'Total reward earned',
       statsNote: 'Stats update automatically when a friend uses your referral code',
+      rewardsAvailableLabel: 'Available Rewards',
+      rewardsAvailableDesc: '15% discount per reward — applies automatically on your next order',
+      rewardsUsedLabel: 'Rewards Used',
+      historyLabel: 'Usage History',
+      historyEmpty: "Nobody has used your referral code yet. Share it with friends!",
+      historyUsedBy: 'Used by',
+      historyEarned: 'Reward earned',
       howToLabel: 'How to Use Referral',
       steps: [
         'Copy your referral code above',
-        'Share it with friends who need RHP Creatives services',
-        'Your friend enters the code when ordering on our website',
-        'You both get a discount instantly!',
+        'Share it with friends who need RHP Creatives',
+        "Your friend uses the code on their first order",
+        'Friend gets 10% off, you earn a 15% reward!',
       ],
       logoutBtn: 'Sign Out',
-      tabReferral: 'Referral & Stats',
+      tabReferral: 'Referral & Rewards',
       tabOrders: 'Order History',
       noOrders: "No orders yet. Let's place one!",
       orderDate: 'Date',
@@ -1294,7 +1334,7 @@ export const t: Record<Lang, Tr> = {
       step1: 'Choose Service',
       step2: 'Choose Package',
       step3: 'Your Info',
-      step4: 'Voucher (Optional)',
+      step4: 'Discounts & Vouchers',
       nameLabel: 'Full Name',
       namePlaceholder: 'Your name',
       emailLabel: 'Email',
@@ -1302,8 +1342,15 @@ export const t: Record<Lang, Tr> = {
       waPlaceholder: '08xxxxxxxxxx',
       notesLabel: 'Additional Notes',
       notesPlaceholder: 'Add your special requests here... (e.g. color theme, event date, name to include, etc)',
-      voucherLabel: 'Voucher Code',
-      voucherPlaceholder: 'EBIRD-XXXXX',
+      discountSectionTitle: 'Choose a Discount',
+      discountAutoReferrer: 'Your Referral Reward — 15% Off',
+      discountAutoReferrerBadge: '🎉 Available',
+      discountAutoInvitee: 'Referred by a Friend — 10% Off',
+      discountAutoInviteeBadge: '✨ Active',
+      discountManualLabel: 'Have a voucher or another referral code?',
+      discountNone: 'No discount',
+      voucherLabel: 'Enter Code',
+      voucherPlaceholder: 'EBIRD-XXXXX or RHP-XXXXX',
       voucherApply: 'Apply',
       voucherApplied: '✓ Early Bird voucher applied! 25% discount activated',
       voucherAppliedReferral: '✓ Referral code applied! 10% discount activated',
@@ -1311,7 +1358,8 @@ export const t: Record<Lang, Tr> = {
       summaryLabel: 'Order Summary',
       originalPrice: 'Original price',
       discount: 'Early Bird Discount',
-      discountReferral: 'Referral Discount',
+      discountReferral: 'Referral Discount (Invitee)',
+      discountReferrerReward: 'Referral Reward (15%)',
       total: 'Total',
       payBtn: 'Pay Now →',
       paying: 'Processing...',

@@ -4,8 +4,8 @@ import { authOptions } from '@/lib/auth'
 import { findPackageById, findServiceById } from '@/lib/packages'
 import { createOrder } from '@/lib/orders'
 import { findClaimByCode, isCodeUsed, markCodeUsed } from '@/lib/early-bird'
-import { findUserByReferralCode, findUserById } from '@/lib/users'
-import { hasUserUsedReferral } from '@/lib/referral'
+import { findUserByReferralCode, findUserById, useReferralReward, getUserReferralCode } from '@/lib/users'
+import { hasUserUsedReferral, recordReferralUsage } from '@/lib/referral'
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions)
@@ -15,13 +15,15 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json()
-    const { packageId, name, email, wa, notes, voucherCode } = body as {
+    const { packageId, name, email, wa, notes, voucherCode, discountMode } = body as {
       packageId: string
       name: string
       email: string
       wa: string
       notes?: string
       voucherCode?: string
+      // 'referrer_reward' = use own 15% reward | 'invitee' = use referred 10% | 'ebird' = manual voucher | undefined = auto/none
+      discountMode?: 'referrer_reward' | 'invitee' | 'ebird' | 'none'
     }
 
     if (!packageId || !name || !email || !wa) {
@@ -29,44 +31,67 @@ export async function POST(req: Request) {
     }
 
     const pkg = findPackageById(packageId)
-    if (!pkg) {
-      return NextResponse.json({ error: 'Paket tidak ditemukan' }, { status: 400 })
-    }
+    if (!pkg) return NextResponse.json({ error: 'Paket tidak ditemukan' }, { status: 400 })
 
     const svc = findServiceById(pkg.serviceId)
-    if (!svc) {
-      return NextResponse.json({ error: 'Layanan tidak ditemukan' }, { status: 400 })
-    }
+    if (!svc) return NextResponse.json({ error: 'Layanan tidak ditemukan' }, { status: 400 })
+
+    const currentUser = findUserById(session.user.id)
+    if (!currentUser) return NextResponse.json({ error: 'User tidak ditemukan' }, { status: 400 })
 
     let discountAmount = 0
     let appliedVoucher: string | undefined
+    let discountType: 'early_bird' | 'referral_invitee' | 'referral_referrer' | null = null
+    let referralCodeUsed: string | undefined
+    let referrerId: string | undefined
 
-    if (voucherCode) {
+    // ── 1. Referrer uses their own accumulated reward (15%)
+    if (discountMode === 'referrer_reward') {
+      const consumed = useReferralReward(session.user.id)
+      if (consumed) {
+        discountAmount = Math.round(pkg.price * 0.15)
+        discountType = 'referral_referrer'
+        appliedVoucher = getUserReferralCode(currentUser)
+      }
+    }
+
+    // ── 2. Invitee uses referral code (10%, first order only)
+    else if (discountMode === 'invitee' || (!discountMode && currentUser.referredBy && !hasUserUsedReferral(session.user.id))) {
+      const codeToUse = (discountMode === 'invitee' && voucherCode)
+        ? voucherCode.trim().toUpperCase()
+        : currentUser.referredBy ?? ''
+
+      if (codeToUse) {
+        const referrer = findUserByReferralCode(codeToUse)
+        if (referrer && referrer.id !== session.user.id && !hasUserUsedReferral(session.user.id)) {
+          discountAmount = Math.round(pkg.price * 0.10)
+          discountType = 'referral_invitee'
+          referralCodeUsed = codeToUse
+          referrerId = referrer.id
+          appliedVoucher = codeToUse
+        }
+      }
+    }
+
+    // ── 3. Manual Early Bird or referral code entered in voucher field
+    else if (voucherCode && discountMode !== 'none') {
       const normalized = voucherCode.trim().toUpperCase()
 
       if (normalized.startsWith('EBIRD-')) {
         const claim = findClaimByCode(normalized)
         if (claim && !isCodeUsed(normalized)) {
           discountAmount = Math.round(pkg.price * 0.25)
+          discountType = 'early_bird'
           appliedVoucher = normalized
         }
       } else if (normalized.startsWith('RHP-')) {
         const referrer = findUserByReferralCode(normalized)
         if (referrer && referrer.id !== session.user.id && !hasUserUsedReferral(session.user.id)) {
           discountAmount = Math.round(pkg.price * 0.10)
+          discountType = 'referral_invitee'
+          referralCodeUsed = normalized
+          referrerId = referrer.id
           appliedVoucher = normalized
-        }
-      }
-    }
-
-    // Auto-apply referral code from registration if user didn't manually enter a voucher
-    if (discountAmount === 0) {
-      const currentUser = findUserById(session.user.id)
-      if (currentUser?.referredBy && !hasUserUsedReferral(session.user.id)) {
-        const referrer = findUserByReferralCode(currentUser.referredBy)
-        if (referrer && referrer.id !== session.user.id) {
-          discountAmount = Math.round(pkg.price * 0.10)
-          appliedVoucher = currentUser.referredBy
         }
       }
     }
@@ -88,16 +113,23 @@ export async function POST(req: Request) {
       discountAmount,
       totalPrice,
       voucherCode: appliedVoucher,
+      discountType,
+      referralCodeUsed,
+      referrerId,
       notes: notes || undefined,
       status: 'pending',
     })
 
-    // Mark early bird voucher as used immediately at order creation
-    if (appliedVoucher?.startsWith('EBIRD-')) {
+    // Post-order side effects
+    if (discountType === 'early_bird' && appliedVoucher) {
       markCodeUsed(appliedVoucher, order.orderId)
     }
+    if (discountType === 'referral_invitee' && referralCodeUsed) {
+      // Records usage and issues a +1 reward to the referrer
+      recordReferralUsage(session.user.id, referralCodeUsed, order.orderId)
+    }
 
-    console.log('[create-transaction] Order created:', order.orderId, '| amount:', totalPrice)
+    console.log('[create-transaction] Order created:', order.orderId, '| amount:', totalPrice, '| discountType:', discountType)
 
     return NextResponse.json({ orderId: order.orderId })
   } catch (err) {

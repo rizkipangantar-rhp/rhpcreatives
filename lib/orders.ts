@@ -22,6 +22,9 @@ export type Order = {
   discountAmount: number
   totalPrice: number
   voucherCode?: string
+  discountType?: 'early_bird' | 'referral_invitee' | 'referral_referrer' | null
+  referralCodeUsed?: string   // referral code applied (if discountType is referral_invitee)
+  referrerId?: string         // user ID of referrer (for reward tracking)
   notes?: string
   status: OrderStatus
   snapToken?: string
