@@ -29,13 +29,14 @@ export default function EarlyBirdPopup() {
   useEffect(() => {
     if (status === 'loading') return
 
-    // Layer 1: cookie (fastest, most reliable)
+    // Unauthenticated users always see the popup (cookie may be stale from a previous session)
+    if (status === 'unauthenticated') { setHasClaim(false); return }
+
+    // Layer 1: cookie (fastest, most reliable) — only checked for authenticated users
     if (document.cookie.includes('eb_claimed=1')) {
       setHasClaim(true)
       return
     }
-
-    if (status === 'unauthenticated') { setHasClaim(false); return }
 
     // Layer 2: localStorage
     const uid = session?.user?.email ?? session?.user?.id ?? ''
