@@ -68,10 +68,22 @@ export default function EarlyBirdPopup() {
 
   useEffect(() => {
     if (!visible) return
+    // Initialise from localStorage cache so we never flash a higher number
+    const cached = parseInt(localStorage.getItem('eb-remaining') ?? String(SLOTS_TOTAL), 10)
+    setSlotsLeft(cached)
+
     fetch('/api/early-bird/quota')
       .then(r => r.json())
-      .then(data => setSlotsLeft(typeof data.remaining === 'number' ? data.remaining : SLOTS_TOTAL))
-      .catch(() => setSlotsLeft(SLOTS_TOTAL))
+      .then(data => {
+        if (typeof data.remaining !== 'number') return
+        // Always show the lower of the two values — stale lambdas can only over-count
+        const shown = Math.min(data.remaining, cached)
+        setSlotsLeft(shown)
+        if (data.remaining < cached) {
+          localStorage.setItem('eb-remaining', String(data.remaining))
+        }
+      })
+      .catch(() => {})
   }, [visible])
 
   function close() {

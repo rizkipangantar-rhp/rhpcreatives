@@ -146,7 +146,16 @@ export default function KlaimEarlyBirdPage() {
     fetch(`/api/early-bird/status?t=${Date.now()}`)
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(data => {
-        if (data.quota) setQuota(data.quota)
+        if (data.quota) {
+          setQuota(data.quota)
+          // Cache remaining count so the popup reflects it on same device
+          if (typeof data.quota.remaining === 'number') {
+            const prev = parseInt(localStorage.getItem('eb-remaining') ?? '20', 10)
+            if (data.quota.remaining < prev) {
+              localStorage.setItem('eb-remaining', String(data.quota.remaining))
+            }
+          }
+        }
         setName(data.userName ?? '')
         if (data.claim) {
           setClaim(data.claim)
