@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import type { Session } from 'next-auth'
 import { useLanguage } from '@/context/LanguageContext'
-import { generateReferralCode } from '@/lib/users'
+import { generateReferralCode } from '@/lib/referral-code'
 import styles from './profil.module.css'
 
 type OrderStatus = 'pending' | 'paid' | 'processing' | 'completed' | 'cancelled'
