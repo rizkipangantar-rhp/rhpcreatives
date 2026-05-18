@@ -132,6 +132,11 @@ export default function KlaimEarlyBirdPage() {
     }
   }, [authStatus, router])
 
+  function cacheClaimedFlag() {
+    const uid = session?.user?.email ?? ''
+    if (uid) localStorage.setItem(`eb-claimed:${uid}`, '1')
+  }
+
   // fetch status once authenticated
   useEffect(() => {
     if (authStatus !== 'authenticated') return
@@ -142,6 +147,7 @@ export default function KlaimEarlyBirdPage() {
         setName(data.userName ?? '')
         if (data.claim) {
           setClaim(data.claim)
+          cacheClaimedFlag()
           setView(data.claim.usedAt ? 'used' : 'already')
         } else if (data.claimExpired) {
           setView('expired')
@@ -174,6 +180,7 @@ export default function KlaimEarlyBirdPage() {
     }
     setClaim(data.claim)
     setJustClaimed(true)
+    cacheClaimedFlag()
     setView('success')
   }
 
