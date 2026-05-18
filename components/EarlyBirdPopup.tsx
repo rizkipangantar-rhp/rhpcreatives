@@ -21,24 +21,38 @@ export default function EarlyBirdPopup() {
   const [slotsLeft, setSlotsLeft] = useState<number | null>(null)
   const [hasClaim, setHasClaim] = useState<boolean | null>(null)
 
-  // Check if authenticated user already has an active claim — suppress popup if so.
-  // Uses localStorage as a client-side cache to survive serverless cold starts where
-  // a different lambda instance may not have the same /tmp data.
+  // Suppress popup for users who have already claimed.
+  // Uses three layers so it survives Vercel lambda isolation (ephemeral /tmp):
+  //   1. Cookie eb_claimed=1 — set by the claim page, no session-email dependency
+  //   2. localStorage keyed by user email — user-specific, cleared with browser data
+  //   3. API call — ground truth, may be stale on a cold lambda
   useEffect(() => {
     if (status === 'loading') return
+
+    // Layer 1: cookie (fastest, most reliable)
+    if (document.cookie.includes('eb_claimed=1')) {
+      setHasClaim(true)
+      return
+    }
+
     if (status === 'unauthenticated') { setHasClaim(false); return }
 
+    // Layer 2: localStorage
     const uid = session?.user?.email ?? session?.user?.id ?? ''
     if (uid && localStorage.getItem(claimCacheKey(uid)) === '1') {
       setHasClaim(true)
       return
     }
 
+    // Layer 3: API
     fetch('/api/early-bird/status')
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(data => {
         const claimed = !!data.claim
-        if (claimed && uid) localStorage.setItem(claimCacheKey(uid), '1')
+        if (claimed) {
+          document.cookie = 'eb_claimed=1; max-age=31536000; path=/; SameSite=Lax'
+          if (uid) localStorage.setItem(claimCacheKey(uid), '1')
+        }
         setHasClaim(claimed)
       })
       .catch(() => {}) // keep null on error — popup stays suppressed

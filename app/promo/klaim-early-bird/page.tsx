@@ -133,6 +133,9 @@ export default function KlaimEarlyBirdPage() {
   }, [authStatus, router])
 
   function cacheClaimedFlag() {
+    // Cookie: no dependency on session email, persists across page loads
+    document.cookie = 'eb_claimed=1; max-age=31536000; path=/; SameSite=Lax'
+    // localStorage: user-specific backup
     const uid = session?.user?.email ?? ''
     if (uid) localStorage.setItem(`eb-claimed:${uid}`, '1')
   }
