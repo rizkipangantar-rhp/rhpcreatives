@@ -108,8 +108,6 @@
 .btnSecondary:hover { color: var(--text); border-color: var(--purple-light); background: rgba(139,92,246,0.08); }
 .btnSecondary:active { opacity: 0.8; transform: scale(0.97); }
 
-/* Desktop: show order link / Mobile: show scroll-to-pricing button */
-.mobileOnly { display: none; }
 .desktopOnly { display: inline-flex; }
 
 /* ── Quick-jump chips ── */
@@ -149,6 +147,5 @@
   .sub { font-size: 0.92rem; margin-bottom: 1.5rem; }
   .actions { flex-direction: column; width: 100%; max-width: 320px; }
   .btnPrimary, .btnSecondary { width: 100%; justify-content: center; }
-  .mobileOnly { display: inline-flex; }
   .desktopOnly { display: none; }
 }

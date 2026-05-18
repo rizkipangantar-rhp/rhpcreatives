@@ -33,17 +33,10 @@ export default function ServicePageHero({ pageType }: Props) {
         <button className={styles.btnPrimary} onClick={() => scrollToId('harga')}>
           {sp.ctaPrimary}
         </button>
-        {/* Desktop: direct link to /order */}
+        {/* Desktop only: direct link to /order */}
         <a href="/order" className={`${styles.btnSecondary} ${styles.desktopOnly}`}>
           {sp.ctaSecondaryDesktop}
         </a>
-        {/* Mobile: scroll to pricing section */}
-        <button
-          className={`${styles.btnSecondary} ${styles.mobileOnly}`}
-          onClick={() => scrollToId('harga')}
-        >
-          {sp.ctaSecondaryMobile}
-        </button>
       </div>
 
       <div className={styles.chips}>

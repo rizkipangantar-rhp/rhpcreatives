@@ -468,13 +468,11 @@ export type Tr = {
     digital: {
       ctaPrimary: string
       ctaSecondaryDesktop: string
-      ctaSecondaryMobile: string
       chips: string[]
     }
     design: {
       ctaPrimary: string
       ctaSecondaryDesktop: string
-      ctaSecondaryMobile: string
       chips: string[]
     }
     stickyBar: {
@@ -1246,13 +1244,11 @@ export const t: Record<Lang, Tr> = {
       digital: {
         ctaPrimary: 'Lihat Paket & Harga ↓',
         ctaSecondaryDesktop: 'Langsung Order →',
-        ctaSecondaryMobile: 'Lihat Paket ↓',
         chips: ['💌 Undangan Online', '🚀 Landing Page'],
       },
       design: {
         ctaPrimary: 'Lihat Paket & Harga ↓',
         ctaSecondaryDesktop: 'Langsung Order →',
-        ctaSecondaryMobile: 'Lihat Paket ↓',
         chips: ['✨ Desain Instagram', '📸 Edit Foto'],
       },
       stickyBar: {
@@ -2023,13 +2019,11 @@ export const t: Record<Lang, Tr> = {
       digital: {
         ctaPrimary: 'View Packages & Pricing ↓',
         ctaSecondaryDesktop: 'Order Now →',
-        ctaSecondaryMobile: 'View Packages ↓',
         chips: ['💌 Online Invitation', '🚀 Landing Page'],
       },
       design: {
         ctaPrimary: 'View Packages & Pricing ↓',
         ctaSecondaryDesktop: 'Order Now →',
-        ctaSecondaryMobile: 'View Packages ↓',
         chips: ['✨ Instagram Design', '📸 Photo Editing'],
       },
       stickyBar: {
