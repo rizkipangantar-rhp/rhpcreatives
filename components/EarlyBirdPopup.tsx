@@ -77,12 +77,11 @@ export default function EarlyBirdPopup() {
       .then(r => r.json())
       .then(data => {
         if (typeof data.remaining !== 'number') return
-        // Always show the lower of the two values — stale lambdas can only over-count
-        const shown = Math.min(data.remaining, cached)
+        // If server reports higher than cache a reset occurred — trust server.
+        // Otherwise show the lower value (stale lambdas can over-count).
+        const shown = data.remaining > cached ? data.remaining : Math.min(data.remaining, cached)
         setSlotsLeft(shown)
-        if (data.remaining < cached) {
-          localStorage.setItem('eb-remaining', String(data.remaining))
-        }
+        localStorage.setItem('eb-remaining', String(shown))
       })
       .catch(() => {})
   }, [visible])
