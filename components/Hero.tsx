@@ -26,7 +26,7 @@ export default function Hero() {
         </div>
         <div className={styles.stats}>
           <div className={styles.statItem}>
-            <span className={styles.statNum}>5</span>
+            <span className={styles.statNum}>4</span>
             <span className={styles.statLabel}>{h.stat1Label}</span>
           </div>
           <div className={styles.statItem}>
