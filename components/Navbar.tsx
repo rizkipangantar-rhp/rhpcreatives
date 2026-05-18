@@ -119,9 +119,6 @@ export default function Navbar() {
           </Link>
         )}
 
-        <Link href="#order" className={styles.cta}>
-          {tr.nav.cta}
-        </Link>
         <button
           className={`${styles.hamburger} ${menuOpen ? styles.hamburgerOpen : ''}`}
           onClick={() => setMenuOpen(!menuOpen)}
@@ -191,9 +188,6 @@ export default function Navbar() {
                 {tr.nav.login}
               </Link>
             )}
-            <Link href="#order" className={styles.mobileCtaBtn} onClick={closeMenu}>
-              {tr.nav.cta}
-            </Link>
           </div>
           </div>
         </>
