@@ -15,6 +15,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
+  const [referralCode, setReferralCode] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -31,7 +32,7 @@ export default function RegisterPage() {
     const res = await fetch('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ name, email, password, referralCode: referralCode.trim() || undefined }),
     })
     const data = await res.json()
 
@@ -126,6 +127,19 @@ export default function RegisterPage() {
               required
               autoComplete="new-password"
             />
+          </div>
+
+          <div className={styles.field}>
+            <label htmlFor="referralCode">{a.referralCodeLabel}</label>
+            <input
+              id="referralCode"
+              type="text"
+              placeholder={a.referralCodePlaceholder}
+              value={referralCode}
+              onChange={e => setReferralCode(e.target.value.toUpperCase())}
+              autoComplete="off"
+            />
+            {a.referralCodeNote && <p className={styles.fieldNote}>{a.referralCodeNote}</p>}
           </div>
 
           <button type="submit" className={styles.submitBtn} disabled={loading}>

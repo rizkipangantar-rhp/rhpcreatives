@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import type { Session } from 'next-auth'
 import { useLanguage } from '@/context/LanguageContext'
+import { generateReferralCode } from '@/lib/users'
 import styles from './profil.module.css'
 
 type OrderStatus = 'pending' | 'paid' | 'processing' | 'completed' | 'cancelled'
@@ -18,22 +19,6 @@ type Order = {
   totalPrice: number
   status: OrderStatus
   createdAt: string
-}
-
-function generateReferralCode(email: string): string {
-  let hash = 0
-  for (let i = 0; i < email.length; i++) {
-    hash = ((hash << 5) - hash) + email.charCodeAt(i)
-    hash |= 0
-  }
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-  let code = ''
-  let n = Math.abs(hash)
-  for (let i = 0; i < 5; i++) {
-    code += chars[n % chars.length]
-    n = Math.floor(n / chars.length)
-  }
-  return `RHP-${code}`
 }
 
 function AvatarDisplay({ src, name }: { src?: string | null; name?: string | null }) {
@@ -77,6 +62,14 @@ export default function ProfilCard({ session }: { session: Session }) {
   const [orders, setOrders] = useState<Order[]>([])
   const [ordersLoading, setOrdersLoading] = useState(false)
   const [ordersLoaded, setOrdersLoaded] = useState(false)
+  const [referralCount, setReferralCount] = useState<number | null>(null)
+
+  useEffect(() => {
+    fetch('/api/referral/stats')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data?.count !== undefined) setReferralCount(data.count) })
+      .catch(() => {})
+  }, [])
 
   function copyCode() {
     navigator.clipboard.writeText(referralCode).then(() => {
@@ -188,12 +181,8 @@ export default function ProfilCard({ session }: { session: Session }) {
               <div className={styles.cardLabel}>{p.statsLabel}</div>
               <div className={styles.statGrid}>
                 <div className={styles.stat}>
-                  <span className={styles.statValue}>0</span>
+                  <span className={styles.statValue}>{referralCount ?? '—'}</span>
                   <span className={styles.statLabel}>{p.statPeople}</span>
-                </div>
-                <div className={styles.stat}>
-                  <span className={styles.statValue}>Rp 0</span>
-                  <span className={styles.statLabel}>{p.statReward}</span>
                 </div>
               </div>
               <p className={styles.cardNote}>{p.statsNote}</p>

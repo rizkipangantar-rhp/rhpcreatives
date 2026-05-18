@@ -8,6 +8,7 @@ export type StoredUser = {
   email: string
   hashedPassword: string
   createdAt: string
+  referredBy?: string
 }
 
 const DB_PATH = () => getDataPath('users.json')
@@ -33,7 +34,7 @@ export function findUserByEmail(email: string): StoredUser | undefined {
   return readUsers().find(u => u.email.toLowerCase() === email.toLowerCase())
 }
 
-function generateReferralCode(email: string): string {
+export function generateReferralCode(email: string): string {
   let hash = 0
   for (let i = 0; i < email.length; i++) {
     hash = ((hash << 5) - hash) + email.charCodeAt(i)
@@ -51,6 +52,19 @@ function generateReferralCode(email: string): string {
 
 export function findUserByReferralCode(code: string): StoredUser | undefined {
   return readUsers().find(u => generateReferralCode(u.email) === code)
+}
+
+export function findUserById(id: string): StoredUser | undefined {
+  return readUsers().find(u => u.id === id)
+}
+
+export function setUserReferredBy(userId: string, referralCode: string): void {
+  const users = readUsers()
+  const idx = users.findIndex(u => u.id === userId)
+  if (idx !== -1) {
+    users[idx].referredBy = referralCode
+    writeUsers(users)
+  }
 }
 
 export function createUser(data: Omit<StoredUser, 'id' | 'createdAt'>): StoredUser {

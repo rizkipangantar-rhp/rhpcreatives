@@ -59,6 +59,7 @@ body {
 
 button, a { -webkit-tap-highlight-color: transparent; }
 button { touch-action: manipulation; }
+button:focus:not(:focus-visible), a:focus:not(:focus-visible) { outline: none; }
 
 ::selection {
   background: rgba(139,92,246,0.35);

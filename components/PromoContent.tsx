@@ -44,11 +44,6 @@ export default function PromoContent() {
               <div className={styles.earlyBirdStatNum}>{promo.earlyBird.quota}</div>
               <div className={styles.earlyBirdStatLabel}>Kuota</div>
             </div>
-            <div className={styles.earlyBirdDivider} />
-            <div className={styles.earlyBirdStat}>
-              <div className={styles.earlyBirdStatNum}>{promo.earlyBird.dp}</div>
-              <div className={styles.earlyBirdStatLabel}>Min. DP</div>
-            </div>
           </div>
 
           <Link href="/promo/klaim-early-bird" className={styles.earlyBirdCta}>

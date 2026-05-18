@@ -85,6 +85,9 @@ export type Tr = {
     passwordMismatch: string
     hasAccount: string
     loginLink: string
+    referralCodeLabel: string
+    referralCodePlaceholder: string
+    referralCodeNote: string
   }
   profile: {
     referralLabel: string
@@ -396,6 +399,9 @@ export type Tr = {
     waitlistSubmit: string
     waitlistSuccess: string
     loading: string
+    usedTitle: string
+    usedSub: string
+    usedOrderBtn: string
   }
   promo: {
     earlyBird: {
@@ -403,7 +409,6 @@ export type Tr = {
       title: string
       discount: string
       quota: string
-      dp: string
       desc: string
       badge: string
       cta: string
@@ -494,6 +499,9 @@ export const t: Record<Lang, Tr> = {
       passwordMismatch: 'Password dan konfirmasi password tidak cocok.',
       hasAccount: 'Sudah punya akun?',
       loginLink: 'Masuk di sini',
+      referralCodeLabel: 'Kode Referral (Opsional)',
+      referralCodePlaceholder: 'RHP-XXXXX',
+      referralCodeNote: 'Punya kode referral teman? Masukkan di sini untuk dapat diskon 10%! ✨',
     },
     profile: {
       referralLabel: 'Kode Referral Kamu',
@@ -1100,6 +1108,9 @@ export const t: Record<Lang, Tr> = {
       waitlistSubmit: 'Daftar Waitlist',
       waitlistSuccess: 'Kamu sudah masuk waitlist! Kami akan kabari segera 🔔',
       loading: 'Memuat...',
+      usedTitle: 'Voucher Udah Kepake! 🎊',
+      usedSub: 'Mantap bestie! Voucher Early Bird-mu udah sukses dipake buat order. Sekarang tinggal gas bayar dan tunggu tim kami follow up ya! 🔥',
+      usedOrderBtn: 'Lihat Riwayat Order →',
     },
     promo: {
       earlyBird: {
@@ -1107,7 +1118,6 @@ export const t: Record<Lang, Tr> = {
         title: 'Early Bird Spesial',
         discount: '25%',
         quota: '20 Klien Pertama',
-        dp: 'DP 50%',
         desc: 'Diskon 25% untuk semua layanan, cuma buat 20 klien pertama. Yang dateng duluan, yang untung duluan. Berlaku 1 bulan sejak launch. DP minimal 50% saat konfirmasi.',
         badge: '🔥 PROMO AKTIF',
         cta: 'Klaim Sebelum Kehabisan →',
@@ -1238,6 +1248,9 @@ export const t: Record<Lang, Tr> = {
       passwordMismatch: 'Password and confirmation do not match.',
       hasAccount: 'Already have an account?',
       loginLink: 'Sign in here',
+      referralCodeLabel: 'Referral Code (Optional)',
+      referralCodePlaceholder: 'RHP-XXXXX',
+      referralCodeNote: "Got a friend's referral code? Enter it here for 10% off! ✨",
     },
     profile: {
       referralLabel: 'Your Referral Code',
@@ -1844,6 +1857,9 @@ export const t: Record<Lang, Tr> = {
       waitlistSubmit: 'Join Waitlist',
       waitlistSuccess: "You're on the waitlist! We'll notify you soon 🔔",
       loading: 'Loading...',
+      usedTitle: "Voucher's Been Used! 🎊",
+      usedSub: "Yass bestie! Your Early Bird voucher has been successfully applied to your order. Time to pay and wait for our team to follow up! 🔥",
+      usedOrderBtn: 'View Order History →',
     },
     promo: {
       earlyBird: {
@@ -1851,7 +1867,6 @@ export const t: Record<Lang, Tr> = {
         title: 'Early Bird Special',
         discount: '25%',
         quota: 'First 20 Clients',
-        dp: '50% DP',
         desc: "25% off all services, but only for the first 20 clients. First come, first served. Valid for 1 month from launch. Minimum 50% down payment upon confirmation.",
         badge: '🔥 PROMO ACTIVE',
         cta: "Claim Before It's Gone →",

@@ -3,8 +3,8 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { findPackageById, findServiceById } from '@/lib/packages'
 import { createOrder } from '@/lib/orders'
-import { findClaimByCode, isCodeUsed } from '@/lib/early-bird'
-import { findUserByReferralCode } from '@/lib/users'
+import { findClaimByCode, isCodeUsed, markCodeUsed } from '@/lib/early-bird'
+import { findUserByReferralCode, findUserById } from '@/lib/users'
 import { hasUserUsedReferral } from '@/lib/referral'
 
 export async function POST(req: Request) {
@@ -59,6 +59,18 @@ export async function POST(req: Request) {
       }
     }
 
+    // Auto-apply referral code from registration if user didn't manually enter a voucher
+    if (discountAmount === 0) {
+      const currentUser = findUserById(session.user.id)
+      if (currentUser?.referredBy && !hasUserUsedReferral(session.user.id)) {
+        const referrer = findUserByReferralCode(currentUser.referredBy)
+        if (referrer && referrer.id !== session.user.id) {
+          discountAmount = Math.round(pkg.price * 0.10)
+          appliedVoucher = currentUser.referredBy
+        }
+      }
+    }
+
     const totalPrice = pkg.price - discountAmount
 
     const order = createOrder({
@@ -79,6 +91,11 @@ export async function POST(req: Request) {
       notes: notes || undefined,
       status: 'pending',
     })
+
+    // Mark early bird voucher as used immediately at order creation
+    if (appliedVoucher?.startsWith('EBIRD-')) {
+      markCodeUsed(appliedVoucher, order.orderId)
+    }
 
     console.log('[create-transaction] Order created:', order.orderId, '| amount:', totalPrice)
 

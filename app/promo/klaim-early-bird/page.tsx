@@ -100,7 +100,7 @@ function SlotBar({ used, slotsLeft }: { used: number; slotsLeft: string }) {
 }
 
 // ── Main page ────────────────────────────────────────────────────────────────
-type View = 'loading' | 'form' | 'success' | 'already' | 'expired' | 'full'
+type View = 'loading' | 'form' | 'success' | 'already' | 'used' | 'expired' | 'full'
 
 export default function KlaimEarlyBirdPage() {
   const { tr, lang } = useLanguage()
@@ -135,22 +135,23 @@ export default function KlaimEarlyBirdPage() {
   // fetch status once authenticated
   useEffect(() => {
     if (authStatus !== 'authenticated') return
-    fetch('/api/early-bird/status')
-      .then(r => r.json())
+    fetch(`/api/early-bird/status?t=${Date.now()}`)
+      .then(r => r.ok ? r.json() : Promise.reject())
       .then(data => {
-        setQuota(data.quota)
+        if (data.quota) setQuota(data.quota)
         setName(data.userName ?? '')
         if (data.claim) {
           setClaim(data.claim)
-          setView('already')
+          setView(data.claim.usedAt ? 'used' : 'already')
         } else if (data.claimExpired) {
           setView('expired')
-        } else if (data.quota.remaining <= 0) {
+        } else if (data.quota?.remaining <= 0) {
           setView('full')
         } else {
           setView('form')
         }
       })
+      .catch(() => setView('form'))
   }, [authStatus])
 
   async function handleClaim(e: React.FormEvent) {
@@ -267,6 +268,24 @@ export default function KlaimEarlyBirdPage() {
             <a href={waShareUrl(claim.voucherCode)} target="_blank" rel="noopener noreferrer" className={styles.secondaryCta}>
               {c.shareWaBtn}
             </a>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  if (view === 'used' && claim) {
+    return (
+      <main className={styles.page}>
+        <div className={styles.card}>
+          <div className={styles.successIcon}>🎊</div>
+          <h1 className={styles.title}>{c.usedTitle}</h1>
+          <p className={styles.sub}>{c.usedSub}</p>
+          <VoucherBox code={claim.voucherCode} label={c.voucherLabel} copyBtn={c.copyBtn} copied={c.copied} />
+          <div className={styles.ctaGroup}>
+            <Link href="/dashboard/profil" className={styles.primaryCta}>
+              {c.usedOrderBtn}
+            </Link>
           </div>
         </div>
       </main>

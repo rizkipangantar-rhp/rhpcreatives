@@ -14,7 +14,7 @@ export default function EarlyBirdPopup() {
   const router = useRouter()
   const { status } = useSession()
   const [visible, setVisible] = useState(false)
-  const [slotsLeft, setSlotsLeft] = useState(17)
+  const [slotsLeft, setSlotsLeft] = useState(SLOTS_TOTAL)
   const [hasClaim, setHasClaim] = useState<boolean | null>(null)
 
   // Check if authenticated user already has an active claim — suppress popup if so
@@ -39,7 +39,7 @@ export default function EarlyBirdPopup() {
     if (!visible) return
     fetch('/api/early-bird/quota')
       .then(r => r.json())
-      .then(data => setSlotsLeft(data.remaining ?? 17))
+      .then(data => setSlotsLeft(data.remaining ?? SLOTS_TOTAL))
       .catch(() => {})
   }, [visible])
 
