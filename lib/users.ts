@@ -170,6 +170,15 @@ export function setUserSuspended(userId: string, suspended: boolean): void {
   }
 }
 
+export function deleteUser(userId: string): boolean {
+  const users = readUsers()
+  const idx = users.findIndex(u => u.id === userId)
+  if (idx === -1) return false
+  users.splice(idx, 1)
+  writeUsers(users)
+  return true
+}
+
 export function addReferralReward(userId: string): void {
   const users = readUsers()
   const idx = users.findIndex(u => u.id === userId)

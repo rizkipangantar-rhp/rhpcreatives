@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { findUserById, setUserSuspended, getUserReferralCode } from '@/lib/users'
+import { findUserById, setUserSuspended, getUserReferralCode, deleteUser } from '@/lib/users'
 import { getOrdersByUser } from '@/lib/orders'
 import { getReferralStats } from '@/lib/referral'
 
@@ -52,5 +52,21 @@ export async function PATCH(
   const { user_id } = await params
   const { suspended } = await req.json() as { suspended: boolean }
   setUserSuspended(user_id, suspended)
+  return NextResponse.json({ ok: true })
+}
+
+export async function DELETE(
+  _req: Request,
+  { params }: { params: Promise<{ user_id: string }> }
+) {
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+
+  const { user_id } = await params
+  const user = findUserById(user_id)
+  if (!user) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  if (user.isAdmin) return NextResponse.json({ error: 'Tidak bisa hapus akun admin' }, { status: 400 })
+
+  deleteUser(user_id)
   return NextResponse.json({ ok: true })
 }

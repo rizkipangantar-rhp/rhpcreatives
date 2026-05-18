@@ -30,6 +30,7 @@ export default function AdminUsersPage() {
   const [search, setSearch] = useState('')
   const [providerFilter, setProviderFilter] = useState<'all' | 'google' | 'credentials'>('all')
   const [suspendedFilter, setSuspendedFilter] = useState<'all' | 'active' | 'suspended'>('all')
+  const [deleting, setDeleting] = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/admin/users')
@@ -53,6 +54,19 @@ export default function AdminUsersPage() {
     if (suspendedFilter === 'suspended') list = list.filter(u => u.suspended)
     return list
   }, [users, search, providerFilter, suspendedFilter])
+
+  async function handleDelete(u: User) {
+    if (!confirm(`Hapus akun "${u.name}" (${u.email})?\n\nAksi ini permanen dan tidak bisa dibatalkan.`)) return
+    setDeleting(u.id)
+    const res = await fetch(`/api/admin/users/${encodeURIComponent(u.id)}`, { method: 'DELETE' })
+    if (res.ok) {
+      setUsers(prev => prev.filter(x => x.id !== u.id))
+    } else {
+      const data = await res.json().catch(() => ({}))
+      alert(data.error ?? 'Gagal menghapus user.')
+    }
+    setDeleting(null)
+  }
 
   if (loading) return <div className={s.loading}><div className={s.spinner} /></div>
 
@@ -90,10 +104,8 @@ export default function AdminUsersPage() {
               <th>Email</th>
               <th>Provider</th>
               <th>Kode Referral</th>
-              <th>Direferensikan oleh</th>
               <th>Total Order</th>
               <th>Total Belanja</th>
-              <th>Rewards</th>
               <th>Daftar</th>
               <th>Status</th>
               <th>Aksi</th>
@@ -103,7 +115,7 @@ export default function AdminUsersPage() {
                 <tr key={u.id}>
                   <td>
                     <div className={s.bold}>{u.name}</div>
-                    {u.isAdmin && <span className={`${s.badge} ${s.badgePaid}`} style={{ fontSize: '0.65rem' }}>Admin</span>}
+                    {u.isAdmin && <span className={`${s.badge} ${s.badgePaid}`} style={{ fontSize: '0.65rem', marginTop: 4 }}>Admin</span>}
                   </td>
                   <td className={s.dim}>{u.email}</td>
                   <td>
@@ -112,10 +124,8 @@ export default function AdminUsersPage() {
                     </span>
                   </td>
                   <td><span className={s.mono}>{u.referralCode}</span></td>
-                  <td className={s.dim}>{u.referredBy ? <span className={s.mono}>{u.referredBy}</span> : '—'}</td>
                   <td style={{ textAlign: 'center' }}>{u.totalOrders}</td>
                   <td className={s.textGreen}>{fmt(u.totalSpent)}</td>
-                  <td style={{ textAlign: 'center' }}>{u.rewardsAvailable > 0 ? <span className={s.textYellow}>{u.rewardsAvailable}</span> : '—'}</td>
                   <td className={s.dim} style={{ whiteSpace: 'nowrap' }}>{fmtDate(u.createdAt)}</td>
                   <td>
                     {u.suspended
@@ -123,12 +133,24 @@ export default function AdminUsersPage() {
                       : <span className={`${s.badge} ${s.badgeActive}`}>Aktif</span>}
                   </td>
                   <td>
-                    <Link href={`/admin/users/${u.id}`} className={s.btnGhost}>Detail →</Link>
+                    <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                      <Link href={`/admin/users/${u.id}`} className={s.btnGhost}>Detail</Link>
+                      {!u.isAdmin && (
+                        <button
+                          className={s.btnDanger}
+                          style={{ padding: '5px 10px', fontSize: '0.75rem' }}
+                          onClick={() => handleDelete(u)}
+                          disabled={deleting === u.id}
+                        >
+                          {deleting === u.id ? '...' : 'Hapus'}
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
               {filtered.length === 0 && (
-                <tr><td colSpan={11} className={s.emptyState}>Tidak ada user ditemukan</td></tr>
+                <tr><td colSpan={9} className={s.emptyState}>Tidak ada user ditemukan</td></tr>
               )}
             </tbody>
           </table>
