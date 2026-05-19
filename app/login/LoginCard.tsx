@@ -23,6 +23,29 @@ export default function LoginCard() {
     e.preventDefault()
     setError('')
     setLoading(true)
+
+    // Check if email exists first for a specific error message
+    try {
+      const check = await fetch('/api/auth/check-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      }).then(r => r.json()) as { exists: boolean; provider: string | null }
+
+      if (!check.exists) {
+        setError(a.errorEmailNotFound ?? 'Email tidak terdaftar. Daftar dulu ya!')
+        setLoading(false)
+        return
+      }
+      if (check.provider === 'google') {
+        setError(a.errorGoogleOnly ?? 'Akun ini terdaftar via Google. Gunakan tombol "Masuk dengan Google".')
+        setLoading(false)
+        return
+      }
+    } catch {
+      // If check fails, fall through to normal sign-in
+    }
+
     const res = await signIn('credentials', {
       email,
       password,
@@ -31,7 +54,7 @@ export default function LoginCard() {
     })
     setLoading(false)
     if (res?.error) {
-      setError(a.errorInvalid)
+      setError(a.errorWrongPassword ?? a.errorInvalid)
     } else {
       router.push(callbackUrl)
     }

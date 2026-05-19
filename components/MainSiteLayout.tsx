@@ -7,6 +7,7 @@ import Footer from '@/components/Footer'
 import EarlyBirdPopup from '@/components/EarlyBirdPopup'
 import FirstLoginModal from '@/components/FirstLoginModal'
 import FloatingBadge from '@/components/FloatingBadge'
+import Analytics from '@/components/Analytics'
 
 export default function MainSiteLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -21,6 +22,7 @@ export default function MainSiteLayout({ children }: { children: React.ReactNode
       <EarlyBirdPopup />
       <FirstLoginModal />
       <FloatingBadge />
+      <Analytics />
     </>
   )
 }

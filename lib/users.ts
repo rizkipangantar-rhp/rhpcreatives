@@ -2,9 +2,12 @@ import fs from 'fs'
 import path from 'path'
 import { getDataPath } from '@/lib/data-path'
 import { generateReferralCode, generateRandomReferralCode } from '@/lib/referral-code'
+import { safeWriteJson } from '@/lib/safe-write'
 export { generateReferralCode, generateRandomReferralCode } from '@/lib/referral-code'
 
 const ADMIN_EMAIL = 'rhpcreativesid@gmail.com'
+
+export type AdminRole = 'super_admin' | 'admin' | 'cs'
 
 export type StoredUser = {
   id: string                          // "google_<googleId>" | "cred_<uuid>"
@@ -17,6 +20,7 @@ export type StoredUser = {
   lastLogin: string
   onboardingDone: boolean             // false until first-login modal completed
   isAdmin: boolean
+  role?: AdminRole                    // only set for admin accounts
   referralCode?: string               // stored random code; undefined = hash fallback
   referredBy?: string                 // referral code of who referred this user
   referralRewardsAvailable: number    // 15% rewards ready to use
@@ -37,10 +41,7 @@ function readUsers(): StoredUser[] {
 }
 
 function writeUsers(users: StoredUser[]): void {
-  const p = DB_PATH()
-  const dir = path.dirname(p)
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
-  fs.writeFileSync(p, JSON.stringify(users, null, 2), 'utf-8')
+  safeWriteJson(DB_PATH(), users)
 }
 
 function uniqueReferralCode(users: StoredUser[]): string {
@@ -90,6 +91,7 @@ export function upsertGoogleUser(data: {
     users[idx].image = data.image ?? users[idx].image
     users[idx].lastLogin = new Date().toISOString()
     users[idx].isAdmin = users[idx].email.toLowerCase() === ADMIN_EMAIL
+    if (users[idx].isAdmin && !users[idx].role) users[idx].role = 'super_admin'
     writeUsers(users)
     return { user: users[idx], isNew: false }
   }
@@ -105,6 +107,7 @@ export function upsertGoogleUser(data: {
     lastLogin: new Date().toISOString(),
     onboardingDone: false,
     isAdmin: data.email.toLowerCase() === ADMIN_EMAIL,
+    role: data.email.toLowerCase() === ADMIN_EMAIL ? ('super_admin' as AdminRole) : undefined,
     referralCode: uniqueReferralCode(users),
     referralRewardsAvailable: 0,
     referralRewardsUsed: 0,
@@ -133,6 +136,7 @@ export function createUser(data: {
     lastLogin: new Date().toISOString(),
     onboardingDone: true,   // credentials users complete onboarding via register form
     isAdmin: data.email.toLowerCase() === ADMIN_EMAIL,
+    role: data.email.toLowerCase() === ADMIN_EMAIL ? ('super_admin' as AdminRole) : undefined,
     referralCode: uniqueReferralCode(users),
     referredBy: data.referredBy,
     referralRewardsAvailable: 0,
@@ -168,6 +172,20 @@ export function setUserSuspended(userId: string, suspended: boolean): void {
     users[idx].suspended = suspended
     writeUsers(users)
   }
+}
+
+export function setUserRole(userId: string, role: AdminRole | null): void {
+  const users = readUsers()
+  const idx = users.findIndex(u => u.id === userId)
+  if (idx === -1) return
+  if (role === null) {
+    users[idx].isAdmin = false
+    delete users[idx].role
+  } else {
+    users[idx].isAdmin = true
+    users[idx].role = role
+  }
+  writeUsers(users)
 }
 
 export function deleteUser(userId: string): boolean {

@@ -79,14 +79,23 @@ export function findRawClaim(userId: string): ClaimEntry | undefined {
 
 export function addClaim(entry: Omit<ClaimEntry, 'voucherCode' | 'claimedAt'>): ClaimEntry {
   const data = read()
-  const existingIdx = data.claims.findIndex(c => c.userId === entry.userId)
-  if (existingIdx !== -1) {
-    if (isClaimExpired(data.claims[existingIdx])) {
-      data.claims.splice(existingIdx, 1) // remove expired claim — allow re-claim
+
+  // Check by userId (primary key)
+  const existingByUser = data.claims.findIndex(c => c.userId === entry.userId)
+  if (existingByUser !== -1) {
+    if (isClaimExpired(data.claims[existingByUser])) {
+      data.claims.splice(existingByUser, 1)
     } else {
       throw new Error('already_claimed')
     }
   }
+
+  // Check by email to block multi-account abuse
+  const existingByEmail = data.claims.find(
+    c => c.email.toLowerCase() === entry.email.toLowerCase() && !isClaimExpired(c)
+  )
+  if (existingByEmail) throw new Error('already_claimed')
+
   const activeCount = data.claims.filter(c => !isClaimExpired(c)).length
   if (activeCount >= QUOTA) throw new Error('quota_full')
   const claim: ClaimEntry = { ...entry, voucherCode: generateCode(), claimedAt: new Date().toISOString() }

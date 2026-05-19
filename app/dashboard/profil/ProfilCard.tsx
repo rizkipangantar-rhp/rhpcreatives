@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
+import { useSearchParams } from 'next/navigation'
 import type { Session } from 'next-auth'
 import { useLanguage } from '@/context/LanguageContext'
 import styles from './profil.module.css'
@@ -70,11 +71,13 @@ export default function ProfilCard({ session }: { session: Session }) {
   const { user } = session
   const { tr, lang } = useLanguage()
   const p = tr.profile
+  const searchParams = useSearchParams()
+  const initialTab = searchParams.get('tab') === 'orders' ? 'orders' : 'referral'
 
   const [copied, setCopied] = useState(false)
-  const [activeTab, setActiveTab] = useState<'referral' | 'orders'>('referral')
+  const [activeTab, setActiveTab] = useState<'referral' | 'orders'>(initialTab)
   const [orders, setOrders] = useState<Order[]>([])
-  const [ordersLoading, setOrdersLoading] = useState(false)
+  const [ordersLoading, setOrdersLoading] = useState(initialTab === 'orders')
   const [ordersLoaded, setOrdersLoaded] = useState(false)
   const [referralStats, setReferralStats] = useState<ReferralStatsData | null>(null)
 
@@ -83,6 +86,17 @@ export default function ProfilCard({ session }: { session: Session }) {
       .then(r => r.ok ? r.json() : null)
       .then(data => { if (data) setReferralStats(data) })
       .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    if (initialTab === 'orders' && !ordersLoaded) {
+      fetch('/api/payment/my-orders')
+        .then(r => r.json())
+        .then(data => { setOrders(Array.isArray(data) ? data : []); setOrdersLoaded(true) })
+        .catch(() => setOrdersLoaded(true))
+        .finally(() => setOrdersLoading(false))
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const referralCode = referralStats?.referralCode ?? '...'

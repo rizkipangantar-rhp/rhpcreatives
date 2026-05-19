@@ -71,6 +71,9 @@ export type Tr = {
     submitLogin: string
     loggingIn: string
     errorInvalid: string
+    errorEmailNotFound: string
+    errorGoogleOnly: string
+    errorWrongPassword: string
     noAccount: string
     registerLink: string
     registerTitle: string
@@ -511,6 +514,9 @@ export const t: Record<Lang, Tr> = {
       submitLogin: 'Masuk',
       loggingIn: 'Masuk...',
       errorInvalid: 'Email atau password salah.',
+      errorEmailNotFound: 'Email ini belum terdaftar. Daftar dulu yuk!',
+      errorGoogleOnly: 'Akun ini terdaftar via Google. Pakai tombol "Masuk dengan Google" ya!',
+      errorWrongPassword: 'Password salah. Coba lagi!',
       noAccount: 'Belum punya akun?',
       registerLink: 'Daftar sekarang',
       registerTitle: 'Buat akun baru',
@@ -613,7 +619,7 @@ export const t: Record<Lang, Tr> = {
       selectFirst: 'Pilih layanan dan paket dulu',
       errorGeneral: 'Gagal membuat transaksi. Coba lagi.',
       confirmTitle: 'Cek dulu ya, bestie! ✨',
-      confirmSub: 'Eh bestie, mau langsung gasken atau konsultasi dulu? Tenang, kamu juga bisa tulis keterangan/request khusus di halaman pembayaran kok! 📝',
+      confirmSub: 'Siap diproses! Kalau ada pertanyaan soal layanan ini, kamu bisa konsultasi dulu via WA sebelum bayar. Atau langsung gasken bayar sekarang — kamu tetap bisa tulis catatan/request di halaman pembayaran ya! 📝',
       confirmGasken: 'Langsung Gasken Bayar 🚀',
       confirmWa: 'Konsultasi Dulu via WA 💬',
     },
@@ -1286,6 +1292,9 @@ export const t: Record<Lang, Tr> = {
       submitLogin: 'Sign In',
       loggingIn: 'Signing in...',
       errorInvalid: 'Invalid email or password.',
+      errorEmailNotFound: "This email isn't registered. Sign up first!",
+      errorGoogleOnly: 'This account uses Google Sign-In. Use the "Sign in with Google" button.',
+      errorWrongPassword: 'Wrong password. Try again!',
       noAccount: "Don't have an account?",
       registerLink: 'Register now',
       registerTitle: 'Create a new account',
@@ -1388,7 +1397,7 @@ export const t: Record<Lang, Tr> = {
       selectFirst: 'Select a service and package first',
       errorGeneral: 'Failed to create transaction. Please try again.',
       confirmTitle: 'Double-check, bestie! ✨',
-      confirmSub: 'Hey bestie, ready to pay or wanna chat first? You can also add special notes on the payment page btw! 📝',
+      confirmSub: "All set! Have questions about this service? You can consult via WA first, or go ahead and pay now — you can still add notes/requests on the payment page! 📝",
       confirmGasken: 'Pay Now! 🚀',
       confirmWa: 'Chat WA First 💬',
     },

@@ -169,7 +169,7 @@ export default function SuksesPage() {
             >
               {p.waBtn}
             </a>
-            <button onClick={() => router.push('/dashboard/profil')} className={styles.historyBtn}>
+            <button onClick={() => router.push('/dashboard/profil?tab=orders')} className={styles.historyBtn}>
               {p.orderHistoryBtn}
             </button>
             <Link href="/" className={styles.homeBtn}>{p.homeBtn}</Link>

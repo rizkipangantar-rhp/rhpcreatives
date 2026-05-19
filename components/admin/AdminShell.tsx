@@ -6,7 +6,7 @@ import type { Session } from 'next-auth'
 import { signOut } from 'next-auth/react'
 import styles from './AdminShell.module.css'
 
-type NavItem = { href: string; icon: string; label: string }
+type NavItem = { href: string; icon: string; label: string; minRole?: string }
 
 const NAV: NavItem[] = [
   { href: '/admin',              icon: '📊', label: 'Overview' },
@@ -15,12 +15,25 @@ const NAV: NavItem[] = [
   { href: '/admin/early-bird',   icon: '🎫', label: 'Early Bird' },
   { href: '/admin/referral',     icon: '🔗', label: 'Referral' },
   { href: '/admin/pendapatan',   icon: '💰', label: 'Pendapatan' },
-  { href: '/admin/pengaturan',   icon: '⚙️', label: 'Pengaturan' },
+  { href: '/admin/pengaturan',   icon: '⚙️', label: 'Pengaturan', minRole: 'super_admin' },
 ]
+
+const ROLE_LABELS: Record<string, string> = {
+  super_admin: 'Super Admin',
+  admin: 'Administrator',
+  cs: 'Customer Service',
+}
+
+function navAllowed(item: NavItem, role?: string): boolean {
+  if (role === 'cs') return item.href === '/admin/orders'
+  if (role === 'admin') return item.minRole !== 'super_admin'
+  return true
+}
 
 export default function AdminShell({ session, children }: { session: Session; children: React.ReactNode }) {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
+  const role = session.user?.role as string | undefined
 
   useEffect(() => { setOpen(false) }, [pathname])
 
@@ -29,8 +42,10 @@ export default function AdminShell({ session, children }: { session: Session; ch
     return pathname?.startsWith(href) ?? false
   }
 
-  const current = NAV.find(n => isActive(n.href))
+  const visibleNav = NAV.filter(item => navAllowed(item, role))
+  const current = visibleNav.find(n => isActive(n.href))
   const initials = (session.user?.name ?? 'A').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()
+  const roleLabel = ROLE_LABELS[role ?? ''] ?? 'Administrator'
 
   return (
     <div className={styles.shell}>
@@ -46,7 +61,7 @@ export default function AdminShell({ session, children }: { session: Session; ch
         </div>
 
         <nav className={styles.nav}>
-          {NAV.map(item => (
+          {visibleNav.map(item => (
             <Link
               key={item.href}
               href={item.href}
@@ -81,7 +96,7 @@ export default function AdminShell({ session, children }: { session: Session; ch
               <div className={styles.avatar}>{initials}</div>
               <div className={styles.userInfo}>
                 <span className={styles.userName}>{session.user?.name ?? 'Admin'}</span>
-                <span className={styles.userRole}>Administrator</span>
+                <span className={styles.userRole}>{roleLabel}</span>
               </div>
             </div>
             <button className={styles.logoutBtn} onClick={() => signOut({ callbackUrl: '/' })} title="Logout">

@@ -5,6 +5,7 @@ import { getAllOrders } from '@/lib/orders'
 import { readUsers } from '@/lib/users-internal'
 import { getQuota } from '@/lib/early-bird'
 import { getReferralStats } from '@/lib/referral'
+import { getAnalyticsSummary } from '@/lib/analytics'
 
 export async function GET() {
   const session = await getServerSession(authOptions)
@@ -47,6 +48,7 @@ export async function GET() {
   }
 
   const activeReferralCodes = users.filter(u => u.referralCode).length
+  const analytics = getAnalyticsSummary()
 
   return NextResponse.json({
     totalOrders: orders.length,
@@ -63,5 +65,6 @@ export async function GET() {
     ordersByStatus: byStatus,
     recentOrders: orders.slice(0, 5),
     recentUsers: users.slice(-5).reverse(),
+    analytics,
   })
 }

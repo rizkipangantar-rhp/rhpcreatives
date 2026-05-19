@@ -24,6 +24,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ claim })
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'error'
+    if (msg === 'already_claimed') {
+      return NextResponse.json(
+        { error: 'already_claimed', message: 'Kamu udah pernah klaim Early Bird nih! Cek kode kamu di dashboard profil ya 😊' },
+        { status: 400 }
+      )
+    }
     return NextResponse.json({ error: msg }, { status: 400 })
   }
 }

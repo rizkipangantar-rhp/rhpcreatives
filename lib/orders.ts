@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { getDataPath } from '@/lib/data-path'
+import { safeWriteJson } from '@/lib/safe-write'
 
 const DB_PATH = () => getDataPath('orders.json')
 
@@ -57,10 +58,7 @@ function read(): OrdersData {
 }
 
 function write(data: OrdersData) {
-  const p = DB_PATH()
-  const dir = path.dirname(p)
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
-  fs.writeFileSync(p, JSON.stringify(data, null, 2), 'utf-8')
+  safeWriteJson(DB_PATH(), data)
 }
 
 function generateOrderId(): string {

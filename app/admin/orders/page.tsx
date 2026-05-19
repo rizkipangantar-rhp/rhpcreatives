@@ -114,7 +114,12 @@ export default function AdminOrdersPage() {
     <div>
       <div className={s.pageHeader}>
         <h1 className={s.pageTitle}>Manajemen Order</h1>
-        <p className={s.pageSub}>{orders.length} total order · Pendapatan: <strong style={{ color: '#34d399' }}>{fmt(paidRevenue)}</strong></p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <p className={s.pageSub}>{orders.length} total order · Pendapatan: <strong style={{ color: '#34d399' }}>{fmt(paidRevenue)}</strong></p>
+          <Link href="/admin/orders/custom" className={s.btnPrimary} style={{ padding: '7px 16px', fontSize: '0.82rem', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+            + Custom Order
+          </Link>
+        </div>
       </div>
 
       <div className={s.card}>

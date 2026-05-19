@@ -23,6 +23,13 @@ const STATUS_LABELS: Record<string, string> = {
   completed: 'Selesai', cancelled: 'Batal',
 }
 
+type AnalyticsSummary = {
+  totalViews: number
+  todayViews: number
+  last7Days: { date: string; views: number }[]
+  topPaths: { path: string; views: number }[]
+}
+
 type StatsData = {
   totalOrders: number; totalRevenue: number; monthOrders: number; monthRevenue: number
   totalUsers: number; monthUsers: number; ebSlotsLeft: number; ebTotal: number
@@ -32,6 +39,7 @@ type StatsData = {
   ordersByStatus: Record<string, number>
   recentOrders: { orderId: string; serviceNameId: string; packageNameId: string; name: string; totalPrice: number; status: string; createdAt: string }[]
   recentUsers: { id: string; name: string; email: string; provider: string; referralCode?: string; createdAt: string }[]
+  analytics?: AnalyticsSummary
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -212,6 +220,46 @@ export default function AdminOverview() {
           </table>
         </div>
       </div>
+
+      {/* Analytics */}
+      {data.analytics && (
+        <div className={s.card} style={{ padding: 24 }}>
+          <div className={s.cardHeader} style={{ marginBottom: 20 }}>
+            <span className={s.cardTitle}>Analitik Pageview</span>
+          </div>
+          <div className={s.statGrid} style={{ marginBottom: 20 }}>
+            {[
+              { icon: '👁️', label: 'Total Pageview', value: data.analytics.totalViews },
+              { icon: '📅', label: 'Hari Ini', value: data.analytics.todayViews },
+            ].map(st => (
+              <div key={st.label} className={s.statCard}>
+                <div className={s.statIcon}>{st.icon}</div>
+                <div className={s.statValue}>{st.value}</div>
+                <div className={s.statLabel}>{st.label}</div>
+              </div>
+            ))}
+          </div>
+          <div className={s.chartArea} style={{ height: 120, marginBottom: 20 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data.analytics.last7Days.map(d => ({ ...d, label: d.date.slice(5) }))} barSize={20}>
+                <XAxis dataKey="label" tick={{ fontSize: 10, fill: '#475569' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 10, fill: '#475569' }} axisLine={false} tickLine={false} width={24} />
+                <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 12 }} labelStyle={{ color: '#94a3b8' }} />
+                <Bar dataKey="views" name="Views" fill="#a855f7" radius={[4,4,0,0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className={s.cardTitle} style={{ fontSize: '0.78rem', marginBottom: 8, color: '#64748b' }}>Top Halaman (All-Time)</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {data.analytics.topPaths.map((p, i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                <span style={{ color: '#94a3b8', fontFamily: 'monospace' }}>{p.path}</span>
+                <span style={{ color: '#f1f5f9', fontWeight: 600 }}>{p.views}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

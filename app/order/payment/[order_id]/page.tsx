@@ -131,8 +131,8 @@ export default function PaymentPage() {
   const notesSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  // 24h expiry from order creation (if no Midtrans expiry yet)
-  const expiryIso = order?.paymentExpiry ?? (order ? new Date(new Date(order.createdAt).getTime() + 24 * 3600 * 1000).toISOString() : undefined)
+  // 15-min expiry from order creation (if no Midtrans expiry yet)
+  const expiryIso = order?.paymentExpiry ?? (order ? new Date(new Date(order.createdAt).getTime() + 15 * 60 * 1000).toISOString() : undefined)
   const { display: countdownDisplay, expired } = useCountdown(expiryIso)
 
   // Load Snap.js for credit card tab

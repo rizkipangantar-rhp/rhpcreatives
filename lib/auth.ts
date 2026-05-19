@@ -2,7 +2,7 @@ import { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
-import { findUserByEmail, findUserById, upsertGoogleUser } from '@/lib/users'
+import { findUserByEmail, findUserById, upsertGoogleUser, type AdminRole } from '@/lib/users'
 
 declare module 'next-auth' {
   interface Session {
@@ -13,6 +13,7 @@ declare module 'next-auth' {
       image?: string | null
       onboardingDone?: boolean
       isAdmin?: boolean
+      role?: AdminRole
     }
   }
 }
@@ -21,6 +22,7 @@ declare module 'next-auth/jwt' {
   interface JWT {
     onboardingDone?: boolean
     isAdmin?: boolean
+    role?: AdminRole
   }
 }
 
@@ -39,7 +41,9 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
         const user = findUserByEmail(credentials.email)
-        if (!user?.hashedPassword) return null
+        if (!user) return null
+        if (user.provider !== 'credentials' || !user.hashedPassword) return null
+        if (user.suspended) return null
         const match = await bcrypt.compare(credentials.password, user.hashedPassword)
         if (!match) return null
         return { id: user.id, name: user.name, email: user.email, image: user.image ?? null }
@@ -75,6 +79,7 @@ export const authOptions: NextAuthOptions = {
         if (dbUser) {
           token.onboardingDone = dbUser.onboardingDone
           token.isAdmin = dbUser.isAdmin
+          token.role = dbUser.role
         }
         return token
       }
@@ -89,6 +94,7 @@ export const authOptions: NextAuthOptions = {
         const dbUser = findUserById(token.sub as string)
         token.onboardingDone = dbUser?.onboardingDone ?? true
         token.isAdmin = dbUser?.isAdmin ?? false
+        token.role = dbUser?.role
       }
 
       return token
@@ -99,6 +105,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.sub
         session.user.onboardingDone = token.onboardingDone
         session.user.isAdmin = token.isAdmin
+        session.user.role = token.role
       }
       return session
     },
