@@ -57,6 +57,7 @@ export type Tr = {
     login: string
     logout: string
     profileLink: string
+    customOrder: string
   }
   auth: {
     loginTitle: string
@@ -119,6 +120,7 @@ export type Tr = {
     logoutBtn: string
     tabReferral: string
     tabOrders: string
+    tabCustom: string
     noOrders: string
     orderDate: string
     orderStatus: string
@@ -500,6 +502,7 @@ export const t: Record<Lang, Tr> = {
       login: 'Masuk',
       logout: 'Keluar',
       profileLink: 'Profil & Referral',
+      customOrder: 'Custom Order',
     },
     auth: {
       loginTitle: 'Selamat datang kembali',
@@ -567,6 +570,7 @@ export const t: Record<Lang, Tr> = {
       logoutBtn: 'Keluar',
       tabReferral: 'Referral & Reward',
       tabOrders: 'Riwayat Order',
+      tabCustom: 'Request Custom',
       noOrders: 'Belum ada order. Yuk order sekarang!',
       orderDate: 'Tanggal',
       orderStatus: 'Status',
@@ -1278,6 +1282,7 @@ export const t: Record<Lang, Tr> = {
       login: 'Sign In',
       logout: 'Sign Out',
       profileLink: 'Profile & Referral',
+      customOrder: 'Custom Order',
     },
     auth: {
       loginTitle: 'Welcome back',
@@ -1345,6 +1350,7 @@ export const t: Record<Lang, Tr> = {
       logoutBtn: 'Sign Out',
       tabReferral: 'Referral & Rewards',
       tabOrders: 'Order History',
+      tabCustom: 'Custom Requests',
       noOrders: "No orders yet. Let's place one!",
       orderDate: 'Date',
       orderStatus: 'Status',

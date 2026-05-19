@@ -9,13 +9,14 @@ import styles from './AdminShell.module.css'
 type NavItem = { href: string; icon: string; label: string; minRole?: string }
 
 const NAV: NavItem[] = [
-  { href: '/admin',              icon: '📊', label: 'Overview' },
-  { href: '/admin/orders',       icon: '📦', label: 'Orders' },
-  { href: '/admin/users',        icon: '👥', label: 'Users' },
-  { href: '/admin/early-bird',   icon: '🎫', label: 'Early Bird' },
-  { href: '/admin/referral',     icon: '🔗', label: 'Referral' },
-  { href: '/admin/pendapatan',   icon: '💰', label: 'Pendapatan' },
-  { href: '/admin/pengaturan',   icon: '⚙️', label: 'Pengaturan', minRole: 'super_admin' },
+  { href: '/admin',                icon: '📊', label: 'Overview' },
+  { href: '/admin/orders',         icon: '📦', label: 'Orders' },
+  { href: '/admin/custom-orders',  icon: '✨', label: 'Custom Orders' },
+  { href: '/admin/users',          icon: '👥', label: 'Users' },
+  { href: '/admin/early-bird',     icon: '🎫', label: 'Early Bird' },
+  { href: '/admin/referral',       icon: '🔗', label: 'Referral' },
+  { href: '/admin/pendapatan',     icon: '💰', label: 'Pendapatan' },
+  { href: '/admin/pengaturan',     icon: '⚙️', label: 'Pengaturan', minRole: 'super_admin' },
 ]
 
 const ROLE_LABELS: Record<string, string> = {
@@ -25,7 +26,7 @@ const ROLE_LABELS: Record<string, string> = {
 }
 
 function navAllowed(item: NavItem, role?: string): boolean {
-  if (role === 'cs') return item.href === '/admin/orders'
+  if (role === 'cs') return item.href === '/admin/orders' || item.href === '/admin/custom-orders'
   if (role === 'admin') return item.minRole !== 'super_admin'
   return true
 }
@@ -33,9 +34,17 @@ function navAllowed(item: NavItem, role?: string): boolean {
 export default function AdminShell({ session, children }: { session: Session; children: React.ReactNode }) {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
+  const [customOrderCount, setCustomOrderCount] = useState(0)
   const role = session.user?.role as string | undefined
 
   useEffect(() => { setOpen(false) }, [pathname])
+
+  useEffect(() => {
+    fetch('/api/admin/custom-orders/count')
+      .then(r => r.ok ? r.json() : { count: 0 })
+      .then(d => setCustomOrderCount(d.count ?? 0))
+      .catch(() => {})
+  }, [pathname])
 
   function isActive(href: string) {
     if (href === '/admin') return pathname === '/admin'
@@ -69,6 +78,11 @@ export default function AdminShell({ session, children }: { session: Session; ch
             >
               <span className={styles.navIcon}>{item.icon}</span>
               <span className={styles.navLabel}>{item.label}</span>
+              {item.href === '/admin/custom-orders' && customOrderCount > 0 && (
+                <span style={{ marginLeft: 'auto', background: '#fbbf24', color: '#0a0a0f', fontSize: '0.65rem', fontWeight: 700, padding: '1px 6px', borderRadius: 999, lineHeight: 1.5 }}>
+                  {customOrderCount}
+                </span>
+              )}
             </Link>
           ))}
         </nav>

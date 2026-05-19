@@ -102,6 +102,13 @@ export default function Navbar() {
                   >
                     {tr.nav.profileLink}
                   </Link>
+                  <Link
+                    href="/order/custom"
+                    className={styles.dropdownLink}
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    {tr.nav.customOrder}
+                  </Link>
                   <div className={styles.dropdownDivider} />
                   <button
                     className={styles.dropdownLogout}
@@ -175,6 +182,9 @@ export default function Navbar() {
               <>
                 <Link href="/dashboard/profil" className={styles.mobileLoginBtn} onClick={closeMenu}>
                   {tr.nav.profileLink}
+                </Link>
+                <Link href="/order/custom" className={styles.mobileLoginBtn} onClick={closeMenu} style={{ background: 'rgba(139,92,246,0.15)', borderColor: 'rgba(139,92,246,0.3)' }}>
+                  {tr.nav.customOrder}
                 </Link>
                 <button
                   className={styles.mobileLogoutBtn}

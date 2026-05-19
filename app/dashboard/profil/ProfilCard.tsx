@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import { useSearchParams } from 'next/navigation'
 import type { Session } from 'next-auth'
@@ -19,6 +20,44 @@ type Order = {
   totalPrice: number
   status: OrderStatus
   createdAt: string
+}
+
+type RequestStatus =
+  | 'waiting_review' | 'price_sent' | 'accepted' | 'payment_pending'
+  | 'paid' | 'in_progress' | 'done' | 'rejected_by_admin' | 'rejected_by_customer'
+
+type CustomRequest = {
+  request_id: string
+  service: { name: string; package: string }
+  pricing: { final_price: number | null; estimated_days: number | null }
+  notes: { for_customer?: string; rejection_reason?: string }
+  status: RequestStatus
+  offer_expires_at: string | null
+  created_at: string
+}
+
+const REQ_STATUS_LABELS: Record<RequestStatus, string> = {
+  waiting_review: 'Menunggu Review',
+  price_sent: 'Harga Dikirim',
+  accepted: 'Diterima',
+  payment_pending: 'Menunggu Bayar',
+  paid: 'Dibayar',
+  in_progress: 'Diproses',
+  done: 'Selesai',
+  rejected_by_admin: 'Ditolak Admin',
+  rejected_by_customer: 'Ditolak Customer',
+}
+
+const REQ_STATUS_CLS: Partial<Record<RequestStatus, string>> = {
+  waiting_review: styles.statusPending,
+  price_sent: styles.statusPaid,
+  accepted: styles.statusProcessing,
+  payment_pending: styles.statusPending,
+  paid: styles.statusPaid,
+  in_progress: styles.statusProcessing,
+  done: styles.statusCompleted,
+  rejected_by_admin: styles.statusCancelled,
+  rejected_by_customer: styles.statusCancelled,
 }
 
 type ReferralUsage = {
@@ -72,14 +111,21 @@ export default function ProfilCard({ session }: { session: Session }) {
   const { tr, lang } = useLanguage()
   const p = tr.profile
   const searchParams = useSearchParams()
-  const initialTab = searchParams.get('tab') === 'orders' ? 'orders' : 'referral'
+  const router = useRouter()
+  const rawTab = searchParams.get('tab')
+  const initialTab: 'referral' | 'orders' | 'custom' =
+    rawTab === 'orders' ? 'orders' : rawTab === 'custom' ? 'custom' : 'referral'
 
   const [copied, setCopied] = useState(false)
-  const [activeTab, setActiveTab] = useState<'referral' | 'orders'>(initialTab)
+  const [activeTab, setActiveTab] = useState<'referral' | 'orders' | 'custom'>(initialTab)
   const [orders, setOrders] = useState<Order[]>([])
   const [ordersLoading, setOrdersLoading] = useState(initialTab === 'orders')
   const [ordersLoaded, setOrdersLoaded] = useState(false)
+  const [customRequests, setCustomRequests] = useState<CustomRequest[]>([])
+  const [customLoading, setCustomLoading] = useState(initialTab === 'custom')
+  const [customLoaded, setCustomLoaded] = useState(false)
   const [referralStats, setReferralStats] = useState<ReferralStatsData | null>(null)
+  const [actionLoading, setActionLoading] = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/referral/stats')
@@ -95,6 +141,13 @@ export default function ProfilCard({ session }: { session: Session }) {
         .then(data => { setOrders(Array.isArray(data) ? data : []); setOrdersLoaded(true) })
         .catch(() => setOrdersLoaded(true))
         .finally(() => setOrdersLoading(false))
+    }
+    if (initialTab === 'custom' && !customLoaded) {
+      fetch('/api/custom-order/my-requests')
+        .then(r => r.json())
+        .then(data => { setCustomRequests(Array.isArray(data) ? data : []); setCustomLoaded(true) })
+        .catch(() => setCustomLoaded(true))
+        .finally(() => setCustomLoading(false))
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -123,6 +176,43 @@ export default function ProfilCard({ session }: { session: Session }) {
         .then(data => { setOrders(Array.isArray(data) ? data : []); setOrdersLoaded(true) })
         .catch(() => setOrdersLoaded(true))
         .finally(() => setOrdersLoading(false))
+    }
+  }
+
+  function handleCustomTab() {
+    setActiveTab('custom')
+    if (!customLoaded) {
+      setCustomLoading(true)
+      fetch('/api/custom-order/my-requests')
+        .then(r => r.json())
+        .then(data => { setCustomRequests(Array.isArray(data) ? data : []); setCustomLoaded(true) })
+        .catch(() => setCustomLoaded(true))
+        .finally(() => setCustomLoading(false))
+    }
+  }
+
+  async function acceptOffer(requestId: string) {
+    setActionLoading(requestId + '-accept')
+    try {
+      const res = await fetch(`/api/custom-order/${requestId}/accept`, { method: 'PUT' })
+      const data = await res.json() as { order_id?: string; error?: string }
+      if (res.ok && data.order_id) {
+        router.push(`/order/payment/${data.order_id}`)
+      }
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
+  async function rejectOffer(requestId: string) {
+    setActionLoading(requestId + '-reject')
+    try {
+      await fetch(`/api/custom-order/${requestId}/reject`, { method: 'PUT' })
+      setCustomRequests(prev => prev.map(r =>
+        r.request_id === requestId ? { ...r, status: 'rejected_by_customer' as RequestStatus } : r
+      ))
+    } finally {
+      setActionLoading(null)
     }
   }
 
@@ -167,6 +257,12 @@ export default function ProfilCard({ session }: { session: Session }) {
             onClick={handleOrdersTab}
           >
             {p.tabOrders}
+          </button>
+          <button
+            className={`${styles.tab} ${activeTab === 'custom' ? styles.tabActive : ''}`}
+            onClick={handleCustomTab}
+          >
+            {p.tabCustom}
           </button>
         </div>
 
@@ -316,6 +412,126 @@ export default function ProfilCard({ session }: { session: Session }) {
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Custom requests tab */}
+        {activeTab === 'custom' && (
+          <div className={styles.ordersSection}>
+            {customLoading ? (
+              <div className={styles.ordersLoading}><div className={styles.spinner} /></div>
+            ) : customRequests.length === 0 ? (
+              <div className={styles.ordersEmpty}>
+                <p>{lang === 'id' ? 'Belum ada custom order request.' : 'No custom order requests yet.'}</p>
+                <Link href="/order/custom" className={styles.orderNowBtn}>
+                  {lang === 'id' ? 'Buat Request →' : 'Create Request →'}
+                </Link>
+              </div>
+            ) : (
+              <div className={styles.ordersList}>
+                {customRequests.map(req => {
+                  const isPriceSent = req.status === 'price_sent'
+                  const offerExpired = isPriceSent && req.offer_expires_at
+                    ? new Date(req.offer_expires_at) < new Date()
+                    : false
+                  const offerActive = isPriceSent && !offerExpired
+                  const msLeft = req.offer_expires_at ? Math.max(0, new Date(req.offer_expires_at).getTime() - Date.now()) : 0
+                  const hoursLeft = Math.floor(msLeft / 3600000)
+                  const minutesLeft = Math.floor((msLeft % 3600000) / 60000)
+
+                  return (
+                    <div key={req.request_id} className={styles.orderCard} style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.75rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 8 }}>
+                        <div>
+                          <div className={styles.orderService}>{req.service.name}</div>
+                          <div className={styles.orderPackage}>{req.service.package}</div>
+                          <div className={styles.orderDate}>
+                            {new Date(req.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+                            <span style={{ marginLeft: 6, fontFamily: 'monospace', fontSize: '0.68rem', color: '#475569' }}>{req.request_id}</span>
+                          </div>
+                        </div>
+                        <span className={`${styles.statusBadge} ${REQ_STATUS_CLS[req.status] ?? styles.statusPending}`}>
+                          {REQ_STATUS_LABELS[req.status]}
+                        </span>
+                      </div>
+
+                      {/* Offer card */}
+                      {offerActive && req.pricing.final_price != null && (
+                        <div style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 12, padding: '14px 16px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, flexWrap: 'wrap', gap: 6 }}>
+                            <span style={{ fontSize: '0.75rem', color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                              {lang === 'id' ? 'Penawaran Harga' : 'Price Offer'}
+                            </span>
+                            <span style={{ fontSize: '0.72rem', color: '#fbbf24' }}>
+                              ⏱ {hoursLeft}j {minutesLeft}m {lang === 'id' ? 'tersisa' : 'left'}
+                            </span>
+                          </div>
+                          <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#f1f5f9', marginBottom: 4 }}>
+                            Rp{req.pricing.final_price.toLocaleString('id-ID')}
+                          </div>
+                          {req.pricing.estimated_days && (
+                            <div style={{ fontSize: '0.78rem', color: '#64748b', marginBottom: req.notes.for_customer ? 8 : 12 }}>
+                              {lang === 'id' ? `Estimasi ${req.pricing.estimated_days} hari` : `Est. ${req.pricing.estimated_days} days`}
+                            </div>
+                          )}
+                          {req.notes.for_customer && (
+                            <div style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: 1.6, marginBottom: 12 }}>
+                              {req.notes.for_customer}
+                            </div>
+                          )}
+                          <div style={{ display: 'flex', gap: 8 }}>
+                            <button
+                              onClick={() => acceptOffer(req.request_id)}
+                              disabled={actionLoading === req.request_id + '-accept'}
+                              style={{
+                                flex: 1, background: 'linear-gradient(135deg, #7c3aed, #be185d)', color: '#fff',
+                                border: 'none', borderRadius: 8, padding: '9px 0', fontSize: '0.84rem',
+                                fontWeight: 700, cursor: 'pointer', opacity: actionLoading === req.request_id + '-accept' ? 0.6 : 1,
+                              }}
+                            >
+                              {actionLoading === req.request_id + '-accept'
+                                ? (lang === 'id' ? 'Memproses...' : 'Processing...')
+                                : (lang === 'id' ? 'Terima & Bayar →' : 'Accept & Pay →')}
+                            </button>
+                            <button
+                              onClick={() => rejectOffer(req.request_id)}
+                              disabled={actionLoading === req.request_id + '-reject'}
+                              style={{
+                                background: 'rgba(239,68,68,0.1)', color: '#f87171',
+                                border: '1px solid rgba(239,68,68,0.3)', borderRadius: 8,
+                                padding: '9px 14px', fontSize: '0.84rem', fontWeight: 600,
+                                cursor: 'pointer', opacity: actionLoading === req.request_id + '-reject' ? 0.6 : 1,
+                              }}
+                            >
+                              {lang === 'id' ? 'Tolak' : 'Decline'}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Expired offer warning */}
+                      {offerExpired && (
+                        <div style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 10, padding: '10px 14px', fontSize: '0.8rem', color: '#f87171' }}>
+                          {lang === 'id' ? 'Penawaran sudah kedaluwarsa.' : 'Offer has expired.'}
+                        </div>
+                      )}
+
+                      {/* Rejection reason */}
+                      {(req.status === 'rejected_by_admin') && req.notes.rejection_reason && (
+                        <div style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 10, padding: '10px 14px', fontSize: '0.8rem', color: '#f87171' }}>
+                          {lang === 'id' ? 'Alasan: ' : 'Reason: '}{req.notes.rejection_reason}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+                <div style={{ textAlign: 'center', paddingTop: 8 }}>
+                  <Link href="/order/custom" style={{ fontSize: '0.82rem', color: '#a78bfa', textDecoration: 'none' }}>
+                    + {lang === 'id' ? 'Buat Request Baru' : 'New Request'}
+                  </Link>
+                </div>
               </div>
             )}
           </div>
