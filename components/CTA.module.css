@@ -168,6 +168,6 @@
   .section { padding: 5rem 1.5rem; }
   .title { font-size: clamp(1.8rem, 6vw, 2.5rem); }
   .trust { gap: 1.25rem; }
-  .actions { flex-direction: column; width: 100%; max-width: 320px; }
+  .actions { flex-direction: column; align-items: stretch; }
   .primary, .secondary { width: 100%; justify-content: center; }
 }
