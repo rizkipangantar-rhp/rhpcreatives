@@ -114,7 +114,7 @@ export default function SuksesPage() {
   }
 
   const waMessage = encodeURIComponent(
-    `Halo RHP Creatives! 👋\nSaya mau follow up order:\n\nOrder ID: ${order.orderId}\nLayanan: ${lang === 'id' ? order.serviceNameId : order.serviceNameEn} — ${lang === 'id' ? order.packageNameId : order.packageNameEn}\nNama: ${order.name}\nTotal: ${fmt(order.totalPrice)}${order.voucherCode ? `\nVoucher: ${order.voucherCode}` : ''}${order.notes ? `\nCatatan: ${order.notes}` : ''}`
+    `Halo RHP Creatives! Saya mau follow up order:\n\nOrder ID: ${order.orderId}\nLayanan: ${lang === 'id' ? order.serviceNameId : order.serviceNameEn} — ${lang === 'id' ? order.packageNameId : order.packageNameEn}\nNama: ${order.name}\nTotal: ${fmt(order.totalPrice)}${order.voucherCode ? `\nVoucher: ${order.voucherCode}` : ''}${order.notes ? `\nCatatan: ${order.notes}` : ''}`
   )
 
   return (

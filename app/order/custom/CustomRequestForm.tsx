@@ -22,7 +22,7 @@ function buildWaMessage(data: {
   deadline?: string
 }) {
   return encodeURIComponent(
-    `📋 CUSTOM ORDER REQUEST BARU!\n` +
+    `CUSTOM ORDER REQUEST BARU\n` +
     `Request ID: ${data.requestId}\n` +
     `Dari: ${data.name} (${data.email})\n` +
     `WA: ${data.wa}\n` +
@@ -52,7 +52,6 @@ export default function CustomRequestForm({ session }: { session: Session | null
     description: '',
     reference: '',
     deadline: '',
-    voucherCode: '',
   })
 
   useEffect(() => {
@@ -100,7 +99,6 @@ export default function CustomRequestForm({ session }: { session: Session | null
           description: form.description,
           reference: form.reference || undefined,
           deadline: form.deadline || undefined,
-          voucherCode: form.voucherCode || undefined,
         }),
       })
       const data = await res.json() as { request_id?: string; error?: string }
@@ -349,26 +347,15 @@ export default function CustomRequestForm({ session }: { session: Session | null
                 maxLength={500}
               />
             </div>
-            <div className={styles.fieldGroup}>
-              <div className={styles.field}>
-                <label className={styles.label}>{lang === 'id' ? 'Deadline yang Diharapkan' : 'Expected Deadline'}</label>
-                <input
-                  className={styles.input}
-                  type="date"
-                  value={form.deadline}
-                  onChange={e => set('deadline', e.target.value)}
-                  min={new Date().toISOString().slice(0, 10)}
-                />
-              </div>
-              <div className={styles.field}>
-                <label className={styles.label}>{lang === 'id' ? 'Kode Voucher (Opsional)' : 'Voucher Code (Optional)'}</label>
-                <input
-                  className={styles.input}
-                  value={form.voucherCode}
-                  onChange={e => set('voucherCode', e.target.value.toUpperCase())}
-                  placeholder={lang === 'id' ? 'Early Bird / Referral' : 'Early Bird / Referral'}
-                />
-              </div>
+            <div className={styles.field}>
+              <label className={styles.label}>{lang === 'id' ? 'Deadline yang Diharapkan' : 'Expected Deadline'}</label>
+              <input
+                className={styles.input}
+                type="date"
+                value={form.deadline}
+                onChange={e => set('deadline', e.target.value)}
+                min={new Date().toISOString().slice(0, 10)}
+              />
             </div>
           </div>
 

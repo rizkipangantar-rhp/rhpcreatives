@@ -7,6 +7,7 @@ import type { CustomOrderRequest, RequestStatus, DiscountType } from '@/lib/cust
 const STATUS_LABELS: Record<RequestStatus, string> = {
   waiting_review: 'Menunggu Review',
   price_sent: 'Harga Dikirim',
+  negotiating: 'Negosiasi',
   accepted: 'Diterima',
   payment_pending: 'Menunggu Bayar',
   paid: 'Dibayar',
@@ -19,6 +20,7 @@ const STATUS_LABELS: Record<RequestStatus, string> = {
 const STATUS_BADGE_CLS: Partial<Record<RequestStatus, string>> = {
   waiting_review: s.badgePending,
   price_sent: s.badgePaid,
+  negotiating: s.badgeProcessing,
   accepted: s.badgeProcessing,
   payment_pending: s.badgePending,
   paid: s.badgePaid,
@@ -167,7 +169,8 @@ export default function AdminCustomOrderDetailPage() {
 
   const waUrl = `https://wa.me/${request.customer.whatsapp}?text=${encodeURIComponent(`Halo ${request.customer.name}, mengenai Custom Order ${request_id}`)}`
   const isTerminal = ['done', 'rejected_by_admin', 'rejected_by_customer'].includes(request.status)
-  const canSendPrice = request.status === 'waiting_review' || request.status === 'price_sent'
+  const canSendPrice = request.status === 'waiting_review' || request.status === 'price_sent' || request.status === 'negotiating'
+  const isNegotiating = request.status === 'negotiating'
   const canAdvance = ['paid', 'in_progress'].includes(request.status)
   const nextStatus: RequestStatus = request.status === 'paid' ? 'in_progress' : 'done'
   const nextLabel = request.status === 'paid' ? 'Tandai Diproses' : 'Tandai Selesai'
@@ -233,9 +236,14 @@ export default function AdminCustomOrderDetailPage() {
       {/* Pricing section */}
       {canSendPrice && (
         <div className={s.card} style={{ padding: 20, marginBottom: 20 }}>
-          <div className={s.cardTitle} style={{ marginBottom: 20 }}>
-            {request.status === 'price_sent' ? 'Edit Penawaran Harga' : 'Input Penawaran Harga'}
+          <div className={s.cardTitle} style={{ marginBottom: isNegotiating ? 8 : 20, color: isNegotiating ? '#fbbf24' : undefined }}>
+            {isNegotiating ? 'Tanggapi Negosiasi — Kirim Ulang Penawaran' : request.status === 'price_sent' ? 'Edit Penawaran Harga' : 'Input Penawaran Harga'}
           </div>
+          {isNegotiating && (
+            <p style={{ fontSize: '0.82rem', color: '#94a3b8', marginBottom: 20, lineHeight: 1.6 }}>
+              Customer sedang meminta negosiasi. Sesuaikan harga jika perlu, lalu kirim penawaran baru. Ini akan mengubah status kembali ke &ldquo;Harga Dikirim&rdquo;.
+            </p>
+          )}
 
           <div className={s.twoCol} style={{ marginBottom: 16 }}>
             <div>
@@ -430,6 +438,31 @@ export default function AdminCustomOrderDetailPage() {
                 Tolak Request
               </button>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Negotiation history */}
+      {request.negotiation_history && request.negotiation_history.length > 0 && (
+        <div className={s.card} style={{ padding: 20, marginBottom: 20, borderColor: isNegotiating ? 'rgba(251,191,36,0.3)' : undefined }}>
+          <div className={s.cardTitle} style={{ marginBottom: 16, color: '#fbbf24' }}>Riwayat Negosiasi</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {request.negotiation_history.map((entry, i) => (
+              <div key={i} style={{
+                background: entry.by === 'customer' ? 'rgba(251,191,36,0.06)' : 'rgba(139,92,246,0.06)',
+                border: `1px solid ${entry.by === 'customer' ? 'rgba(251,191,36,0.2)' : 'rgba(139,92,246,0.2)'}`,
+                borderRadius: 10, padding: '10px 14px', fontSize: '0.82rem',
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <span style={{ fontWeight: 700, color: entry.by === 'customer' ? '#fbbf24' : '#a78bfa' }}>
+                    {entry.by === 'customer' ? '[Customer]' : '[Admin]'}
+                    {entry.counter_price ? ` — Counter: Rp${entry.counter_price.toLocaleString('id-ID')}` : ''}
+                  </span>
+                  <span style={{ color: '#475569', fontSize: '0.76rem' }}>{fmtDate(entry.created_at)}</span>
+                </div>
+                <p style={{ color: '#cbd5e1', margin: 0, lineHeight: 1.6 }}>{entry.note}</p>
+              </div>
+            ))}
           </div>
         </div>
       )}

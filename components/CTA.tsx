@@ -29,7 +29,7 @@ export default function CTA() {
       <p className={styles.sub}>{c.sub}</p>
       <div className={styles.actions}>
         <a
-          href="https://wa.me/6285179992598?text=Halo%20RHP%20Creatives!%20Mau%20konsultasi%20dulu%20nih%20sebelum%20order%20%F0%9F%91%8B"
+          href="https://wa.me/6285179992598?text=Halo%20RHP%20Creatives!%20Mau%20konsultasi%20dulu%20nih%20sebelum%20order"
           target="_blank"
           rel="noopener noreferrer"
           className={styles.primary}

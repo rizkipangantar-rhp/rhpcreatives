@@ -2,6 +2,33 @@ import { dbGet, dbSet } from '@/lib/store'
 
 export type OrderStatus = 'pending' | 'paid' | 'processing' | 'completed' | 'cancelled'
 
+export type ProgressStepStatus = 'pending' | 'in_progress' | 'done'
+
+export type ProgressStep = {
+  step: 1 | 2 | 3 | 4 | 5
+  status: ProgressStepStatus
+  timestamp?: string
+  estimatedNext?: string
+  noteForCustomer?: string
+  internalNote?: string
+}
+
+export const PROGRESS_STEP_LABELS_ID = [
+  'Pembayaran Diterima',
+  'Proses Pengerjaan',
+  'Revisi',
+  'Finalisasi',
+  'Selesai & Dikirim',
+]
+
+export const PROGRESS_STEP_LABELS_EN = [
+  'Payment Received',
+  'Working on It',
+  'Revision',
+  'Finalization',
+  'Completed & Delivered',
+]
+
 export type Order = {
   orderId: string
   userId: string
@@ -36,6 +63,8 @@ export type Order = {
   adminNotes?: string
   resultUrl?: string
   statusHistory?: Array<{ status: OrderStatus; note: string; changedAt: string }>
+  progressSteps?: ProgressStep[]
+  progressUpdatedAt?: string
   createdAt: string
   updatedAt: string
 }
@@ -127,6 +156,17 @@ export async function addOrderStatusHistory(orderId: string, status: OrderStatus
   if (!db.orders[idx].statusHistory) db.orders[idx].statusHistory = []
   db.orders[idx].statusHistory!.push({ status, note, changedAt: new Date().toISOString() })
   db.orders[idx].status = status
+  db.orders[idx].updatedAt = new Date().toISOString()
+  await write(db)
+  return true
+}
+
+export async function updateProgressSteps(orderId: string, steps: ProgressStep[]): Promise<boolean> {
+  const db = await read()
+  const idx = db.orders.findIndex(o => o.orderId === orderId)
+  if (idx === -1) return false
+  db.orders[idx].progressSteps = steps
+  db.orders[idx].progressUpdatedAt = new Date().toISOString()
   db.orders[idx].updatedAt = new Date().toISOString()
   await write(db)
   return true

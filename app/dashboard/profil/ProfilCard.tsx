@@ -24,8 +24,15 @@ type Order = {
 }
 
 type RequestStatus =
-  | 'waiting_review' | 'price_sent' | 'accepted' | 'payment_pending'
+  | 'waiting_review' | 'price_sent' | 'negotiating' | 'accepted' | 'payment_pending'
   | 'paid' | 'in_progress' | 'done' | 'rejected_by_admin' | 'rejected_by_customer'
+
+type NegotiationEntry = {
+  by: 'customer' | 'admin'
+  note: string
+  counter_price?: number | null
+  created_at: string
+}
 
 type CustomRequest = {
   request_id: string
@@ -35,11 +42,13 @@ type CustomRequest = {
   status: RequestStatus
   offer_expires_at: string | null
   created_at: string
+  negotiation_history?: NegotiationEntry[]
 }
 
 const REQ_STATUS_LABELS: Record<RequestStatus, string> = {
   waiting_review: 'Menunggu Review',
   price_sent: 'Harga Dikirim',
+  negotiating: 'Negosiasi',
   accepted: 'Diterima',
   payment_pending: 'Menunggu Bayar',
   paid: 'Dibayar',
@@ -52,6 +61,7 @@ const REQ_STATUS_LABELS: Record<RequestStatus, string> = {
 const REQ_STATUS_CLS: Partial<Record<RequestStatus, string>> = {
   waiting_review: styles.statusPending,
   price_sent: styles.statusPaid,
+  negotiating: styles.statusProcessing,
   accepted: styles.statusProcessing,
   payment_pending: styles.statusPending,
   paid: styles.statusPaid,
@@ -134,6 +144,10 @@ export default function ProfilCard({ session }: { session: Session }) {
   const [waError, setWaError] = useState('')
   const [waToast, setWaToast] = useState(false)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
+  const [negoOpen, setNegoOpen] = useState<string | null>(null)
+  const [negoNote, setNegoNote] = useState('')
+  const [negoPrice, setNegoPrice] = useState('')
+  const [negoError, setNegoError] = useState('')
 
   useEffect(() => {
     fetch('/api/referral/stats')
@@ -246,6 +260,28 @@ export default function ProfilCard({ session }: { session: Session }) {
       setCustomRequests(prev => prev.map(r =>
         r.request_id === requestId ? { ...r, status: 'rejected_by_customer' as RequestStatus } : r
       ))
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
+  async function submitNego(requestId: string) {
+    if (!negoNote.trim()) { setNegoError(lang === 'id' ? 'Tulis alasan/catatan dulu ya!' : 'Please add a note first!'); return }
+    setActionLoading(requestId + '-nego')
+    setNegoError('')
+    try {
+      const res = await fetch(`/api/custom-order/${requestId}/negotiate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ note: negoNote.trim(), counter_price: negoPrice || undefined }),
+      })
+      const data = await res.json() as { ok?: boolean; adminWaUrl?: string; error?: string }
+      if (!res.ok) { setNegoError(data.error ?? 'Gagal nego. Coba lagi.'); return }
+      setCustomRequests(prev => prev.map(r =>
+        r.request_id === requestId ? { ...r, status: 'negotiating' as RequestStatus } : r
+      ))
+      setNegoOpen(null); setNegoNote(''); setNegoPrice('')
+      if (data.adminWaUrl) setTimeout(() => window.open(data.adminWaUrl, '_blank'), 500)
     } finally {
       setActionLoading(null)
     }
@@ -410,16 +446,23 @@ export default function ProfilCard({ session }: { session: Session }) {
               <p className={styles.cardNote}>{p.statsNote}</p>
             </div>
 
-            {/* Early bird status card */}
-            {ebirdStatus && (ebirdStatus.available || ebirdStatus.used) && (
+            {/* Early bird status card — only show when available */}
+            {ebirdStatus?.available && (
               <div className={styles.card}>
                 <div className={styles.cardLabel}>{p.earlyBirdLabel}</div>
                 <div className={styles.rewardCount}>
                   <span className={styles.rewardNum} style={{ fontSize: '1rem' }}>
-                    {ebirdStatus.available ? p.earlyBirdActive : p.earlyBirdUsed}
+                    {p.earlyBirdActive}
                   </span>
                 </div>
                 <p className={styles.rewardDesc}>{p.earlyBirdAutoDiscount}</p>
+              </div>
+            )}
+
+            {/* No active discounts message */}
+            {!ebirdStatus?.available && (referralStats?.rewardsAvailable ?? 0) === 0 && (
+              <div className={styles.card}>
+                <p className={styles.historyEmpty}>{p.noActiveDiscounts}</p>
               </div>
             )}
 
@@ -434,10 +477,9 @@ export default function ProfilCard({ session }: { session: Session }) {
                     <div key={i} className={styles.historyItem}>
                       <div className={styles.historyDot} />
                       <div className={styles.historyContent}>
-                        <span className={styles.historyLabel}>{p.historyUsedBy} ···{usage.userId.slice(-6)}</span>
+                        <span className={styles.historyLabel}>#{i + 1} {usage.orderId ? p.historyOrdered : p.historyJoined}</span>
                         <span className={styles.historyDate}>{new Date(usage.usedAt).toLocaleDateString(lang === 'id' ? 'id-ID' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                       </div>
-                      <span className={styles.historyReward}>+1 {p.historyEarned}</span>
                     </div>
                   ))}
                 </div>
@@ -472,7 +514,7 @@ export default function ProfilCard({ session }: { session: Session }) {
             ) : (
               <div className={styles.ordersList}>
                 {orders.map(order => (
-                  <div key={order.orderId} className={styles.orderCard}>
+                  <Link key={order.orderId} href={`/dashboard/profil/orders/${order.orderId}`} className={styles.orderCard} style={{ textDecoration: 'none', display: 'flex' }}>
                     <div className={styles.orderLeft}>
                       <div className={styles.orderService}>
                         {lang === 'id' ? order.serviceNameId : order.serviceNameEn}
@@ -487,11 +529,9 @@ export default function ProfilCard({ session }: { session: Session }) {
                     <div className={styles.orderRight}>
                       <div className={styles.orderAmount}>Rp{order.totalPrice.toLocaleString('id-ID')}</div>
                       <StatusBadge status={order.status} labels={statusLabels} />
-                      <Link href={`/order/sukses/${order.orderId}`} className={styles.orderViewBtn}>
-                        {p.viewOrder} →
-                      </Link>
+                      <span className={styles.orderViewBtn}>{p.viewOrder} →</span>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
@@ -546,7 +586,7 @@ export default function ProfilCard({ session }: { session: Session }) {
                               {lang === 'id' ? 'Penawaran Harga' : 'Price Offer'}
                             </span>
                             <span style={{ fontSize: '0.72rem', color: '#fbbf24' }}>
-                              ⏱ {hoursLeft}j {minutesLeft}m {lang === 'id' ? 'tersisa' : 'left'}
+                              {hoursLeft}j {minutesLeft}m {lang === 'id' ? 'tersisa' : 'left'}
                             </span>
                           </div>
                           <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#f1f5f9', marginBottom: 4 }}>
@@ -562,23 +602,35 @@ export default function ProfilCard({ session }: { session: Session }) {
                               {req.notes.for_customer}
                             </div>
                           )}
-                          <div style={{ display: 'flex', gap: 8 }}>
+                          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                             <button
                               onClick={() => acceptOffer(req.request_id)}
-                              disabled={actionLoading === req.request_id + '-accept'}
+                              disabled={!!actionLoading}
                               style={{
-                                flex: 1, background: 'linear-gradient(135deg, #7c3aed, #be185d)', color: '#fff',
+                                flex: 1, minWidth: 120, background: 'linear-gradient(135deg, #7c3aed, #be185d)', color: '#fff',
                                 border: 'none', borderRadius: 8, padding: '9px 0', fontSize: '0.84rem',
                                 fontWeight: 700, cursor: 'pointer', opacity: actionLoading === req.request_id + '-accept' ? 0.6 : 1,
                               }}
                             >
                               {actionLoading === req.request_id + '-accept'
                                 ? (lang === 'id' ? 'Memproses...' : 'Processing...')
-                                : (lang === 'id' ? 'Terima & Bayar →' : 'Accept & Pay →')}
+                                : (lang === 'id' ? 'Terima & Bayar' : 'Accept & Pay')}
+                            </button>
+                            <button
+                              onClick={() => { setNegoOpen(req.request_id); setNegoNote(''); setNegoPrice(''); setNegoError('') }}
+                              disabled={!!actionLoading}
+                              style={{
+                                background: 'rgba(251,191,36,0.1)', color: '#fbbf24',
+                                border: '1px solid rgba(251,191,36,0.3)', borderRadius: 8,
+                                padding: '9px 14px', fontSize: '0.84rem', fontWeight: 600,
+                                cursor: 'pointer', opacity: !!actionLoading ? 0.6 : 1,
+                              }}
+                            >
+                              {lang === 'id' ? 'Nego Harga' : 'Negotiate'}
                             </button>
                             <button
                               onClick={() => rejectOffer(req.request_id)}
-                              disabled={actionLoading === req.request_id + '-reject'}
+                              disabled={!!actionLoading}
                               style={{
                                 background: 'rgba(239,68,68,0.1)', color: '#f87171',
                                 border: '1px solid rgba(239,68,68,0.3)', borderRadius: 8,
@@ -586,9 +638,78 @@ export default function ProfilCard({ session }: { session: Session }) {
                                 cursor: 'pointer', opacity: actionLoading === req.request_id + '-reject' ? 0.6 : 1,
                               }}
                             >
-                              {lang === 'id' ? 'Tolak' : 'Decline'}
+                              {lang === 'id' ? 'Batalkan' : 'Cancel'}
                             </button>
                           </div>
+
+                          {/* Nego form */}
+                          {negoOpen === req.request_id && (
+                            <div style={{ marginTop: 12, padding: '12px 14px', background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.2)', borderRadius: 10 }}>
+                              <div style={{ fontSize: '0.75rem', color: '#fbbf24', fontWeight: 600, marginBottom: 8 }}>
+                                {lang === 'id' ? 'Ajukan Nego Harga' : 'Negotiate Price'}
+                              </div>
+                              <textarea
+                                rows={3}
+                                value={negoNote}
+                                onChange={e => setNegoNote(e.target.value)}
+                                placeholder={lang === 'id' ? 'Tulis alasan atau catatan nego kamu...' : 'Write your negotiation reason or note...'}
+                                style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#f1f5f9', fontSize: '0.82rem', padding: '8px 10px', outline: 'none', resize: 'vertical', fontFamily: 'inherit', marginBottom: 8, boxSizing: 'border-box' }}
+                              />
+                              <input
+                                type="text"
+                                inputMode="numeric"
+                                value={negoPrice}
+                                onChange={e => setNegoPrice(e.target.value.replace(/\D/g, ''))}
+                                placeholder={lang === 'id' ? 'Harga harapan (opsional, contoh: 150000)' : 'Expected price (optional, e.g. 150000)'}
+                                style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#f1f5f9', fontSize: '0.82rem', padding: '8px 10px', outline: 'none', fontFamily: 'inherit', marginBottom: 8, boxSizing: 'border-box' }}
+                              />
+                              {negoError && <div style={{ color: '#f87171', fontSize: '0.78rem', marginBottom: 8 }}>{negoError}</div>}
+                              <div style={{ display: 'flex', gap: 8 }}>
+                                <button
+                                  onClick={() => submitNego(req.request_id)}
+                                  disabled={actionLoading === req.request_id + '-nego'}
+                                  style={{ flex: 1, background: '#fbbf24', color: '#0f172a', border: 'none', borderRadius: 8, padding: '8px 0', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer' }}
+                                >
+                                  {actionLoading === req.request_id + '-nego' ? '...' : (lang === 'id' ? 'Kirim Nego' : 'Send Nego')}
+                                </button>
+                                <button
+                                  onClick={() => { setNegoOpen(null); setNegoError('') }}
+                                  style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: '#64748b', borderRadius: 8, padding: '8px 12px', fontSize: '0.82rem', cursor: 'pointer' }}
+                                >
+                                  {lang === 'id' ? 'Batal' : 'Cancel'}
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Negotiating status */}
+                      {req.status === 'negotiating' && (
+                        <div style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.25)', borderRadius: 12, padding: '14px 16px' }}>
+                          <div style={{ fontSize: '0.82rem', color: '#fbbf24', fontWeight: 600, marginBottom: 6 }}>
+                            {lang === 'id' ? 'Negosiasi sedang diproses admin, tunggu ya!' : 'Negotiation is being reviewed by admin, please wait!'}
+                          </div>
+                          {req.negotiation_history && req.negotiation_history.length > 0 && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
+                              {req.negotiation_history.map((entry, ni) => (
+                                <div key={ni} style={{
+                                  fontSize: '0.78rem', padding: '8px 10px', borderRadius: 8,
+                                  background: entry.by === 'customer' ? 'rgba(251,191,36,0.08)' : 'rgba(139,92,246,0.08)',
+                                  border: `1px solid ${entry.by === 'customer' ? 'rgba(251,191,36,0.2)' : 'rgba(139,92,246,0.2)'}`,
+                                }}>
+                                  <span style={{ fontWeight: 700, color: entry.by === 'customer' ? '#fbbf24' : '#a78bfa' }}>
+                                    {entry.by === 'customer' ? (lang === 'id' ? '[Kamu]' : '[You]') : '[Admin]'}
+                                    {entry.counter_price ? ` — Rp${entry.counter_price.toLocaleString('id-ID')}` : ''}
+                                  </span>
+                                  <span style={{ color: '#94a3b8', marginLeft: 6 }}>{entry.note}</span>
+                                  <span style={{ color: '#475569', marginLeft: 6 }}>
+                                    · {new Date(entry.created_at).toLocaleDateString(lang === 'id' ? 'id-ID' : 'en-US', { day: 'numeric', month: 'short' })}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       )}
 

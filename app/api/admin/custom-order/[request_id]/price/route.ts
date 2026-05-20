@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { getRequestById, updateRequest, pushStatusHistory, type DiscountType } from '@/lib/custom-orders'
+import { getRequestById, updateRequest, pushStatusHistory, pushNegotiationEntry, type DiscountType } from '@/lib/custom-orders'
 
 export async function PUT(
   req: Request,
@@ -37,6 +37,8 @@ export async function PUT(
   // Offer expires 48 hours from now
   const offer_expires_at = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString()
 
+  const wasNegotiating = request.status === 'negotiating'
+
   await updateRequest(request_id, {
     pricing: {
       base_price,
@@ -54,7 +56,16 @@ export async function PUT(
     offer_expires_at,
     status: 'price_sent',
   })
-  await pushStatusHistory(request_id, 'price_sent', 'Admin sent price offer')
+  await pushStatusHistory(request_id, 'price_sent', wasNegotiating ? 'Admin membalas negosiasi dengan penawaran baru' : 'Admin sent price offer')
+
+  if (wasNegotiating) {
+    await pushNegotiationEntry(request_id, {
+      by: 'admin',
+      note: body.for_customer || 'Admin mengirim penawaran baru.',
+      counter_price: final_price,
+      created_at: new Date().toISOString(),
+    })
+  }
 
   return NextResponse.json({ ok: true })
 }

@@ -146,6 +146,9 @@ export type Tr = {
     waSaving: string
     waSaved: string
     waInvalid: string
+    noActiveDiscounts: string
+    historyJoined: string
+    historyOrdered: string
   }
   orderPage: {
     tag: string
@@ -624,6 +627,9 @@ export const t: Record<Lang, Tr> = {
       waSaving: 'Menyimpan...',
       waSaved: 'Nomor WA berhasil diperbarui ✅',
       waInvalid: 'Format nomor tidak valid (contoh: 08xx atau 628xx)',
+      noActiveDiscounts: 'Belum ada diskon aktif. Ajak teman pakai kode referralmu untuk dapat diskon! 🎉',
+      historyJoined: 'Teman bergabung menggunakan kode referralmu',
+      historyOrdered: 'Teman melakukan order',
     },
     orderPage: {
       tag: '✦ Pesan Layanan',
@@ -1227,8 +1233,8 @@ export const t: Record<Lang, Tr> = {
       waitlistSubmit: 'Daftar Waitlist',
       waitlistSuccess: 'Kamu sudah masuk waitlist! Kami akan kabari segera 🔔',
       loading: 'Memuat...',
-      usedTitle: 'Voucher Udah Kepake! 🎊',
-      usedSub: 'Mantap bestie! Voucher Early Bird-mu udah sukses dipake buat order. Sekarang tinggal gas bayar dan tunggu tim kami follow up ya! 🔥',
+      usedTitle: 'Early Bird Udah Kepake!',
+      usedSub: 'Diskon Early Bird kamu udah kepake nih! Tenang, hasilnya pasti worth it banget!',
       usedOrderBtn: 'Lihat Riwayat Order →',
       historyBtn: 'Lihat Riwayat →',
       waLabel: 'Nomor WhatsApp (Opsional)',
@@ -1434,6 +1440,9 @@ export const t: Record<Lang, Tr> = {
       waSaving: 'Saving...',
       waSaved: 'WhatsApp number updated ✅',
       waInvalid: 'Invalid number format (e.g. 08xx or 628xx)',
+      noActiveDiscounts: 'No active discounts. Invite friends with your referral code to earn discounts! 🎉',
+      historyJoined: 'Friend joined using your referral code',
+      historyOrdered: 'Friend placed an order',
     },
     orderPage: {
       tag: '✦ Place an Order',
@@ -2037,8 +2046,8 @@ export const t: Record<Lang, Tr> = {
       waitlistSubmit: 'Join Waitlist',
       waitlistSuccess: "You're on the waitlist! We'll notify you soon 🔔",
       loading: 'Loading...',
-      usedTitle: "Voucher's Been Used! 🎊",
-      usedSub: "Yass bestie! Your Early Bird voucher has been successfully applied to your order. Time to pay and wait for our team to follow up! 🔥",
+      usedTitle: "Early Bird Has Been Used!",
+      usedSub: "Your Early Bird discount has been used! Don't worry, the results will be totally worth it!",
       usedOrderBtn: 'View Order History →',
       historyBtn: 'View History →',
       waLabel: 'WhatsApp Number (Optional)',

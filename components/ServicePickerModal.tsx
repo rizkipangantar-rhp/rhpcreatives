@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/context/LanguageContext'
 import styles from './ServicePickerModal.module.css'
 
-const WA_URL = `https://wa.me/6285179992598?text=${encodeURIComponent('Halo RHP Creatives! Aku mau konsultasi nih soal layanan kalian 😊')}`
+const WA_URL = `https://wa.me/6285179992598?text=${encodeURIComponent('Halo RHP Creatives! Aku mau konsultasi nih soal layanan kalian')}`
 
 export default function ServicePickerModal({ onClose }: { onClose: () => void }) {
   const { tr } = useLanguage()

@@ -5,6 +5,7 @@ export type ServiceCategory = 'Layanan Digital' | 'Layanan Desain' | 'Lainnya'
 export type RequestStatus =
   | 'waiting_review'
   | 'price_sent'
+  | 'negotiating'
   | 'accepted'
   | 'payment_pending'
   | 'paid'
@@ -12,6 +13,13 @@ export type RequestStatus =
   | 'done'
   | 'rejected_by_admin'
   | 'rejected_by_customer'
+
+export type NegotiationEntry = {
+  by: 'customer' | 'admin'
+  note: string
+  counter_price?: number | null
+  created_at: string
+}
 
 export type DiscountType = 'percent' | 'nominal' | null
 
@@ -48,6 +56,7 @@ export type CustomOrderRequest = {
   }
   status: RequestStatus
   status_history: Array<{ status: RequestStatus; note?: string; changed_at: string }>
+  negotiation_history?: NegotiationEntry[]
   offer_expires_at: string | null
   created_at: string
   updated_at: string
@@ -115,6 +124,17 @@ export async function updateRequest(requestId: string, updates: Partial<CustomOr
   const idx = db.requests.findIndex(r => r.request_id === requestId)
   if (idx === -1) return false
   db.requests[idx] = { ...db.requests[idx], ...updates, updated_at: new Date().toISOString() }
+  await write(db)
+  return true
+}
+
+export async function pushNegotiationEntry(requestId: string, entry: NegotiationEntry): Promise<boolean> {
+  const db = await read()
+  const idx = db.requests.findIndex(r => r.request_id === requestId)
+  if (idx === -1) return false
+  if (!db.requests[idx].negotiation_history) db.requests[idx].negotiation_history = []
+  db.requests[idx].negotiation_history!.push(entry)
+  db.requests[idx].updated_at = new Date().toISOString()
   await write(db)
   return true
 }

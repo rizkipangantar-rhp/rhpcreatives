@@ -227,8 +227,8 @@ export default function OrderPage() {
   }
 
   const waConsultUrl = selectedPkg
-    ? `https://wa.me/6285179992598?text=${encodeURIComponent(`Halo RHP Creatives! 👋 Mau konsultasi dulu sebelum order:\n\nLayanan: ${lang === 'id' ? (selectedSvc?.nameId ?? '') : (selectedSvc?.nameEn ?? '')}\nPaket: ${lang === 'id' ? selectedPkg.nameId : selectedPkg.nameEn}\nTotal: ${fmt(totalPrice)}`)}`
-    : 'https://wa.me/6285179992598?text=Halo%20RHP%20Creatives!%20Mau%20konsultasi%20dulu%20nih%20%F0%9F%91%8B'
+    ? `https://wa.me/6285179992598?text=${encodeURIComponent(`Halo RHP Creatives! Mau konsultasi dulu sebelum order:\n\nLayanan: ${lang === 'id' ? (selectedSvc?.nameId ?? '') : (selectedSvc?.nameEn ?? '')}\nPaket: ${lang === 'id' ? selectedPkg.nameId : selectedPkg.nameEn}\nTotal: ${fmt(totalPrice)}`)}`
+    : 'https://wa.me/6285179992598?text=Halo%20RHP%20Creatives!%20Mau%20konsultasi%20dulu%20nih'
 
   const canPay = selectedService && selectedPackage && name.trim() && email.trim() && wa.trim() && !isSubmitting
 

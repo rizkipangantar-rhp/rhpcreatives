@@ -5,6 +5,9 @@ import s from '@/components/admin/admin.module.css'
 
 type OrderStatus = 'pending' | 'paid' | 'processing' | 'completed' | 'cancelled'
 
+type ProgressStepStatus = 'pending' | 'in_progress' | 'done'
+type ProgressStep = { step: number; status: ProgressStepStatus; timestamp?: string; estimatedNext?: string; noteForCustomer?: string; internalNote?: string }
+
 type Order = {
   orderId: string
   userId: string
@@ -29,9 +32,12 @@ type Order = {
   adminNotes?: string
   resultUrl?: string
   statusHistory?: { status: OrderStatus; note: string; changedAt: string }[]
+  progressSteps?: ProgressStep[]
   createdAt: string
   updatedAt: string
 }
+
+const STEP_LABELS = ['Pembayaran Diterima', 'Proses Pengerjaan', 'Revisi', 'Finalisasi', 'Selesai & Dikirim']
 
 const STATUS_OPTIONS: OrderStatus[] = ['pending', 'paid', 'processing', 'completed', 'cancelled']
 const STATUS_LABELS: Record<string, string> = {
@@ -64,6 +70,9 @@ export default function OrderDetailPage() {
   const [resultUrl, setResultUrl] = useState('')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [progressSteps, setProgressSteps] = useState<ProgressStep[]>([])
+  const [progressSaving, setProgressSaving] = useState(false)
+  const [progressSaved, setProgressSaved] = useState(false)
 
   useEffect(() => {
     fetch(`/api/admin/orders/${order_id}`)
@@ -73,10 +82,34 @@ export default function OrderDetailPage() {
         setNewStatus(d.status)
         setAdminNotes(d.adminNotes ?? '')
         setResultUrl(d.resultUrl ?? '')
+        setProgressSteps(
+          d.progressSteps ?? [1, 2, 3, 4, 5].map((n: number) => ({ step: n, status: 'pending', noteForCustomer: '', estimatedNext: '' }))
+        )
         setLoading(false)
       })
       .catch(() => setLoading(false))
   }, [order_id])
+
+  function updateStep(idx: number, field: keyof ProgressStep, value: string) {
+    setProgressSteps(prev => prev.map((s, i) => i === idx ? { ...s, [field]: value } : s))
+  }
+
+  async function saveProgress() {
+    setProgressSaving(true)
+    const stepsWithTimestamps = progressSteps.map(s => ({
+      ...s,
+      timestamp: s.status !== 'pending' && !s.timestamp ? new Date().toISOString() : s.timestamp,
+    }))
+    await fetch(`/api/admin/orders/${order_id}/progress`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ steps: stepsWithTimestamps }),
+    })
+    setProgressSteps(stepsWithTimestamps)
+    setProgressSaving(false)
+    setProgressSaved(true)
+    setTimeout(() => setProgressSaved(false), 2000)
+  }
 
   async function saveStatus() {
     if (!order) return
@@ -233,6 +266,65 @@ export default function OrderDetailPage() {
         </div>
         <button className={s.btnPrimary} style={{ marginTop: 12 }} onClick={saveAdminData} disabled={saving}>
           {saving ? 'Menyimpan...' : saved ? 'Tersimpan ✓' : 'Simpan'}
+        </button>
+      </div>
+
+      {/* Progress tracking */}
+      <div className={s.card} style={{ padding: 20, marginBottom: 20 }}>
+        <div className={s.cardTitle} style={{ marginBottom: 20 }}>Update Progress Pengerjaan</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {progressSteps.map((step, i) => (
+            <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '12px 0', borderBottom: i < progressSteps.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+              <div style={{ flexShrink: 0, paddingTop: 2 }}>
+                <div style={{
+                  width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700,
+                  background: step.status === 'done' ? 'rgba(52,211,153,0.15)' : step.status === 'in_progress' ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.05)',
+                  border: step.status === 'done' ? '2px solid #34d399' : step.status === 'in_progress' ? '2px solid #8b5cf6' : '2px solid rgba(255,255,255,0.1)',
+                  color: step.status === 'done' ? '#34d399' : step.status === 'in_progress' ? '#a78bfa' : '#64748b',
+                }}>
+                  {i + 1}
+                </div>
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '0.84rem', fontWeight: 600, color: '#f1f5f9', marginBottom: 8 }}>{STEP_LABELS[i]}</div>
+                <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                  {(['pending', 'in_progress', 'done'] as ProgressStepStatus[]).map(st => (
+                    <button
+                      key={st}
+                      onClick={() => updateStep(i, 'status', st)}
+                      style={{
+                        padding: '4px 10px', borderRadius: 6, fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer',
+                        background: step.status === st ? (st === 'done' ? '#34d399' : st === 'in_progress' ? '#8b5cf6' : '#475569') : 'rgba(255,255,255,0.05)',
+                        border: step.status === st ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                        color: step.status === st ? '#fff' : '#64748b',
+                      }}
+                    >
+                      {st === 'pending' ? 'Pending' : st === 'in_progress' ? 'Sedang Dikerjakan' : 'Selesai'}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  placeholder="Catatan untuk customer (opsional)..."
+                  value={step.noteForCustomer ?? ''}
+                  onChange={e => updateStep(i, 'noteForCustomer', e.target.value)}
+                  style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, color: '#f1f5f9', fontSize: '0.8rem', padding: '6px 10px', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', marginBottom: 6 }}
+                />
+                {step.status === 'in_progress' && (
+                  <input
+                    type="text"
+                    placeholder="Estimasi selesai (misal: 2 hari lagi / 25 Mei 2026)..."
+                    value={step.estimatedNext ?? ''}
+                    onChange={e => updateStep(i, 'estimatedNext', e.target.value)}
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, color: '#f1f5f9', fontSize: '0.8rem', padding: '6px 10px', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                  />
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+        <button className={s.btnPrimary} style={{ marginTop: 16 }} onClick={saveProgress} disabled={progressSaving}>
+          {progressSaving ? 'Menyimpan...' : progressSaved ? 'Progress Tersimpan ✓' : 'Simpan Progress'}
         </button>
       </div>
 

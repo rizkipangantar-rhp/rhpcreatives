@@ -297,16 +297,15 @@ export default function KlaimEarlyBirdPage() {
     )
   }
 
-  if (view === 'used' && claim) {
+  if (view === 'used') {
     return (
       <main className={styles.page}>
         <div className={styles.card}>
           <div className={styles.successIcon}>🎊</div>
           <h1 className={styles.title}>{c.usedTitle}</h1>
           <p className={styles.sub}>{c.usedSub}</p>
-          <VoucherBox code={claim.voucherCode} label={c.voucherLabel} copyBtn={c.copyBtn} copied={c.copied} />
           <div className={styles.ctaGroup}>
-            <Link href="/dashboard/profil" className={styles.primaryCta}>
+            <Link href="/dashboard/profil?tab=orders" className={styles.primaryCta}>
               {c.usedOrderBtn}
             </Link>
           </div>

@@ -7,6 +7,7 @@ import type { CustomOrderRequest, RequestStatus } from '@/lib/custom-orders'
 const STATUS_LABELS: Record<RequestStatus, string> = {
   waiting_review: 'Menunggu Review',
   price_sent: 'Harga Dikirim',
+  negotiating: 'Negosiasi',
   accepted: 'Diterima',
   payment_pending: 'Menunggu Bayar',
   paid: 'Dibayar',
