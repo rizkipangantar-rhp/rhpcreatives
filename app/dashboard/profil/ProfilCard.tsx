@@ -308,46 +308,46 @@ export default function ProfilCard({ session }: { session: Session }) {
           <div className={styles.avatarWrap}>
             <AvatarDisplay src={user.image} name={user.name} />
           </div>
-          <div className={styles.profileInfo}>
-            <div className={styles.profileNameRow}>
+          <div className={styles.profileRight}>
+            <div className={styles.profileInfo}>
               <h1 className={styles.name}>{user.name ?? 'User'}</h1>
-              <button className={styles.logoutBtn} onClick={() => signOut({ callbackUrl: '/' })}>
-                {p.logoutBtn}
-              </button>
-            </div>
-            <p className={styles.email}>{user.email}</p>
-            <div className={styles.waRow}>
-              {waEditing ? (
-                <div className={styles.waEditRow}>
-                  <input
-                    className={styles.waInput}
-                    value={waInput}
-                    onChange={e => setWaInput(e.target.value)}
-                    placeholder="08xx atau 628xx"
-                    autoFocus
-                  />
-                  {waError && <span className={styles.waError}>{waError}</span>}
-                  <div className={styles.waActions}>
-                    <button className={styles.waSaveBtn} onClick={handleWaSave} disabled={waSaving}>
-                      {waSaving ? p.waSaving : p.waSave}
-                    </button>
-                    <button className={styles.waCancelBtn} onClick={() => { setWaEditing(false); setWaError('') }}>
-                      {p.waCancel}
+              <p className={styles.email}>{user.email}</p>
+              <div className={styles.waRow}>
+                {waEditing ? (
+                  <div className={styles.waEditRow}>
+                    <input
+                      className={styles.waInput}
+                      value={waInput}
+                      onChange={e => setWaInput(e.target.value)}
+                      placeholder="08xx atau 628xx"
+                      autoFocus
+                    />
+                    {waError && <span className={styles.waError}>{waError}</span>}
+                    <div className={styles.waActions}>
+                      <button className={styles.waSaveBtn} onClick={handleWaSave} disabled={waSaving}>
+                        {waSaving ? p.waSaving : p.waSave}
+                      </button>
+                      <button className={styles.waCancelBtn} onClick={() => { setWaEditing(false); setWaError('') }}>
+                        {p.waCancel}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className={styles.waDisplayRow}>
+                    <span className={styles.waIcon}>📱</span>
+                    <span className={styles.waValue}>
+                      {userWa ? formatWaDisplay(userWa) : p.waEmpty}
+                    </span>
+                    <button className={styles.waEditBtn} onClick={() => { setWaEditing(true); setWaInput(userWa ?? ''); setWaError('') }}>
+                      {p.waEdit}
                     </button>
                   </div>
-                </div>
-              ) : (
-                <div className={styles.waDisplayRow}>
-                  <span className={styles.waIcon}>📱</span>
-                  <span className={styles.waValue}>
-                    {userWa ? formatWaDisplay(userWa) : p.waEmpty}
-                  </span>
-                  <button className={styles.waEditBtn} onClick={() => { setWaEditing(true); setWaInput(userWa ?? ''); setWaError('') }}>
-                    {p.waEdit}
-                  </button>
-                </div>
-              )}
+                )}
+              </div>
             </div>
+            <button className={styles.logoutBtn} onClick={() => signOut({ callbackUrl: '/' })}>
+              {p.logoutBtn}
+            </button>
           </div>
           {waToast && <div className={styles.waToast}>{p.waSaved}</div>}
         </div>

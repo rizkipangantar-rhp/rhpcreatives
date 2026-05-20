@@ -81,17 +81,17 @@
   background-clip: text;
 }
 
+.profileRight {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .profileInfo {
   flex: 1;
   min-width: 0;
-}
-
-.profileNameRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 0.2rem;
 }
 
 .name {
@@ -100,8 +100,7 @@
   font-weight: 700;
   color: var(--text);
   letter-spacing: -0.02em;
-  margin: 0;
-  min-width: 0;
+  margin: 0 0 0.25rem;
 }
 
 .email {
@@ -656,6 +655,7 @@
   font-family: var(--font-body);
   font-size: 0.82rem;
   color: var(--muted);
+  white-space: nowrap;
 }
 
 .waEditBtn {
@@ -758,12 +758,14 @@
     align-items: flex-start;
   }
 
-  .profileNameRow {
+  .profileRight {
+    flex-direction: column;
     align-items: flex-start;
+    gap: 0.75rem;
   }
 
-  .email {
-    white-space: nowrap;
+  .logoutBtn {
+    align-self: flex-start;
   }
 
   .waDisplayRow {
