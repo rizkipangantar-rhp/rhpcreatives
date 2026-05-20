@@ -256,10 +256,12 @@ export default function ProfilCard({ session }: { session: Session }) {
   async function rejectOffer(requestId: string) {
     setActionLoading(requestId + '-reject')
     try {
-      await fetch(`/api/custom-order/${requestId}/reject`, { method: 'PUT' })
-      setCustomRequests(prev => prev.map(r =>
-        r.request_id === requestId ? { ...r, status: 'rejected_by_customer' as RequestStatus } : r
-      ))
+      const res = await fetch(`/api/custom-order/${requestId}/reject`, { method: 'PUT' })
+      if (res.ok) {
+        setCustomRequests(prev => prev.map(r =>
+          r.request_id === requestId ? { ...r, status: 'rejected_by_customer' as RequestStatus } : r
+        ))
+      }
     } finally {
       setActionLoading(null)
     }

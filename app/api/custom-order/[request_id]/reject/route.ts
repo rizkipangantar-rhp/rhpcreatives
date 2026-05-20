@@ -14,7 +14,7 @@ export async function PUT(
   const request = await getRequestById(request_id)
   if (!request) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   if (request.user_id !== session.user.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-  if (request.status !== 'price_sent') return NextResponse.json({ error: 'Cannot reject at this stage' }, { status: 400 })
+  if (!['price_sent', 'negotiating'].includes(request.status)) return NextResponse.json({ error: 'Cannot cancel at this stage' }, { status: 400 })
 
   const { reason } = await req.json() as { reason?: string }
 

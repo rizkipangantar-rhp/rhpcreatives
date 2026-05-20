@@ -239,11 +239,49 @@ export default function AdminCustomOrderDetailPage() {
           <div className={s.cardTitle} style={{ marginBottom: isNegotiating ? 8 : 20, color: isNegotiating ? '#fbbf24' : undefined }}>
             {isNegotiating ? 'Tanggapi Negosiasi — Kirim Ulang Penawaran' : request.status === 'price_sent' ? 'Edit Penawaran Harga' : 'Input Penawaran Harga'}
           </div>
-          {isNegotiating && (
-            <p style={{ fontSize: '0.82rem', color: '#94a3b8', marginBottom: 20, lineHeight: 1.6 }}>
-              Customer sedang meminta negosiasi. Sesuaikan harga jika perlu, lalu kirim penawaran baru. Ini akan mengubah status kembali ke &ldquo;Harga Dikirim&rdquo;.
-            </p>
-          )}
+          {isNegotiating && (() => {
+            const latestEntry = request.negotiation_history?.filter(e => e.by === 'customer').at(-1)
+            const counterPrice = latestEntry?.counter_price
+            return (
+              <div style={{ marginBottom: 20 }}>
+                <p style={{ fontSize: '0.82rem', color: '#94a3b8', marginBottom: 14, lineHeight: 1.6 }}>
+                  Customer mengajukan negosiasi. Pilih aksi di bawah, atau isi form untuk kirim harga baru.
+                </p>
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                  {counterPrice && (
+                    <button
+                      onClick={() => {
+                        setBasePrice(String(counterPrice))
+                        setDiscountType(null)
+                        setDiscountValue('')
+                      }}
+                      style={{
+                        background: 'rgba(52,211,153,0.12)', border: '1px solid rgba(52,211,153,0.35)',
+                        color: '#34d399', borderRadius: 8, padding: '8px 16px', fontSize: '0.82rem',
+                        fontWeight: 700, cursor: 'pointer',
+                      }}
+                    >
+                      Gunakan Harga Customer — {fmt(counterPrice)}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setShowRejectModal(true)}
+                    style={{
+                      background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
+                      color: '#f87171', borderRadius: 8, padding: '8px 16px', fontSize: '0.82rem',
+                      fontWeight: 700, cursor: 'pointer',
+                    }}
+                  >
+                    Batalkan Request
+                  </button>
+                </div>
+                <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '16px 0' }} />
+                <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: 10 }}>
+                  Atau isi form di bawah untuk kirim harga berbeda
+                </div>
+              </div>
+            )
+          })()}
 
           <div className={s.twoCol} style={{ marginBottom: 16 }}>
             <div>
