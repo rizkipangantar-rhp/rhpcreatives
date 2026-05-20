@@ -21,7 +21,19 @@ export async function dbGet<T>(key: string, fallbackFile: string, defaultValue: 
   if (r) {
     try {
       const val = await r.get<T>(key)
-      return val ?? defaultValue
+      if (val !== null && val !== undefined) return val
+
+      // Redis key is empty — try to seed from the bundled JSON file (one-time auto-migration)
+      try {
+        const p = getDataPath(fallbackFile)
+        if (fs.existsSync(p)) {
+          const fileData = JSON.parse(fs.readFileSync(p, 'utf-8')) as T
+          r.set(key, JSON.stringify(fileData)).catch(() => {})
+          return fileData
+        }
+      } catch { /* ignore */ }
+
+      return defaultValue
     } catch {
       return defaultValue
     }
