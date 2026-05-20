@@ -7,6 +7,7 @@ import { signOut } from 'next-auth/react'
 import { useSearchParams } from 'next/navigation'
 import type { Session } from 'next-auth'
 import { useLanguage } from '@/context/LanguageContext'
+import { formatWaDisplay, normalizeWa, isValidWa } from '@/lib/wa'
 import styles from './profil.module.css'
 
 type OrderStatus = 'pending' | 'paid' | 'processing' | 'completed' | 'cancelled'
@@ -126,6 +127,12 @@ export default function ProfilCard({ session }: { session: Session }) {
   const [customLoaded, setCustomLoaded] = useState(false)
   const [referralStats, setReferralStats] = useState<ReferralStatsData | null>(null)
   const [ebirdStatus, setEbirdStatus] = useState<{ available: boolean; used: boolean } | null>(null)
+  const [userWa, setUserWa] = useState<string | null>(null)
+  const [waEditing, setWaEditing] = useState(false)
+  const [waInput, setWaInput] = useState('')
+  const [waSaving, setWaSaving] = useState(false)
+  const [waError, setWaError] = useState('')
+  const [waToast, setWaToast] = useState(false)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
 
   useEffect(() => {
@@ -136,6 +143,10 @@ export default function ProfilCard({ session }: { session: Session }) {
     fetch('/api/referral/discount-status')
       .then(r => r.ok ? r.json() : null)
       .then(data => { if (data?.earlyBird) setEbirdStatus(data.earlyBird) })
+      .catch(() => {})
+    fetch('/api/user/profile')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data?.whatsapp) setUserWa(data.whatsapp) })
       .catch(() => {})
   }, [])
 
@@ -158,6 +169,25 @@ export default function ProfilCard({ session }: { session: Session }) {
   }, [])
 
   const referralCode = referralStats?.referralCode ?? '...'
+
+  async function handleWaSave() {
+    if (!isValidWa(waInput)) { setWaError(p.waInvalid); return }
+    setWaSaving(true); setWaError('')
+    const normalized = normalizeWa(waInput)
+    const res = await fetch('/api/user/profile', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ whatsapp: normalized }),
+    })
+    setWaSaving(false)
+    if (res.ok) {
+      setUserWa(normalized); setWaEditing(false)
+      setWaToast(true); setTimeout(() => setWaToast(false), 3000)
+    } else {
+      const d = await res.json().catch(() => ({}))
+      setWaError(d.error ?? p.waInvalid)
+    }
+  }
 
   function copyCode() {
     if (referralCode === '...') return
@@ -243,10 +273,43 @@ export default function ProfilCard({ session }: { session: Session }) {
           <div className={styles.profileInfo}>
             <h1 className={styles.name}>{user.name ?? 'User'}</h1>
             <p className={styles.email}>{user.email}</p>
+            <div className={styles.waRow}>
+              {waEditing ? (
+                <div className={styles.waEditRow}>
+                  <input
+                    className={styles.waInput}
+                    value={waInput}
+                    onChange={e => setWaInput(e.target.value)}
+                    placeholder="08xx atau 628xx"
+                    autoFocus
+                  />
+                  {waError && <span className={styles.waError}>{waError}</span>}
+                  <div className={styles.waActions}>
+                    <button className={styles.waSaveBtn} onClick={handleWaSave} disabled={waSaving}>
+                      {waSaving ? p.waSaving : p.waSave}
+                    </button>
+                    <button className={styles.waCancelBtn} onClick={() => { setWaEditing(false); setWaError('') }}>
+                      {p.waCancel}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className={styles.waDisplayRow}>
+                  <span className={styles.waIcon}>📱</span>
+                  <span className={styles.waValue}>
+                    {userWa ? formatWaDisplay(userWa) : p.waEmpty}
+                  </span>
+                  <button className={styles.waEditBtn} onClick={() => { setWaEditing(true); setWaInput(userWa ?? ''); setWaError('') }}>
+                    {p.waEdit}
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
           <button className={styles.logoutBtn} onClick={() => signOut({ callbackUrl: '/' })}>
             {p.logoutBtn}
           </button>
+          {waToast && <div className={styles.waToast}>{p.waSaved}</div>}
         </div>
 
         {/* Tabs */}

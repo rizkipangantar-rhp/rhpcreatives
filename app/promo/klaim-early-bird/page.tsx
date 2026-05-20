@@ -93,6 +93,8 @@ export default function KlaimEarlyBirdPage() {
 
   // form state
   const [name, setName] = useState('')
+  const [wa, setWa] = useState('')
+  const [savedWa, setSavedWa] = useState<string | null>(null)
   const [service, setService] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [formError, setFormError] = useState('')
@@ -117,6 +119,17 @@ export default function KlaimEarlyBirdPage() {
     const uid = session?.user?.email ?? ''
     if (uid) localStorage.setItem(`eb-claimed:${uid}`, '1')
   }
+
+  // fetch saved WA from profile
+  useEffect(() => {
+    if (authStatus !== 'authenticated') return
+    fetch('/api/user/profile')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.whatsapp) { setSavedWa(data.whatsapp); setWa(data.whatsapp) }
+      })
+      .catch(() => {})
+  }, [authStatus])
 
   // fetch status once authenticated
   useEffect(() => {
@@ -155,6 +168,15 @@ export default function KlaimEarlyBirdPage() {
     setFormError('')
     if (!service) { setFormError('Pilih layanan dulu ya!'); return }
     setSubmitting(true)
+    // Auto-save WA if provided and changed
+    if (wa.trim() && wa.trim() !== savedWa) {
+      fetch('/api/user/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ whatsapp: wa.trim() }),
+      }).catch(() => {})
+      setSavedWa(wa.trim())
+    }
     const res = await fetch('/api/early-bird/claim', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -219,6 +241,19 @@ export default function KlaimEarlyBirdPage() {
             <div className={styles.field}>
               <label>{c.emailLabel}</label>
               <input value={session?.user?.email ?? ''} readOnly className={styles.readOnly} />
+            </div>
+
+            <div className={styles.field}>
+              <label>{c.waLabel}</label>
+              <input
+                value={wa}
+                onChange={e => setWa(e.target.value.replace(/\D/g, ''))}
+                placeholder="08xx atau 628xx"
+                className={savedWa && wa === savedWa ? styles.inputSaved : undefined}
+              />
+              {savedWa && wa === savedWa && (
+                <span className={styles.savedHint}>✓ {c.waSavedHint}</span>
+              )}
             </div>
 
             <div className={styles.field}>

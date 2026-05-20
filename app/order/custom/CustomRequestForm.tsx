@@ -1,8 +1,9 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import type { Session } from 'next-auth'
 import { useLanguage } from '@/context/LanguageContext'
+import { formatWaDisplay, normalizeWa } from '@/lib/wa'
 import styles from './custom.module.css'
 
 const ADMIN_WA = '6285179992598'
@@ -39,6 +40,8 @@ export default function CustomRequestForm({ session }: { session: Session | null
   const [requestId, setRequestId] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [savedWa, setSavedWa] = useState<string | null>(null)
+  const [waMode, setWaMode] = useState<'display' | 'edit'>('edit')
 
   const [form, setForm] = useState({
     name: session?.user?.name ?? '',
@@ -52,6 +55,20 @@ export default function CustomRequestForm({ session }: { session: Session | null
     voucherCode: '',
   })
 
+  useEffect(() => {
+    if (!session) return
+    fetch('/api/user/profile')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.whatsapp) {
+          setSavedWa(data.whatsapp)
+          setForm(prev => ({ ...prev, whatsapp: data.whatsapp }))
+          setWaMode('display')
+        }
+      })
+      .catch(() => {})
+  }, [session])
+
   function set<K extends keyof typeof form>(key: K, value: typeof form[K]) {
     setForm(prev => ({ ...prev, [key]: value }))
   }
@@ -60,6 +77,16 @@ export default function CustomRequestForm({ session }: { session: Session | null
     e.preventDefault()
     setError('')
     setLoading(true)
+    // Auto-save WA if changed
+    const normalizedWa = normalizeWa(form.whatsapp)
+    if (normalizedWa !== savedWa) {
+      fetch('/api/user/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ whatsapp: normalizedWa }),
+      }).catch(() => {})
+      setSavedWa(normalizedWa)
+    }
     try {
       const res = await fetch('/api/custom-order/request', {
         method: 'POST',
@@ -222,14 +249,30 @@ export default function CustomRequestForm({ session }: { session: Session | null
             </div>
             <div className={styles.field}>
               <label className={styles.label}>{lang === 'id' ? 'Nomor WhatsApp' : 'WhatsApp Number'}<span className={styles.required}>*</span></label>
-              <input
-                className={styles.input}
-                value={form.whatsapp}
-                onChange={e => set('whatsapp', e.target.value.replace(/\D/g, ''))}
-                placeholder="628xxxx"
-                required
-              />
-              <span className={styles.hint}>{lang === 'id' ? 'Format internasional tanpa +, contoh: 62812xxxx' : 'International format without +, e.g. 62812xxxx'}</span>
+              {waMode === 'display' && savedWa ? (
+                <div className={styles.waSavedRow}>
+                  <span className={styles.waSavedText}>{formatWaDisplay(savedWa)}</span>
+                  <span className={styles.waBadge}>✓ {lang === 'id' ? 'Tersimpan' : 'Saved'}</span>
+                  <button type="button" className={styles.waChangeBtn} onClick={() => { setWaMode('edit'); set('whatsapp', '') }}>
+                    {lang === 'id' ? 'Bukan nomor ini? Ganti →' : 'Not your number? Change →'}
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <input
+                    className={styles.input}
+                    value={form.whatsapp}
+                    onChange={e => set('whatsapp', e.target.value.replace(/\D/g, ''))}
+                    placeholder="08xx atau 628xx"
+                    required
+                  />
+                  {!savedWa && form.whatsapp.trim() && (
+                    <span className={styles.waHint}>
+                      {lang === 'id' ? 'Nomor ini akan disimpan untuk order berikutnya 💾' : 'This number will be saved for future orders 💾'}
+                    </span>
+                  )}
+                </>
+              )}
             </div>
           </div>
 

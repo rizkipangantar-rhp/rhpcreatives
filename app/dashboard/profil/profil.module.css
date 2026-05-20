@@ -629,6 +629,115 @@
   white-space: nowrap;
 }
 
+/* ── WhatsApp edit ── */
+.waRow { margin-top: 0.6rem; }
+
+.waDisplayRow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.waIcon { font-size: 0.8rem; }
+
+.waValue {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.waEditBtn {
+  background: none;
+  border: none;
+  color: var(--purple-light);
+  font-size: 0.72rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: var(--font-body);
+  transition: background 0.15s;
+}
+.waEditBtn:hover { background: rgba(139,92,246,0.1); }
+
+.waEditRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+}
+
+.waInput {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.45rem 0.7rem;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  outline: none;
+  width: 100%;
+  max-width: 220px;
+  transition: border-color 0.15s;
+}
+.waInput:focus { border-color: rgba(139,92,246,0.5); }
+
+.waActions { display: flex; gap: 0.4rem; }
+
+.waSaveBtn {
+  padding: 0.35rem 0.85rem;
+  background: rgba(139,92,246,0.15);
+  border: 1px solid rgba(139,92,246,0.3);
+  border-radius: 999px;
+  color: var(--purple-light);
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.waSaveBtn:hover { background: rgba(139,92,246,0.25); }
+.waSaveBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.waCancelBtn {
+  padding: 0.35rem 0.85rem;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.waCancelBtn:hover { border-color: rgba(255,255,255,0.2); }
+
+.waError {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: #f87171;
+}
+
+.waToast {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: rgba(34,197,94,0.12);
+  border: 1px solid rgba(34,197,94,0.3);
+  color: #4ade80;
+  padding: 0.7rem 1.2rem;
+  border-radius: 10px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  z-index: 999;
+  animation: fadeInUp 0.25s ease;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* ── Responsive ── */
 @media (max-width: 640px) {
   .page { padding: calc(var(--bar-h) + 5rem) 1rem 3rem; }

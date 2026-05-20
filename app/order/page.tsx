@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useLanguage } from '@/context/LanguageContext'
+import { formatWaDisplay, normalizeWa } from '@/lib/wa'
 import styles from './order.module.css'
 
 type ServiceOption = { id: string; nameId: string; nameEn: string; icon: string }
@@ -76,6 +77,9 @@ export default function OrderPage() {
   const [discountStatus, setDiscountStatus] = useState<DiscountStatus | null>(null)
   const [discountOption, setDiscountOption] = useState<DiscountOption>('none')
 
+  const [savedWa, setSavedWa] = useState<string | null>(null)
+  const [waMode, setWaMode] = useState<'display' | 'edit'>('edit')
+
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [showConfirm, setShowConfirm] = useState(false)
@@ -103,7 +107,7 @@ export default function OrderPage() {
     }
   }, [])
 
-  // Fetch auto-discount status once authenticated
+  // Fetch discount status + saved WA once authenticated
   useEffect(() => {
     if (status !== 'authenticated') return
     fetch('/api/referral/discount-status')
@@ -111,13 +115,22 @@ export default function OrderPage() {
       .then(data => {
         if (!data) return
         setDiscountStatus(data as DiscountStatus)
-        // Auto-select the best available discount
         if (data.referrerReward?.available) {
           setDiscountOption('referrer_reward')
         } else if (data.inviteeDiscount?.available) {
           setDiscountOption('invitee')
         } else if (data.earlyBird?.available) {
           setDiscountOption('early_bird')
+        }
+      })
+      .catch(() => {})
+    fetch('/api/user/profile')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.whatsapp) {
+          setSavedWa(data.whatsapp)
+          setWa(data.whatsapp)
+          setWaMode('display')
         }
       })
       .catch(() => {})
@@ -153,6 +166,16 @@ export default function OrderPage() {
     if (!selectedService || !selectedPackage || !name.trim() || !email.trim() || !wa.trim()) return
     setIsSubmitting(true)
     setError('')
+    // Auto-save WA if changed
+    const normalizedWa = normalizeWa(wa.trim())
+    if (normalizedWa !== savedWa) {
+      fetch('/api/user/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ whatsapp: normalizedWa }),
+      }).catch(() => {})
+      setSavedWa(normalizedWa)
+    }
 
     let discountMode: string | undefined
 
@@ -340,7 +363,22 @@ export default function OrderPage() {
                   </div>
                   <div className={`${styles.field} ${styles.fieldFull}`}>
                     <label className={styles.label}>{p.waLabel}</label>
-                    <input className={styles.input} value={wa} onChange={e => setWa(e.target.value)} placeholder={p.waPlaceholder} />
+                    {waMode === 'display' && savedWa ? (
+                      <div className={styles.waSavedRow}>
+                        <span className={styles.waSavedText}>{formatWaDisplay(savedWa)}</span>
+                        <span className={styles.waBadge}>{p.waSavedBadge}</span>
+                        <button type="button" className={styles.waChangeBtn} onClick={() => { setWaMode('edit'); setWa('') }}>
+                          {p.waChangeLink}
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <input className={styles.input} value={wa} onChange={e => setWa(e.target.value)} placeholder={p.waPlaceholder} />
+                        {!savedWa && wa.trim() && (
+                          <span className={styles.waHint}>{p.waWillSave}</span>
+                        )}
+                      </>
+                    )}
                   </div>
                   <div className={`${styles.field} ${styles.fieldFull}`}>
                     <label className={styles.label}>{p.notesLabel}</label>

@@ -22,6 +22,7 @@ export type StoredUser = {
   referredBy?: string                 // referral code of who referred this user
   referralRewardsAvailable: number    // 15% rewards ready to use
   referralRewardsUsed: number
+  whatsapp?: string | null            // saved WA number in 628xx format
   suspended?: boolean
 }
 
@@ -188,6 +189,15 @@ export async function deleteUser(userId: string): Promise<boolean> {
   users.splice(idx, 1)
   await writeUsers(users)
   return true
+}
+
+export async function updateUserProfile(userId: string, data: { whatsapp?: string; name?: string }): Promise<void> {
+  const users = await readUsers()
+  const idx = users.findIndex(u => u.id === userId)
+  if (idx === -1) return
+  if (data.whatsapp !== undefined) users[idx].whatsapp = data.whatsapp
+  if (data.name !== undefined) users[idx].name = data.name
+  await writeUsers(users)
 }
 
 export async function addReferralReward(userId: string): Promise<void> {

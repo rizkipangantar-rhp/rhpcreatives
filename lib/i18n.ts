@@ -135,6 +135,14 @@ export type Tr = {
     earlyBirdActive: string
     earlyBirdUsed: string
     earlyBirdAutoDiscount: string
+    waLabel: string
+    waEmpty: string
+    waEdit: string
+    waSave: string
+    waCancel: string
+    waSaving: string
+    waSaved: string
+    waInvalid: string
   }
   orderPage: {
     tag: string
@@ -183,6 +191,9 @@ export type Tr = {
     confirmSub: string
     confirmGasken: string
     confirmWa: string
+    waSavedBadge: string
+    waChangeLink: string
+    waWillSave: string
   }
   orderSuccess: {
     title: string
@@ -443,6 +454,8 @@ export type Tr = {
     usedSub: string
     usedOrderBtn: string
     historyBtn: string
+    waLabel: string
+    waSavedHint: string
   }
   promo: {
     earlyBird: {
@@ -593,6 +606,14 @@ export const t: Record<Lang, Tr> = {
       earlyBirdActive: 'Aktif ✅',
       earlyBirdUsed: 'Sudah Dipakai ✓',
       earlyBirdAutoDiscount: 'Diskon otomatis aktif saat checkout',
+      waLabel: 'Nomor WhatsApp',
+      waEmpty: 'Belum ditambahkan',
+      waEdit: 'Edit ✏️',
+      waSave: 'Simpan',
+      waCancel: 'Batal',
+      waSaving: 'Menyimpan...',
+      waSaved: 'Nomor WA berhasil diperbarui ✅',
+      waInvalid: 'Format nomor tidak valid (contoh: 08xx atau 628xx)',
     },
     orderPage: {
       tag: '✦ Pesan Layanan',
@@ -641,6 +662,9 @@ export const t: Record<Lang, Tr> = {
       confirmSub: 'Siap diproses! Kalau ada pertanyaan soal layanan ini, kamu bisa konsultasi dulu via WA sebelum bayar. Atau langsung gasken bayar sekarang — kamu tetap bisa tulis catatan/request di halaman pembayaran ya! 📝',
       confirmGasken: 'Langsung Gasken Bayar 🚀',
       confirmWa: 'Konsultasi Dulu via WA 💬',
+      waSavedBadge: '✓ Tersimpan',
+      waChangeLink: 'Bukan nomor ini? Ganti →',
+      waWillSave: 'Nomor ini akan disimpan untuk order berikutnya 💾',
     },
     orderSuccess: {
       title: 'Yay! Order Berhasil! 🎉',
@@ -1191,6 +1215,8 @@ export const t: Record<Lang, Tr> = {
       usedSub: 'Mantap bestie! Voucher Early Bird-mu udah sukses dipake buat order. Sekarang tinggal gas bayar dan tunggu tim kami follow up ya! 🔥',
       usedOrderBtn: 'Lihat Riwayat Order →',
       historyBtn: 'Lihat Riwayat →',
+      waLabel: 'Nomor WhatsApp (Opsional)',
+      waSavedHint: 'Tersimpan',
     },
     promo: {
       earlyBird: {
@@ -1381,6 +1407,14 @@ export const t: Record<Lang, Tr> = {
       earlyBirdActive: 'Active ✅',
       earlyBirdUsed: 'Used ✓',
       earlyBirdAutoDiscount: 'Discount automatically applied at checkout',
+      waLabel: 'WhatsApp Number',
+      waEmpty: 'Not added yet',
+      waEdit: 'Edit ✏️',
+      waSave: 'Save',
+      waCancel: 'Cancel',
+      waSaving: 'Saving...',
+      waSaved: 'WhatsApp number updated ✅',
+      waInvalid: 'Invalid number format (e.g. 08xx or 628xx)',
     },
     orderPage: {
       tag: '✦ Place an Order',
@@ -1429,6 +1463,9 @@ export const t: Record<Lang, Tr> = {
       confirmSub: "All set! Have questions about this service? You can consult via WA first, or go ahead and pay now — you can still add notes/requests on the payment page! 📝",
       confirmGasken: 'Pay Now! 🚀',
       confirmWa: 'Chat WA First 💬',
+      waSavedBadge: '✓ Saved',
+      waChangeLink: 'Not your number? Change →',
+      waWillSave: 'This number will be saved for future orders 💾',
     },
     orderSuccess: {
       title: 'Order Placed! 🎉',
@@ -1979,6 +2016,8 @@ export const t: Record<Lang, Tr> = {
       usedSub: "Yass bestie! Your Early Bird voucher has been successfully applied to your order. Time to pay and wait for our team to follow up! 🔥",
       usedOrderBtn: 'View Order History →',
       historyBtn: 'View History →',
+      waLabel: 'WhatsApp Number (Optional)',
+      waSavedHint: 'Saved',
     },
     promo: {
       earlyBird: {
