@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
+import Link from 'next/link'
 import { useLanguage } from '@/context/LanguageContext'
 import styles from './FirstLoginModal.module.css'
 
@@ -9,12 +10,13 @@ const LS_KEY = 'rhp:od'
 type CodeStatus = 'idle' | 'checking' | 'valid' | 'invalid'
 
 export default function FirstLoginModal() {
-  const { tr } = useLanguage()
+  const { tr, lang } = useLanguage()
   const p = tr.firstLoginModal
   const { data: session, status, update } = useSession()
 
   const [code, setCode] = useState('')
   const [codeStatus, setCodeStatus] = useState<CodeStatus>('idle')
+  const [termsAccepted, setTermsAccepted] = useState(false)
   const [saving, setSaving] = useState(false)
   const [dismissed, setDismissed] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -58,7 +60,7 @@ export default function FirstLoginModal() {
       await fetch('/api/auth/complete-onboarding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ referralCode }),
+        body: JSON.stringify({ referralCode, termsAccepted }),
       })
       await update()
     } finally {
@@ -70,18 +72,21 @@ export default function FirstLoginModal() {
     complete(codeStatus === 'valid' ? code.trim() : undefined)
   }
 
-  function handleSkip() {
-    complete(undefined)
+  function handleLogout() {
+    signOut({ callbackUrl: '/' })
   }
 
-  const saveDisabled = saving || codeStatus === 'checking' || (code.trim() !== '' && codeStatus === 'invalid')
+  const saveDisabled = saving || !termsAccepted || codeStatus === 'checking' || (code.trim() !== '' && codeStatus === 'invalid')
 
   if (!visible) return null
+
+  const userName = session?.user?.name ?? (lang === 'id' ? 'kamu' : 'you')
+  const title = p.title.replace('{name}', userName)
 
   return (
     <div className={styles.overlay}>
       <div className={styles.card}>
-        <h2 className={styles.title}>{p.title}</h2>
+        <h2 className={styles.title}>{title}</h2>
         <p className={styles.sub}>{p.sub}</p>
 
         <div className={styles.field}>
@@ -107,10 +112,35 @@ export default function FirstLoginModal() {
           )}
         </div>
 
+        <label className={styles.termsRow}>
+          <input
+            type="checkbox"
+            className={styles.termsCheck}
+            checked={termsAccepted}
+            onChange={e => setTermsAccepted(e.target.checked)}
+            disabled={saving}
+          />
+          <span className={styles.termsText}>
+            {lang === 'id' ? (
+              <>Saya setuju dengan{' '}
+                <Link href="/terms" target="_blank" className={styles.termsLink} onClick={e => e.stopPropagation()}>{p.termsLink}</Link>
+                {' '}dan{' '}
+                <Link href="/privacy" target="_blank" className={styles.termsLink} onClick={e => e.stopPropagation()}>{p.privacyLink}</Link>
+              </>
+            ) : (
+              <>I agree to the{' '}
+                <Link href="/terms" target="_blank" className={styles.termsLink} onClick={e => e.stopPropagation()}>{p.termsLink}</Link>
+                {' '}and{' '}
+                <Link href="/privacy" target="_blank" className={styles.termsLink} onClick={e => e.stopPropagation()}>{p.privacyLink}</Link>
+              </>
+            )}
+          </span>
+        </label>
+
         <button className={styles.cta} onClick={handleSave} disabled={saveDisabled}>
           {saving ? p.saving : p.saveBtn}
         </button>
-        <button className={styles.skip} onClick={handleSkip} disabled={saving}>
+        <button className={styles.skip} onClick={handleLogout} disabled={saving}>
           {p.skipBtn}
         </button>
       </div>

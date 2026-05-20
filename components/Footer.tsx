@@ -1,4 +1,5 @@
 'use client'
+import Link from 'next/link'
 import { useLanguage } from '@/context/LanguageContext'
 import styles from './Footer.module.css'
 
@@ -20,7 +21,14 @@ export default function Footer() {
           rhpcreativesid@gmail.com
         </a>
       </div>
-      <p className={styles.copy}>{f.copy}</p>
+      <div className={styles.legal}>
+        <p className={styles.copy}>{f.copy}</p>
+        <div className={styles.legalLinks}>
+          <Link href="/terms" className={styles.legalLink}>{f.terms}</Link>
+          <span className={styles.legalDot}>·</span>
+          <Link href="/privacy" className={styles.legalLink}>{f.privacy}</Link>
+        </div>
+      </div>
     </footer>
   )
 }

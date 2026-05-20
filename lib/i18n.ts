@@ -92,6 +92,9 @@ export type Tr = {
     referralCodeLabel: string
     referralCodePlaceholder: string
     referralCodeNote: string
+    termsLink: string
+    privacyLink: string
+    termsError: string
   }
   profile: {
     referralLabel: string
@@ -194,6 +197,8 @@ export type Tr = {
     waSavedBadge: string
     waChangeLink: string
     waWillSave: string
+    payTermsNotice: string
+    payTermsLink: string
   }
   orderSuccess: {
     title: string
@@ -362,7 +367,7 @@ export type Tr = {
     items: TestimonialItem[]
   }
   cta: { label: string; title: string; sub: string; trust: string[] }
-  footer: { tagline: string; copy: string }
+  footer: { tagline: string; copy: string; terms: string; privacy: string }
   about: {
     profileLabel: string
     profileTitle: string
@@ -409,6 +414,8 @@ export type Tr = {
     referralChecking: string
     referralValid: string
     referralInvalid: string
+    termsLink: string
+    privacyLink: string
     skipBtn: string
     saveBtn: string
     saving: string
@@ -558,6 +565,9 @@ export const t: Record<Lang, Tr> = {
       referralCodeLabel: 'Kode Referral (Opsional)',
       referralCodePlaceholder: 'RHP-XXXXX',
       referralCodeNote: 'Punya kode referral teman? Masukkan di sini untuk dapat diskon 10%! ✨',
+      termsLink: 'Syarat & Ketentuan',
+      privacyLink: 'Kebijakan Privasi',
+      termsError: 'Kamu harus setujui syarat & ketentuan dulu ya bestie! 😊',
     },
     profile: {
       referralLabel: 'Kode Referral Kamu',
@@ -665,6 +675,8 @@ export const t: Record<Lang, Tr> = {
       waSavedBadge: '✓ Tersimpan',
       waChangeLink: 'Bukan nomor ini? Ganti →',
       waWillSave: 'Nomor ini akan disimpan untuk order berikutnya 💾',
+      payTermsNotice: 'Dengan melanjutkan pembayaran, kamu menyetujui',
+      payTermsLink: 'Syarat & Ketentuan',
     },
     orderSuccess: {
       title: 'Yay! Order Berhasil! 🎉',
@@ -1108,6 +1120,8 @@ export const t: Record<Lang, Tr> = {
     footer: {
       tagline: 'Jasa Digital & Desain Kreatif · Sat-Set & Worth It',
       copy: '© 2026 RHP Creatives. Hak cipta dilindungi.',
+      terms: 'Syarat & Ketentuan',
+      privacy: 'Kebijakan Privasi',
     },
     about: {
       profileLabel: 'Profil',
@@ -1163,15 +1177,17 @@ export const t: Record<Lang, Tr> = {
       sub: 'Cuma 20 slot',
     },
     firstLoginModal: {
-      title: 'Selamat datang di RHP Creatives! 🎉',
+      title: 'Halo {name}! Selamat datang di RHP Creatives 🎉',
       sub: 'Satu langkah lagi — punya kode referral dari teman? Masukkan sekarang untuk dapat diskon 10% di order pertamamu!',
       referralLabel: 'Kode Referral (Opsional)',
       referralPlaceholder: 'RHP-XXXXX',
       referralChecking: 'Mengecek...',
       referralValid: '✓ Kode valid! Diskon 10% siap buat kamu',
       referralInvalid: '✗ Kode tidak ditemukan',
-      skipBtn: 'Lewati',
-      saveBtn: 'Simpan & Lanjut',
+      termsLink: 'Syarat & Ketentuan',
+      privacyLink: 'Kebijakan Privasi',
+      skipBtn: 'Batal / Logout',
+      saveBtn: 'Mulai Gasken →',
       saving: 'Menyimpan...',
     },
     claimPage: {
@@ -1359,6 +1375,9 @@ export const t: Record<Lang, Tr> = {
       referralCodeLabel: 'Referral Code (Optional)',
       referralCodePlaceholder: 'RHP-XXXXX',
       referralCodeNote: "Got a friend's referral code? Enter it here for 10% off! ✨",
+      termsLink: 'Terms & Conditions',
+      privacyLink: 'Privacy Policy',
+      termsError: 'You need to agree to the terms & conditions first! 😊',
     },
     profile: {
       referralLabel: 'Your Referral Code',
@@ -1466,6 +1485,8 @@ export const t: Record<Lang, Tr> = {
       waSavedBadge: '✓ Saved',
       waChangeLink: 'Not your number? Change →',
       waWillSave: 'This number will be saved for future orders 💾',
+      payTermsNotice: 'By proceeding with payment, you agree to our',
+      payTermsLink: 'Terms & Conditions',
     },
     orderSuccess: {
       title: 'Order Placed! 🎉',
@@ -1909,6 +1930,8 @@ export const t: Record<Lang, Tr> = {
     footer: {
       tagline: 'Digital & Creative Design Services · Fast & Worth It',
       copy: '© 2026 RHP Creatives. All rights reserved.',
+      terms: 'Terms & Conditions',
+      privacy: 'Privacy Policy',
     },
     about: {
       profileLabel: 'Profile',
@@ -1964,15 +1987,17 @@ export const t: Record<Lang, Tr> = {
       sub: '20 slots only',
     },
     firstLoginModal: {
-      title: 'Welcome to RHP Creatives! 🎉',
+      title: 'Hey {name}! Welcome to RHP Creatives 🎉',
       sub: "One more step — got a referral code from a friend? Enter it now to get 10% off your first order!",
       referralLabel: 'Referral Code (Optional)',
       referralPlaceholder: 'RHP-XXXXX',
       referralChecking: 'Checking...',
       referralValid: '✓ Code valid! 10% discount ready for you',
       referralInvalid: '✗ Code not found',
-      skipBtn: 'Skip',
-      saveBtn: 'Save & Continue',
+      termsLink: 'Terms & Conditions',
+      privacyLink: 'Privacy Policy',
+      skipBtn: 'Cancel / Logout',
+      saveBtn: "Let's Go! →",
       saving: 'Saving...',
     },
     claimPage: {

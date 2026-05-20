@@ -516,13 +516,21 @@ export default function OrderPage() {
                   <Link href="/login?callbackUrl=/order" className={styles.loginBtn}>{p.loginBtn}</Link>
                 </div>
               ) : (
-                <button
-                  className={styles.payBtn}
-                  onClick={() => { if (canPay) setShowConfirm(true) }}
-                  disabled={!canPay}
-                >
-                  {isSubmitting ? p.paying : p.payBtn}
-                </button>
+                <>
+                  <button
+                    className={styles.payBtn}
+                    onClick={() => { if (canPay) setShowConfirm(true) }}
+                    disabled={!canPay}
+                  >
+                    {isSubmitting ? p.paying : p.payBtn}
+                  </button>
+                  <p className={styles.payTermsNotice}>
+                    {p.payTermsNotice}{' '}
+                    <a href="/terms" target="_blank" rel="noopener noreferrer" className={styles.payTermsLink}>
+                      {p.payTermsLink}
+                    </a>
+                  </p>
+                </>
               )}
             </div>
           </aside>

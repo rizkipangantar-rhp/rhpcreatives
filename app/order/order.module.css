@@ -548,6 +548,22 @@
 .payBtn:active:not(:disabled) { transform: scale(0.97); }
 .payBtn:disabled { opacity: 0.4; cursor: not-allowed; }
 
+.payTermsNotice {
+  font-size: 0.74rem;
+  color: var(--dim);
+  text-align: center;
+  line-height: 1.5;
+  margin-top: 0.5rem;
+}
+
+.payTermsLink {
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.2s;
+}
+.payTermsLink:hover { color: var(--purple-light); }
+
 /* ── Confirm Modal ── */
 .modalBackdrop {
   position: fixed;

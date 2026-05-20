@@ -4,10 +4,14 @@ import { findUserByEmail, findUserByReferralCode, createUser } from '@/lib/users
 
 export async function POST(req: Request) {
   try {
-    const { name, email, password, referralCode } = await req.json()
+    const { name, email, password, referralCode, termsAccepted } = await req.json()
 
     if (!name || !email || !password) {
       return NextResponse.json({ error: 'Semua field wajib diisi.' }, { status: 400 })
+    }
+
+    if (!termsAccepted) {
+      return NextResponse.json({ error: 'Kamu harus setujui syarat & ketentuan dulu ya bestie! 😊' }, { status: 400 })
     }
 
     if (password.length < 8) {
@@ -36,6 +40,7 @@ export async function POST(req: Request) {
       email: normalizedEmail,
       hashedPassword,
       referredBy: validatedReferredBy,
+      termsAccepted: true,
     })
 
     return NextResponse.json({ id: user.id, name: user.name, email: user.email }, { status: 201 })

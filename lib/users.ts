@@ -24,6 +24,9 @@ export type StoredUser = {
   referralRewardsUsed: number
   whatsapp?: string | null            // saved WA number in 628xx format
   suspended?: boolean
+  termsAccepted?: boolean
+  termsAcceptedAt?: string
+  termsVersion?: string
 }
 
 async function readUsers(): Promise<StoredUser[]> {
@@ -117,6 +120,7 @@ export async function createUser(data: {
   email: string
   hashedPassword: string
   referredBy?: string
+  termsAccepted?: boolean
 }): Promise<StoredUser> {
   const users = await readUsers()
   const newUser: StoredUser = {
@@ -135,18 +139,26 @@ export async function createUser(data: {
     referredBy: data.referredBy,
     referralRewardsAvailable: 0,
     referralRewardsUsed: 0,
+    termsAccepted: data.termsAccepted ?? true,
+    termsAcceptedAt: new Date().toISOString(),
+    termsVersion: '2026-05',
   }
   users.push(newUser)
   await writeUsers(users)
   return newUser
 }
 
-export async function completeOnboarding(userId: string, referredBy?: string): Promise<void> {
+export async function completeOnboarding(userId: string, referredBy?: string, termsAccepted?: boolean): Promise<void> {
   const users = await readUsers()
   const idx = users.findIndex(u => u.id === userId)
   if (idx === -1) return
   users[idx].onboardingDone = true
   if (referredBy) users[idx].referredBy = referredBy
+  if (termsAccepted) {
+    users[idx].termsAccepted = true
+    users[idx].termsAcceptedAt = new Date().toISOString()
+    users[idx].termsVersion = '2026-05'
+  }
   await writeUsers(users)
 }
 

@@ -193,3 +193,35 @@
   margin: 0;
   line-height: 1.4;
 }
+
+/* ── T&C Checkbox ── */
+.termsRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  cursor: pointer;
+  margin-top: 0.1rem;
+}
+
+.termsCheck {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--purple);
+  cursor: pointer;
+}
+
+.termsText {
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.5;
+  font-family: var(--font-body);
+}
+
+.termsLink {
+  color: var(--purple-light);
+  text-decoration: none;
+  font-weight: 500;
+}
+.termsLink:hover { text-decoration: underline; }

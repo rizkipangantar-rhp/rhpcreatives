@@ -8,7 +8,7 @@ import styles from './register.module.css'
 
 export default function RegisterPage() {
   const router = useRouter()
-  const { tr } = useLanguage()
+  const { tr, lang } = useLanguage()
   const a = tr.auth
 
   const [name, setName] = useState('')
@@ -16,6 +16,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [referralCode, setReferralCode] = useState('')
+  const [termsAccepted, setTermsAccepted] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -28,11 +29,16 @@ export default function RegisterPage() {
       return
     }
 
+    if (!termsAccepted) {
+      setError(a.termsError)
+      return
+    }
+
     setLoading(true)
     const res = await fetch('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password, referralCode: referralCode.trim() || undefined }),
+      body: JSON.stringify({ name, email, password, referralCode: referralCode.trim() || undefined, termsAccepted }),
     })
     const data = await res.json()
 
@@ -142,7 +148,31 @@ export default function RegisterPage() {
             {a.referralCodeNote && <p className={styles.fieldNote}>{a.referralCodeNote}</p>}
           </div>
 
-          <button type="submit" className={styles.submitBtn} disabled={loading}>
+          <label className={styles.termsRow}>
+            <input
+              type="checkbox"
+              className={styles.termsCheck}
+              checked={termsAccepted}
+              onChange={e => setTermsAccepted(e.target.checked)}
+            />
+            <span className={styles.termsText}>
+              {lang === 'id' ? (
+                <>Saya telah membaca dan menyetujui{' '}
+                  <Link href="/terms" target="_blank" className={styles.termsLink}>{a.termsLink}</Link>
+                  {' '}dan{' '}
+                  <Link href="/privacy" target="_blank" className={styles.termsLink}>{a.privacyLink}</Link>
+                  {' '}RHP Creatives</>
+              ) : (
+                <>I have read and agree to the{' '}
+                  <Link href="/terms" target="_blank" className={styles.termsLink}>{a.termsLink}</Link>
+                  {' '}and{' '}
+                  <Link href="/privacy" target="_blank" className={styles.termsLink}>{a.privacyLink}</Link>
+                  {' '}of RHP Creatives</>
+              )}
+            </span>
+          </label>
+
+          <button type="submit" className={styles.submitBtn} disabled={loading || !termsAccepted}>
             {loading ? a.registering : a.submitRegister}
           </button>
         </form>

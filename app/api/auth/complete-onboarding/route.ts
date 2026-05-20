@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { referralCode } = await req.json() as { referralCode?: string }
+  const { referralCode, termsAccepted } = await req.json() as { referralCode?: string; termsAccepted?: boolean }
 
   let referredBy: string | undefined
   if (referralCode && typeof referralCode === 'string') {
@@ -22,6 +22,6 @@ export async function POST(req: Request) {
     }
   }
 
-  await completeOnboarding(session.user.id, referredBy)
+  await completeOnboarding(session.user.id, referredBy, termsAccepted)
   return NextResponse.json({ ok: true })
 }
