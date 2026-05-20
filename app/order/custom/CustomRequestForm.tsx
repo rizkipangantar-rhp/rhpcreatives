@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import type { Session } from 'next-auth'
 import { useLanguage } from '@/context/LanguageContext'
-import { formatWaDisplay, normalizeWa } from '@/lib/wa'
+import { normalizeWa } from '@/lib/wa'
 import styles from './custom.module.css'
 
 const ADMIN_WA = '6285179992598'
@@ -41,7 +41,6 @@ export default function CustomRequestForm({ session }: { session: Session | null
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [savedWa, setSavedWa] = useState<string | null>(null)
-  const [waMode, setWaMode] = useState<'display' | 'edit'>('edit')
 
   const [form, setForm] = useState({
     name: session?.user?.name ?? '',
@@ -62,7 +61,6 @@ export default function CustomRequestForm({ session }: { session: Session | null
         if (data?.whatsapp) {
           setSavedWa(data.whatsapp)
           setForm(prev => ({ ...prev, whatsapp: data.whatsapp }))
-          setWaMode('display')
         }
       })
       .catch(() => {})
@@ -247,30 +245,13 @@ export default function CustomRequestForm({ session }: { session: Session | null
             </div>
             <div className={styles.field}>
               <label className={styles.label}>{lang === 'id' ? 'Nomor WhatsApp' : 'WhatsApp Number'}<span className={styles.required}>*</span></label>
-              {waMode === 'display' && savedWa ? (
-                <div className={styles.waSavedRow}>
-                  <span className={styles.waSavedText}>{formatWaDisplay(savedWa)}</span>
-                  <span className={styles.waBadge}>✓ {lang === 'id' ? 'Tersimpan' : 'Saved'}</span>
-                  <button type="button" className={styles.waChangeBtn} onClick={() => { setWaMode('edit'); set('whatsapp', '') }}>
-                    {lang === 'id' ? 'Bukan nomor ini? Ganti →' : 'Not your number? Change →'}
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <input
-                    className={styles.input}
-                    value={form.whatsapp}
-                    onChange={e => set('whatsapp', e.target.value.replace(/\D/g, ''))}
-                    placeholder="08xx atau 628xx"
-                    required
-                  />
-                  {!savedWa && form.whatsapp.trim() && (
-                    <span className={styles.waHint}>
-                      {lang === 'id' ? 'Nomor ini akan disimpan untuk order berikutnya 💾' : 'This number will be saved for future orders 💾'}
-                    </span>
-                  )}
-                </>
-              )}
+              <input
+                className={styles.input}
+                value={form.whatsapp}
+                onChange={e => set('whatsapp', e.target.value.replace(/\D/g, ''))}
+                placeholder="08xx atau 628xx"
+                required
+              />
             </div>
           </div>
 

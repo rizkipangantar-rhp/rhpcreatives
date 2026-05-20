@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useLanguage } from '@/context/LanguageContext'
-import { formatWaDisplay, normalizeWa } from '@/lib/wa'
+import { normalizeWa } from '@/lib/wa'
 import styles from './order.module.css'
 
 type ServiceOption = { id: string; nameId: string; nameEn: string; icon: string }
@@ -78,7 +78,6 @@ export default function OrderPage() {
   const [discountOption, setDiscountOption] = useState<DiscountOption>('none')
 
   const [savedWa, setSavedWa] = useState<string | null>(null)
-  const [waMode, setWaMode] = useState<'display' | 'edit'>('edit')
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -130,7 +129,6 @@ export default function OrderPage() {
         if (data?.whatsapp) {
           setSavedWa(data.whatsapp)
           setWa(data.whatsapp)
-          setWaMode('display')
         }
       })
       .catch(() => {})
@@ -363,22 +361,7 @@ export default function OrderPage() {
                   </div>
                   <div className={`${styles.field} ${styles.fieldFull}`}>
                     <label className={styles.label}>{p.waLabel}</label>
-                    {waMode === 'display' && savedWa ? (
-                      <div className={styles.waSavedRow}>
-                        <span className={styles.waSavedText}>{formatWaDisplay(savedWa)}</span>
-                        <span className={styles.waBadge}>{p.waSavedBadge}</span>
-                        <button type="button" className={styles.waChangeBtn} onClick={() => { setWaMode('edit'); setWa('') }}>
-                          {p.waChangeLink}
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        <input className={styles.input} value={wa} onChange={e => setWa(e.target.value)} placeholder={p.waPlaceholder} />
-                        {!savedWa && wa.trim() && (
-                          <span className={styles.waHint}>{p.waWillSave}</span>
-                        )}
-                      </>
-                    )}
+                    <input className={styles.input} value={wa} onChange={e => setWa(e.target.value)} placeholder={p.waPlaceholder} />
                   </div>
                   <div className={`${styles.field} ${styles.fieldFull}`}>
                     <label className={styles.label}>{p.notesLabel}</label>

@@ -212,7 +212,7 @@ export default function ProfilCard({ session }: { session: Session }) {
   }
 
   function shareWa() {
-    const msg = `Bestie, aku pakai RHP Creatives buat jasa digital & desain — hasilnya kece banget! Daftar pakai kode referral aku dan dapet diskon 10% order pertama! Kode: *${referralCode}* → rhpcreatives.com/register`
+    const msg = `Bestie, aku pakai RHP Creatives buat jasa digital & desain, hasilnya kece banget! Daftar pakai kode referral aku dan langsung dapat diskon 10% di order pertama. Kode: *${referralCode}* Daftar di sini: rhpcreatives.com/register`
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank')
   }
 
