@@ -4,6 +4,8 @@ import { useSession } from 'next-auth/react'
 import { useLanguage } from '@/context/LanguageContext'
 import styles from './FirstLoginModal.module.css'
 
+const LS_KEY = 'rhp:od'
+
 type CodeStatus = 'idle' | 'checking' | 'valid' | 'invalid'
 
 export default function FirstLoginModal() {
@@ -14,9 +16,17 @@ export default function FirstLoginModal() {
   const [code, setCode] = useState('')
   const [codeStatus, setCodeStatus] = useState<CodeStatus>('idle')
   const [saving, setSaving] = useState(false)
+  const [dismissed, setDismissed] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const visible = status === 'authenticated' && session?.user?.onboardingDone === false
+  // Check localStorage so the modal never re-shows on this browser after dismissal
+  useEffect(() => {
+    if (typeof window !== 'undefined' && localStorage.getItem(LS_KEY) === '1') {
+      setDismissed(true)
+    }
+  }, [])
+
+  const visible = status === 'authenticated' && session?.user?.onboardingDone === false && !dismissed
 
   const validateCode = useCallback((value: string) => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
@@ -40,6 +50,9 @@ export default function FirstLoginModal() {
   }, [code, validateCode])
 
   async function complete(referralCode?: string) {
+    // Close immediately — don't wait for API or update()
+    if (typeof window !== 'undefined') localStorage.setItem(LS_KEY, '1')
+    setDismissed(true)
     setSaving(true)
     try {
       await fetch('/api/auth/complete-onboarding', {

@@ -83,6 +83,8 @@ export async function upsertGoogleUser(data: {
     users[idx].lastLogin = new Date().toISOString()
     users[idx].isAdmin = users[idx].email.toLowerCase() === ADMIN_EMAIL
     if (users[idx].isAdmin && !users[idx].role) users[idx].role = 'super_admin'
+    // Returning user with onboardingDone: false means their data was lost — treat as done
+    if (!users[idx].onboardingDone) users[idx].onboardingDone = true
     await writeUsers(users)
     return { user: users[idx], isNew: false }
   }
