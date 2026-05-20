@@ -11,29 +11,7 @@ type ClaimEntry = {
   service: string; voucherCode: string; claimedAt: string
 }
 const QUOTA = 20
-const EXPIRY_MS = 24 * 60 * 60 * 1000
 
-const SERVICE_TO_PAKET: Record<string, string> = {
-  'Undangan Online': 'undangan-simpel',
-  'Online Invitation': 'undangan-simpel',
-  'Landing Page': 'landing-santuy',
-  'Desain Instagram': 'ig-satu-post',
-  'Instagram Design': 'ig-satu-post',
-  'Edit Foto': 'foto-poles-dikit',
-  'Photo Editing': 'foto-poles-dikit',
-}
-
-function waShareUrl(code: string) {
-  const msg = `Bestie, aku baru aja klaim voucher Early Bird RHP Creatives diskon 25%! Kode: *${code}*. Buruan klaim juga sebelum habis 🔥 → rhpcreatives.com/promo/klaim-early-bird`
-  return `https://wa.me/?text=${encodeURIComponent(msg)}`
-}
-
-function formatExpiry(claimedAt: string, lang: string): string {
-  const expiresAt = new Date(new Date(claimedAt).getTime() + EXPIRY_MS)
-  return expiresAt.toLocaleString(lang === 'id' ? 'id-ID' : 'en-US', {
-    day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit',
-  })
-}
 
 // ── Confetti ────────────────────────────────────────────────────────────────
 const CONFETTI_COLORS = ['#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#f43f5e', '#ffffff']
@@ -103,7 +81,7 @@ function SlotBar({ used, slotsLeft }: { used: number; slotsLeft: string }) {
 type View = 'loading' | 'form' | 'success' | 'already' | 'used' | 'expired' | 'full'
 
 export default function KlaimEarlyBirdPage() {
-  const { tr, lang } = useLanguage()
+  const { tr } = useLanguage()
   const c = tr.claimPage
   const { data: session, status: authStatus } = useSession()
   const router = useRouter()
@@ -262,31 +240,22 @@ export default function KlaimEarlyBirdPage() {
     )
   }
 
-  if (view === 'success' && claim) {
+  if (view === 'success') {
     return (
       <main className={styles.page}>
         {justClaimed && <Confetti />}
         <div className={styles.card}>
-          <div className={styles.successIcon}>🎊</div>
+          <div className={styles.successIcon}>🎉</div>
           <h1 className={styles.title}>{c.successTitle}</h1>
           <p className={styles.sub}>{c.successSub}</p>
 
-          <div className={styles.expiryWarning}>{c.expiryWarning}</div>
-
-          <VoucherBox code={claim.voucherCode} label={c.voucherLabel} copyBtn={c.copyBtn} copied={c.copied} />
-
-          <div className={styles.howBox}>
-            <div className={styles.howTitle}>{c.howTitle}</div>
-            <p className={styles.howText}>{c.howText}</p>
-          </div>
-
           <div className={styles.ctaGroup}>
-            <Link href={`/order?paket=${SERVICE_TO_PAKET[claim.service] ?? ''}`} className={styles.primaryCta}>
+            <Link href="/order" className={styles.primaryCta}>
               {c.orderWaBtn}
             </Link>
-            <a href={waShareUrl(claim.voucherCode)} target="_blank" rel="noopener noreferrer" className={styles.secondaryCta}>
-              {c.shareWaBtn}
-            </a>
+            <Link href="/dashboard/profil?tab=orders" className={styles.secondaryCta}>
+              {c.historyBtn}
+            </Link>
           </div>
         </div>
       </main>
@@ -311,29 +280,17 @@ export default function KlaimEarlyBirdPage() {
     )
   }
 
-  if (view === 'already' && claim) {
-    const claimedDate = new Date(claim.claimedAt).toLocaleDateString(lang === 'id' ? 'id-ID' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' })
-    const expiryStr = formatExpiry(claim.claimedAt, lang)
+  if (view === 'already') {
     return (
       <main className={styles.page}>
         <div className={styles.card}>
-          <div className={styles.topBadge}>🎉 Voucher Aktif</div>
+          <div className={styles.topBadge}>🔥 Early Bird Aktif</div>
           <h1 className={styles.title}>{c.alreadyTitle}</h1>
           <p className={styles.sub}>{c.alreadySub}</p>
-          <p className={styles.claimedAt}>{c.claimedAtLabel}: <strong>{claimedDate}</strong></p>
-          <p className={styles.claimedAt}>{c.expiresAtLabel}: <strong>{expiryStr}</strong></p>
-
-          <div className={styles.expiryWarning}>{c.expiryWarning}</div>
-
-          <VoucherBox code={claim.voucherCode} label={c.voucherLabel} copyBtn={c.copyBtn} copied={c.copied} />
-
           <div className={styles.ctaGroup}>
-            <Link href={`/order?paket=${SERVICE_TO_PAKET[claim.service] ?? ''}`} className={styles.primaryCta}>
+            <Link href="/order" className={styles.primaryCta}>
               {c.orderWaBtn}
             </Link>
-            <a href={waShareUrl(claim.voucherCode)} target="_blank" rel="noopener noreferrer" className={styles.secondaryCta}>
-              {c.shareWaBtn}
-            </a>
           </div>
         </div>
       </main>

@@ -54,9 +54,10 @@ function fmt(price: number) {
 type DiscountStatus = {
   inviteeDiscount: { available: boolean; code: string | null; percent: number }
   referrerReward: { available: boolean; count: number; percent: number; code: string }
+  earlyBird: { available: boolean; used: boolean; percent: number }
 }
 
-type DiscountOption = 'none' | 'referrer_reward' | 'invitee' | 'manual'
+type DiscountOption = 'none' | 'referrer_reward' | 'invitee' | 'early_bird'
 
 export default function OrderPage() {
   const { tr, lang } = useLanguage()
@@ -74,11 +75,6 @@ export default function OrderPage() {
   // Discount state
   const [discountStatus, setDiscountStatus] = useState<DiscountStatus | null>(null)
   const [discountOption, setDiscountOption] = useState<DiscountOption>('none')
-  const [voucherCode, setVoucherCode] = useState('')
-  const [voucherDiscount, setVoucherDiscount] = useState(0)
-  const [voucherType, setVoucherType] = useState<'ebird' | 'referral' | ''>('')
-  const [voucherStatus, setVoucherStatus] = useState<'idle' | 'valid' | 'invalid' | 'checking'>('idle')
-  const [voucherErrorMsg, setVoucherErrorMsg] = useState('')
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -120,6 +116,8 @@ export default function OrderPage() {
           setDiscountOption('referrer_reward')
         } else if (data.inviteeDiscount?.available) {
           setDiscountOption('invitee')
+        } else if (data.earlyBird?.available) {
+          setDiscountOption('early_bird')
         }
       })
       .catch(() => {})
@@ -140,58 +138,15 @@ export default function OrderPage() {
   } else if (discountOption === 'invitee') {
     discountPercent = 0.10
     discountLabel = p.discountReferral
-  } else if (discountOption === 'manual' && voucherStatus === 'valid') {
-    discountPercent = voucherDiscount
-    discountLabel = voucherType === 'referral' ? p.discountReferral : p.discount
+  } else if (discountOption === 'early_bird') {
+    discountPercent = 0.25
+    discountLabel = p.discount
   }
   discountAmount = Math.round(originalPrice * discountPercent)
   const totalPrice = originalPrice - discountAmount
 
-  // Auto-validate voucher after 1s debounce (only in manual mode)
-  useEffect(() => {
-    if (discountOption !== 'manual') return
-    if (!voucherCode.trim()) return
-    const t = setTimeout(applyVoucher, 1_000)
-    return () => clearTimeout(t)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [voucherCode, discountOption])
-
-  async function applyVoucher() {
-    if (!voucherCode.trim()) return
-    setVoucherStatus('checking')
-    setVoucherErrorMsg('')
-    try {
-      const res = await fetch('/api/payment/voucher', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: voucherCode.trim() }),
-      })
-      const data = await res.json()
-      if (data.valid) {
-        setVoucherDiscount(data.discount)
-        setVoucherType(data.type ?? 'ebird')
-        setVoucherStatus('valid')
-      } else {
-        setVoucherDiscount(0)
-        setVoucherType('')
-        setVoucherStatus('invalid')
-        setVoucherErrorMsg(data.message || p.voucherInvalid)
-      }
-    } catch {
-      setVoucherStatus('invalid')
-      setVoucherErrorMsg(p.voucherInvalid)
-    }
-  }
-
   function handleDiscountOptionChange(opt: DiscountOption) {
     setDiscountOption(opt)
-    if (opt !== 'manual') {
-      setVoucherCode('')
-      setVoucherDiscount(0)
-      setVoucherType('')
-      setVoucherStatus('idle')
-      setVoucherErrorMsg('')
-    }
   }
 
   async function handlePayment() {
@@ -200,15 +155,13 @@ export default function OrderPage() {
     setError('')
 
     let discountMode: string | undefined
-    let voucherToSend: string | undefined
 
     if (discountOption === 'referrer_reward') {
       discountMode = 'referrer_reward'
     } else if (discountOption === 'invitee') {
       discountMode = 'invitee'
-    } else if (discountOption === 'manual' && voucherStatus === 'valid' && voucherCode.trim()) {
-      discountMode = voucherType === 'ebird' ? 'ebird' : 'invitee'
-      voucherToSend = voucherCode.trim()
+    } else if (discountOption === 'early_bird') {
+      discountMode = 'ebird'
     } else {
       discountMode = 'none'
     }
@@ -224,7 +177,6 @@ export default function OrderPage() {
           wa: wa.trim(),
           notes: notes.trim() || undefined,
           discountMode,
-          voucherCode: voucherToSend,
         }),
       })
 
@@ -257,7 +209,7 @@ export default function OrderPage() {
 
   const canPay = selectedService && selectedPackage && name.trim() && email.trim() && wa.trim() && !isSubmitting
 
-  const hasAutoDiscount = !!(discountStatus?.inviteeDiscount?.available || discountStatus?.referrerReward?.available)
+  const hasAutoDiscount = !!(discountStatus?.earlyBird?.available || discountStatus?.inviteeDiscount?.available || discountStatus?.referrerReward?.available)
 
   return (
     <main className={styles.page}>
@@ -407,6 +359,23 @@ export default function OrderPage() {
                 </h2>
 
                 <div className={styles.discountOptions}>
+                  {/* Early bird option */}
+                  {discountStatus?.earlyBird?.available && (
+                    <label className={`${styles.discountOption} ${discountOption === 'early_bird' ? styles.discountOptionSelected : ''}`}>
+                      <input
+                        type="radio"
+                        name="discount"
+                        value="early_bird"
+                        checked={discountOption === 'early_bird'}
+                        onChange={() => handleDiscountOptionChange('early_bird')}
+                      />
+                      <div className={styles.discountOptionContent}>
+                        <span className={styles.discountOptionLabel}>{p.discountAutoEarlyBird}</span>
+                        <span className={styles.discountOptionBadge}>{p.discountAutoEarlyBirdBadge}</span>
+                      </div>
+                    </label>
+                  )}
+
                   {/* Referrer reward option */}
                   {discountStatus?.referrerReward?.available && (
                     <label className={`${styles.discountOption} ${discountOption === 'referrer_reward' ? styles.discountOptionSelected : ''}`}>
@@ -441,20 +410,6 @@ export default function OrderPage() {
                     </label>
                   )}
 
-                  {/* Manual code entry */}
-                  <label className={`${styles.discountOption} ${discountOption === 'manual' ? styles.discountOptionSelected : ''}`}>
-                    <input
-                      type="radio"
-                      name="discount"
-                      value="manual"
-                      checked={discountOption === 'manual'}
-                      onChange={() => handleDiscountOptionChange('manual')}
-                    />
-                    <div className={styles.discountOptionContent}>
-                      <span className={styles.discountOptionLabel}>{p.discountManualLabel}</span>
-                    </div>
-                  </label>
-
                   {/* No discount */}
                   {hasAutoDiscount && (
                     <label className={`${styles.discountOption} ${discountOption === 'none' ? styles.discountOptionSelected : ''}`}>
@@ -472,31 +427,10 @@ export default function OrderPage() {
                   )}
                 </div>
 
-                {/* Manual code input */}
-                {discountOption === 'manual' && (
-                  <div className={styles.voucherRow}>
-                    <input
-                      className={`${styles.input} ${styles.voucherInput} ${voucherStatus === 'valid' ? styles.inputValid : ''} ${voucherStatus === 'invalid' ? styles.inputInvalid : ''}`}
-                      value={voucherCode}
-                      onChange={e => { setVoucherCode(e.target.value); setVoucherStatus('idle'); setVoucherDiscount(0); setVoucherType(''); setVoucherErrorMsg('') }}
-                      placeholder={p.voucherPlaceholder}
-                    />
-                    <button
-                      className={styles.voucherBtn}
-                      onClick={applyVoucher}
-                      disabled={voucherStatus === 'checking' || !voucherCode.trim()}
-                    >
-                      {voucherStatus === 'checking' ? '...' : p.voucherApply}
-                    </button>
-                  </div>
-                )}
-                {discountOption === 'manual' && voucherStatus === 'valid' && (
-                  <p className={styles.voucherSuccess}>
-                    {voucherType === 'referral' ? p.voucherAppliedReferral : p.voucherApplied}
+                {!hasAutoDiscount && discountStatus !== null && (
+                  <p className={styles.voucherError}>
+                    {p.discountNone} — <Link href="/promo" className={styles.promoLink}>{p.noDiscountsPromo}</Link>
                   </p>
-                )}
-                {discountOption === 'manual' && voucherStatus === 'invalid' && (
-                  <p className={styles.voucherError}>{voucherErrorMsg || p.voucherInvalid}</p>
                 )}
               </section>
             )}

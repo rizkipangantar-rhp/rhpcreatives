@@ -125,12 +125,17 @@ export default function ProfilCard({ session }: { session: Session }) {
   const [customLoading, setCustomLoading] = useState(initialTab === 'custom')
   const [customLoaded, setCustomLoaded] = useState(false)
   const [referralStats, setReferralStats] = useState<ReferralStatsData | null>(null)
+  const [ebirdStatus, setEbirdStatus] = useState<{ available: boolean; used: boolean } | null>(null)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/referral/stats')
       .then(r => r.ok ? r.json() : null)
       .then(data => { if (data) setReferralStats(data) })
+      .catch(() => {})
+    fetch('/api/referral/discount-status')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data?.earlyBird) setEbirdStatus(data.earlyBird) })
       .catch(() => {})
   }, [])
 
@@ -341,6 +346,19 @@ export default function ProfilCard({ session }: { session: Session }) {
               </div>
               <p className={styles.cardNote}>{p.statsNote}</p>
             </div>
+
+            {/* Early bird status card */}
+            {ebirdStatus && (ebirdStatus.available || ebirdStatus.used) && (
+              <div className={styles.card}>
+                <div className={styles.cardLabel}>{p.earlyBirdLabel}</div>
+                <div className={styles.rewardCount}>
+                  <span className={styles.rewardNum} style={{ fontSize: '1rem' }}>
+                    {ebirdStatus.available ? p.earlyBirdActive : p.earlyBirdUsed}
+                  </span>
+                </div>
+                <p className={styles.rewardDesc}>{p.earlyBirdAutoDiscount}</p>
+              </div>
+            )}
 
             {/* Usage history card */}
             <div className={`${styles.card} ${styles.cardWide}`}>

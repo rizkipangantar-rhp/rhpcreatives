@@ -349,6 +349,11 @@
   color: #f87171;
 }
 
+.promoLink {
+  color: #a78bfa;
+  text-decoration: underline;
+}
+
 /* ── Summary ── */
 .summaryWrap {
   position: sticky;

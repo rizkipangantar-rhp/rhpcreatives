@@ -131,6 +131,10 @@ export type Tr = {
     statusProcessing: string
     statusCompleted: string
     statusCancelled: string
+    earlyBirdLabel: string
+    earlyBirdActive: string
+    earlyBirdUsed: string
+    earlyBirdAutoDiscount: string
   }
   orderPage: {
     tag: string
@@ -153,7 +157,10 @@ export type Tr = {
     discountAutoInvitee: string
     discountAutoInviteeBadge: string
     discountManualLabel: string
+    discountAutoEarlyBird: string
+    discountAutoEarlyBirdBadge: string
     discountNone: string
+    noDiscountsPromo: string
     voucherLabel: string
     voucherPlaceholder: string
     voucherApply: string
@@ -435,6 +442,7 @@ export type Tr = {
     usedTitle: string
     usedSub: string
     usedOrderBtn: string
+    historyBtn: string
   }
   promo: {
     earlyBird: {
@@ -581,6 +589,10 @@ export const t: Record<Lang, Tr> = {
       statusProcessing: 'Diproses',
       statusCompleted: 'Selesai',
       statusCancelled: 'Dibatalkan',
+      earlyBirdLabel: 'Early Bird',
+      earlyBirdActive: 'Aktif ✅',
+      earlyBirdUsed: 'Sudah Dipakai ✓',
+      earlyBirdAutoDiscount: 'Diskon otomatis aktif saat checkout',
     },
     orderPage: {
       tag: '✦ Pesan Layanan',
@@ -603,7 +615,10 @@ export const t: Record<Lang, Tr> = {
       discountAutoInvitee: 'Diajak Teman — Diskon 10%',
       discountAutoInviteeBadge: '✨ Berlaku',
       discountManualLabel: 'Punya kode voucher atau referral lain?',
+      discountAutoEarlyBird: 'Early Bird — Diskon 25%',
+      discountAutoEarlyBirdBadge: '🔥 25% OFF',
       discountNone: 'Tanpa diskon',
+      noDiscountsPromo: 'Lihat promo menarik →',
       voucherLabel: 'Masukkan Kode',
       voucherPlaceholder: 'EBIRD-XXXXX atau RHP-XXXXX',
       voucherApply: 'Terapkan',
@@ -1146,8 +1161,8 @@ export const t: Record<Lang, Tr> = {
       serviceOptions: ['Undangan Online', 'Landing Page', 'Desain Instagram', 'Edit Foto', 'Paket Bundling'],
       submitBtn: 'Klaim Voucher Sekarang 🎉',
       submitting: 'Memproses...',
-      successTitle: 'Yeay! Voucher Berhasil Diklaim! 🎊',
-      successSub: 'Masukkan kode ini di kolom voucher saat kamu order ya! Diskon 25% langsung berlaku.',
+      successTitle: 'Early Bird Berhasil Diklaim! 🎉',
+      successSub: 'Diskon 25% kamu otomatis aktif saat checkout. Gasken sekarang bestie!',
       expiryWarning: '⏰ Voucher ini hangus dalam 24 jam kalau belum dipakai. Gasken sekarang bestie!',
       expiresAtLabel: 'Berlaku sampai',
       voucherLabel: 'Kode Voucher Kamu',
@@ -1157,8 +1172,8 @@ export const t: Record<Lang, Tr> = {
       orderWaBtn: 'Order Sekarang →',
       howTitle: 'Cara Pakai Voucher',
       howText: 'Klik Order Sekarang di bawah, masukkan kode voucher ini di halaman order. Diskon 25% langsung diterapkan!',
-      alreadyTitle: 'Kamu Sudah Punya Voucher! 🎉',
-      alreadySub: 'Voucher Early Bird kamu masih aktif. Gunakan kode ini saat order ya.',
+      alreadyTitle: 'Kamu udah punya diskon Early Bird 25%! 🔥',
+      alreadySub: 'Diskon kamu otomatis aktif saat checkout. Langsung order aja!',
       claimedAtLabel: 'Diklaim pada',
       expiredTitle: 'Voucher Kamu Hangus 😭',
       expiredSub: 'Sayang banget, voucher expired karena belum dipakai dalam 24 jam. Masih ada slot tersisa? Klaim ulang aja bestie!',
@@ -1175,6 +1190,7 @@ export const t: Record<Lang, Tr> = {
       usedTitle: 'Voucher Udah Kepake! 🎊',
       usedSub: 'Mantap bestie! Voucher Early Bird-mu udah sukses dipake buat order. Sekarang tinggal gas bayar dan tunggu tim kami follow up ya! 🔥',
       usedOrderBtn: 'Lihat Riwayat Order →',
+      historyBtn: 'Lihat Riwayat →',
     },
     promo: {
       earlyBird: {
@@ -1361,6 +1377,10 @@ export const t: Record<Lang, Tr> = {
       statusProcessing: 'Processing',
       statusCompleted: 'Completed',
       statusCancelled: 'Cancelled',
+      earlyBirdLabel: 'Early Bird',
+      earlyBirdActive: 'Active ✅',
+      earlyBirdUsed: 'Used ✓',
+      earlyBirdAutoDiscount: 'Discount automatically applied at checkout',
     },
     orderPage: {
       tag: '✦ Place an Order',
@@ -1383,7 +1403,10 @@ export const t: Record<Lang, Tr> = {
       discountAutoInvitee: 'Referred by a Friend — 10% Off',
       discountAutoInviteeBadge: '✨ Active',
       discountManualLabel: 'Have a voucher or another referral code?',
+      discountAutoEarlyBird: 'Early Bird — 25% Discount',
+      discountAutoEarlyBirdBadge: '🔥 25% OFF',
       discountNone: 'No discount',
+      noDiscountsPromo: 'View promotions →',
       voucherLabel: 'Enter Code',
       voucherPlaceholder: 'EBIRD-XXXXX or RHP-XXXXX',
       voucherApply: 'Apply',
@@ -1926,8 +1949,8 @@ export const t: Record<Lang, Tr> = {
       serviceOptions: ['Online Invitation', 'Landing Page', 'Instagram Design', 'Photo Editing', 'Bundle Package'],
       submitBtn: 'Claim Voucher Now 🎉',
       submitting: 'Processing...',
-      successTitle: 'Woohoo! Voucher Claimed! 🎊',
-      successSub: 'Enter this code in the voucher field when you order! 25% discount applies instantly.',
+      successTitle: 'Early Bird Claimed! 🎉',
+      successSub: "Your 25% discount is automatically applied at checkout. Let's go bestie!",
       expiryWarning: "⏰ This voucher expires in 24 hours if not used. Don't sleep on it bestie!",
       expiresAtLabel: 'Valid until',
       voucherLabel: 'Your Voucher Code',
@@ -1937,8 +1960,8 @@ export const t: Record<Lang, Tr> = {
       orderWaBtn: 'Order Now →',
       howTitle: 'How to Use Your Voucher',
       howText: 'Click Order Now below, enter this voucher code on the order page. Your 25% discount applies instantly!',
-      alreadyTitle: 'You Already Have a Voucher! 🎉',
-      alreadySub: 'Your Early Bird voucher is still active. Use this code when ordering.',
+      alreadyTitle: 'You Already Have Early Bird 25% Discount! 🔥',
+      alreadySub: 'Your discount is automatically applied at checkout. Just order!',
       claimedAtLabel: 'Claimed on',
       expiredTitle: 'Your Voucher Expired 😭',
       expiredSub: "Yikes! Your voucher expired because it wasn't used within 24 hours. Slots still available? Re-claim it bestie!",
@@ -1955,6 +1978,7 @@ export const t: Record<Lang, Tr> = {
       usedTitle: "Voucher's Been Used! 🎊",
       usedSub: "Yass bestie! Your Early Bird voucher has been successfully applied to your order. Time to pay and wait for our team to follow up! 🔥",
       usedOrderBtn: 'View Order History →',
+      historyBtn: 'View History →',
     },
     promo: {
       earlyBird: {

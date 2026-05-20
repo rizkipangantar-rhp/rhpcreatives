@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { findPackageById, findServiceById } from '@/lib/packages'
 import { createOrder } from '@/lib/orders'
-import { findClaimByCode, isCodeUsed, markCodeUsed } from '@/lib/early-bird'
+import { findClaim, findClaimByCode, isCodeUsed, markCodeUsed } from '@/lib/early-bird'
 import { findUserByReferralCode, findUserById, useReferralReward, getUserReferralCode } from '@/lib/users'
 import { hasUserUsedReferral, recordReferralUsage } from '@/lib/referral'
 
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       wa: string
       notes?: string
       voucherCode?: string
-      // 'referrer_reward' = use own 15% reward | 'invitee' = use referred 10% | 'ebird' = manual voucher | undefined = auto/none
+      // 'referrer_reward' = 15% own reward | 'invitee' = 10% referral | 'ebird' = 25% early bird (auto) | undefined/none = no discount
       discountMode?: 'referrer_reward' | 'invitee' | 'ebird' | 'none'
     }
 
@@ -73,7 +73,17 @@ export async function POST(req: Request) {
       }
     }
 
-    // ── 3. Manual Early Bird or referral code entered in voucher field
+    // ── 3. Auto Early Bird (user selected early bird option, no voucher code required)
+    else if (discountMode === 'ebird') {
+      const claim = await findClaim(session.user.id)
+      if (claim && !claim.usedAt) {
+        discountAmount = Math.round(pkg.price * 0.25)
+        discountType = 'early_bird'
+        appliedVoucher = claim.voucherCode
+      }
+    }
+
+    // ── 4. Legacy: manual voucher code entered in field
     else if (voucherCode && discountMode !== 'none') {
       const normalized = voucherCode.trim().toUpperCase()
 
