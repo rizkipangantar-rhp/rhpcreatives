@@ -12,7 +12,7 @@ export async function GET(
   const { order_id } = await params
   const session = await getServerSession(authOptions)
   if (!session?.user?.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-  const order = getOrderById(order_id)
+  const order = await getOrderById(order_id)
   if (!order) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   return NextResponse.json(order)
 }
@@ -37,14 +37,14 @@ export async function PATCH(
       return NextResponse.json({ error: 'Status tidak valid' }, { status: 400 })
     }
     if (body.note !== undefined) {
-      addOrderStatusHistory(order_id, body.status, body.note ?? '')
+      await addOrderStatusHistory(order_id, body.status, body.note ?? '')
     } else {
-      updateOrderStatus(order_id, body.status)
+      await updateOrderStatus(order_id, body.status)
     }
   }
 
   if (body.adminNotes !== undefined || body.resultUrl !== undefined) {
-    updateOrderAdminData(order_id, { adminNotes: body.adminNotes, resultUrl: body.resultUrl })
+    await updateOrderAdminData(order_id, { adminNotes: body.adminNotes, resultUrl: body.resultUrl })
   }
 
   return NextResponse.json({ ok: true })

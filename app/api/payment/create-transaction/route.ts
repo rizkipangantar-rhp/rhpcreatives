@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     const svc = findServiceById(pkg.serviceId)
     if (!svc) return NextResponse.json({ error: 'Layanan tidak ditemukan' }, { status: 400 })
 
-    const currentUser = findUserById(session.user.id)
+    const currentUser = await findUserById(session.user.id)
     if (!currentUser) return NextResponse.json({ error: 'User tidak ditemukan' }, { status: 400 })
 
     let discountAmount = 0
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
 
     // ── 1. Referrer uses their own accumulated reward (15%)
     if (discountMode === 'referrer_reward') {
-      const consumed = useReferralReward(session.user.id)
+      const consumed = await useReferralReward(session.user.id)
       if (consumed) {
         discountAmount = Math.round(pkg.price * 0.15)
         discountType = 'referral_referrer'
@@ -56,14 +56,14 @@ export async function POST(req: Request) {
     }
 
     // ── 2. Invitee uses referral code (10%, first order only)
-    else if (discountMode === 'invitee' || (!discountMode && currentUser.referredBy && !hasUserUsedReferral(session.user.id))) {
+    else if (discountMode === 'invitee' || (!discountMode && currentUser.referredBy && !await hasUserUsedReferral(session.user.id))) {
       const codeToUse = (discountMode === 'invitee' && voucherCode)
         ? voucherCode.trim().toUpperCase()
         : currentUser.referredBy ?? ''
 
       if (codeToUse) {
-        const referrer = findUserByReferralCode(codeToUse)
-        if (referrer && referrer.id !== session.user.id && !hasUserUsedReferral(session.user.id)) {
+        const referrer = await findUserByReferralCode(codeToUse)
+        if (referrer && referrer.id !== session.user.id && !await hasUserUsedReferral(session.user.id)) {
           discountAmount = Math.round(pkg.price * 0.10)
           discountType = 'referral_invitee'
           referralCodeUsed = codeToUse
@@ -78,15 +78,15 @@ export async function POST(req: Request) {
       const normalized = voucherCode.trim().toUpperCase()
 
       if (normalized.startsWith('EBIRD-')) {
-        const claim = findClaimByCode(normalized)
-        if (claim && !isCodeUsed(normalized)) {
+        const claim = await findClaimByCode(normalized)
+        if (claim && !await isCodeUsed(normalized)) {
           discountAmount = Math.round(pkg.price * 0.25)
           discountType = 'early_bird'
           appliedVoucher = normalized
         }
       } else if (normalized.startsWith('RHP-')) {
-        const referrer = findUserByReferralCode(normalized)
-        if (referrer && referrer.id !== session.user.id && !hasUserUsedReferral(session.user.id)) {
+        const referrer = await findUserByReferralCode(normalized)
+        if (referrer && referrer.id !== session.user.id && !await hasUserUsedReferral(session.user.id)) {
           discountAmount = Math.round(pkg.price * 0.10)
           discountType = 'referral_invitee'
           referralCodeUsed = normalized
@@ -98,7 +98,7 @@ export async function POST(req: Request) {
 
     const totalPrice = pkg.price - discountAmount
 
-    const order = createOrder({
+    const order = await createOrder({
       userId: session.user.id,
       name,
       email,
@@ -122,11 +122,11 @@ export async function POST(req: Request) {
 
     // Post-order side effects
     if (discountType === 'early_bird' && appliedVoucher) {
-      markCodeUsed(appliedVoucher, order.orderId)
+      await markCodeUsed(appliedVoucher, order.orderId)
     }
     if (discountType === 'referral_invitee' && referralCodeUsed) {
       // Records usage and issues a +1 reward to the referrer
-      recordReferralUsage(session.user.id, referralCodeUsed, order.orderId)
+      await recordReferralUsage(session.user.id, referralCodeUsed, order.orderId)
     }
 
     console.log('[create-transaction] Order created:', order.orderId, '| amount:', totalPrice, '| discountType:', discountType)

@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Data tidak lengkap' }, { status: 400 })
   }
 
-  const request = createRequest({
+  const request = await createRequest({
     user_id: session.user.id,
     order_id: null,
     customer: {

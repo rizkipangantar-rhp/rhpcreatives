@@ -1,30 +1,27 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { readUsers } from '@/lib/users-internal'
+import { getAllUsers } from '@/lib/users'
 import { getAllOrders } from '@/lib/orders'
-import fs from 'fs'
-import { getDataPath } from '@/lib/data-path'
+import { dbGet } from '@/lib/store'
+import type { ReferralUsage } from '@/lib/referral'
 
-function readReferralData() {
-  try {
-    const p = getDataPath('referral.json')
-    if (!fs.existsSync(p)) return { usages: [] }
-    return JSON.parse(fs.readFileSync(p, 'utf-8'))
-  } catch { return { usages: [] } }
-}
+type ReferralData = { usages: ReferralUsage[] }
 
 export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session?.user?.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
-  const users = readUsers()
-  const orders = getAllOrders()
-  const { usages } = readReferralData()
+  const [users, orders, referralData] = await Promise.all([
+    getAllUsers(),
+    getAllOrders(),
+    dbGet<ReferralData>('rhp:referral', 'referral.json', { usages: [] }),
+  ])
 
+  const { usages } = referralData
   const usersMap = new Map(users.map(u => [u.id, u]))
 
-  const enriched = usages.map((u: { userId: string; referralCode: string; referrerId: string; orderId: string; usedAt: string }) => {
+  const enriched = usages.map((u) => {
     const invitee = usersMap.get(u.userId)
     const referrer = usersMap.get(u.referrerId)
     const order = orders.find(o => o.orderId === u.orderId)
@@ -52,7 +49,7 @@ export async function GET() {
     .map(([id, v]) => ({ id, ...v }))
     .sort((a, b) => b.count - a.count)
 
-  const totalDiscountGiven = enriched.reduce((s: number, u: { discountGiven: number }) => s + u.discountGiven, 0)
+  const totalDiscountGiven = enriched.reduce((s, u) => s + u.discountGiven, 0)
 
   return NextResponse.json({
     totalUsages: usages.length,

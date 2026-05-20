@@ -1,8 +1,5 @@
-import fs from 'fs'
-import path from 'path'
-import { getDataPath } from '@/lib/data-path'
+import { dbGet, dbSet } from '@/lib/store'
 import { generateReferralCode, generateRandomReferralCode } from '@/lib/referral-code'
-import { safeWriteJson } from '@/lib/safe-write'
 export { generateReferralCode, generateRandomReferralCode } from '@/lib/referral-code'
 
 const ADMIN_EMAIL = 'rhpcreativesid@gmail.com'
@@ -28,20 +25,12 @@ export type StoredUser = {
   suspended?: boolean
 }
 
-const DB_PATH = () => getDataPath('users.json')
-
-function readUsers(): StoredUser[] {
-  try {
-    const p = DB_PATH()
-    if (!fs.existsSync(p)) return []
-    return JSON.parse(fs.readFileSync(p, 'utf-8')) as StoredUser[]
-  } catch {
-    return []
-  }
+async function readUsers(): Promise<StoredUser[]> {
+  return dbGet<StoredUser[]>('rhp:users', 'users.json', [])
 }
 
-function writeUsers(users: StoredUser[]): void {
-  safeWriteJson(DB_PATH(), users)
+async function writeUsers(users: StoredUser[]): Promise<void> {
+  return dbSet('rhp:users', 'users.json', users)
 }
 
 function uniqueReferralCode(users: StoredUser[]): string {
@@ -57,31 +46,33 @@ export function getUserReferralCode(user: StoredUser): string {
   return user.referralCode ?? generateReferralCode(user.email)
 }
 
-export function findUserByEmail(email: string): StoredUser | undefined {
-  return readUsers().find(u => u.email.toLowerCase() === email.toLowerCase())
+export async function findUserByEmail(email: string): Promise<StoredUser | undefined> {
+  const users = await readUsers()
+  return users.find(u => u.email.toLowerCase() === email.toLowerCase())
 }
 
 // Find by stored code first, then hash-based fallback for legacy users
-export function findUserByReferralCode(code: string): StoredUser | undefined {
-  const users = readUsers()
+export async function findUserByReferralCode(code: string): Promise<StoredUser | undefined> {
+  const users = await readUsers()
   return (
     users.find(u => u.referralCode === code) ??
     users.find(u => !u.referralCode && generateReferralCode(u.email) === code)
   )
 }
 
-export function findUserById(id: string): StoredUser | undefined {
-  return readUsers().find(u => u.id === id)
+export async function findUserById(id: string): Promise<StoredUser | undefined> {
+  const users = await readUsers()
+  return users.find(u => u.id === id)
 }
 
 // Create or update a Google OAuth user. Returns the user and whether it was newly created.
-export function upsertGoogleUser(data: {
+export async function upsertGoogleUser(data: {
   id: string          // already prefixed: "google_<googleId>"
   name: string
   email: string
   image?: string | null
-}): { user: StoredUser; isNew: boolean } {
-  const users = readUsers()
+}): Promise<{ user: StoredUser; isNew: boolean }> {
+  const users = await readUsers()
   const idx = users.findIndex(u => u.id === data.id)
 
   if (idx !== -1) {
@@ -92,7 +83,7 @@ export function upsertGoogleUser(data: {
     users[idx].lastLogin = new Date().toISOString()
     users[idx].isAdmin = users[idx].email.toLowerCase() === ADMIN_EMAIL
     if (users[idx].isAdmin && !users[idx].role) users[idx].role = 'super_admin'
-    writeUsers(users)
+    await writeUsers(users)
     return { user: users[idx], isNew: false }
   }
 
@@ -113,18 +104,18 @@ export function upsertGoogleUser(data: {
     referralRewardsUsed: 0,
   }
   users.push(newUser)
-  writeUsers(users)
+  await writeUsers(users)
   return { user: newUser, isNew: true }
 }
 
 // Create a credentials user (called from /api/register)
-export function createUser(data: {
+export async function createUser(data: {
   name: string
   email: string
   hashedPassword: string
   referredBy?: string
-}): StoredUser {
-  const users = readUsers()
+}): Promise<StoredUser> {
+  const users = await readUsers()
   const newUser: StoredUser = {
     id: 'cred_' + crypto.randomUUID(),
     provider: 'credentials',
@@ -143,39 +134,39 @@ export function createUser(data: {
     referralRewardsUsed: 0,
   }
   users.push(newUser)
-  writeUsers(users)
+  await writeUsers(users)
   return newUser
 }
 
-export function completeOnboarding(userId: string, referredBy?: string): void {
-  const users = readUsers()
+export async function completeOnboarding(userId: string, referredBy?: string): Promise<void> {
+  const users = await readUsers()
   const idx = users.findIndex(u => u.id === userId)
   if (idx === -1) return
   users[idx].onboardingDone = true
   if (referredBy) users[idx].referredBy = referredBy
-  writeUsers(users)
+  await writeUsers(users)
 }
 
-export function setUserReferredBy(userId: string, referralCode: string): void {
-  const users = readUsers()
+export async function setUserReferredBy(userId: string, referralCode: string): Promise<void> {
+  const users = await readUsers()
   const idx = users.findIndex(u => u.id === userId)
   if (idx !== -1) {
     users[idx].referredBy = referralCode
-    writeUsers(users)
+    await writeUsers(users)
   }
 }
 
-export function setUserSuspended(userId: string, suspended: boolean): void {
-  const users = readUsers()
+export async function setUserSuspended(userId: string, suspended: boolean): Promise<void> {
+  const users = await readUsers()
   const idx = users.findIndex(u => u.id === userId)
   if (idx !== -1) {
     users[idx].suspended = suspended
-    writeUsers(users)
+    await writeUsers(users)
   }
 }
 
-export function setUserRole(userId: string, role: AdminRole | null): void {
-  const users = readUsers()
+export async function setUserRole(userId: string, role: AdminRole | null): Promise<void> {
+  const users = await readUsers()
   const idx = users.findIndex(u => u.id === userId)
   if (idx === -1) return
   if (role === null) {
@@ -185,35 +176,40 @@ export function setUserRole(userId: string, role: AdminRole | null): void {
     users[idx].isAdmin = true
     users[idx].role = role
   }
-  writeUsers(users)
+  await writeUsers(users)
 }
 
-export function deleteUser(userId: string): boolean {
-  const users = readUsers()
+export async function deleteUser(userId: string): Promise<boolean> {
+  const users = await readUsers()
   const idx = users.findIndex(u => u.id === userId)
   if (idx === -1) return false
   users.splice(idx, 1)
-  writeUsers(users)
+  await writeUsers(users)
   return true
 }
 
-export function addReferralReward(userId: string): void {
-  const users = readUsers()
+export async function addReferralReward(userId: string): Promise<void> {
+  const users = await readUsers()
   const idx = users.findIndex(u => u.id === userId)
   if (idx !== -1) {
     users[idx].referralRewardsAvailable = (users[idx].referralRewardsAvailable ?? 0) + 1
-    writeUsers(users)
+    await writeUsers(users)
   }
 }
 
-export function useReferralReward(userId: string): boolean {
-  const users = readUsers()
+export async function useReferralReward(userId: string): Promise<boolean> {
+  const users = await readUsers()
   const idx = users.findIndex(u => u.id === userId)
   if (idx === -1) return false
   const available = users[idx].referralRewardsAvailable ?? 0
   if (available <= 0) return false
   users[idx].referralRewardsAvailable = available - 1
   users[idx].referralRewardsUsed = (users[idx].referralRewardsUsed ?? 0) + 1
-  writeUsers(users)
+  await writeUsers(users)
   return true
+}
+
+// Internal helper — returns all users directly (for admin routes)
+export async function getAllUsers(): Promise<StoredUser[]> {
+  return readUsers()
 }

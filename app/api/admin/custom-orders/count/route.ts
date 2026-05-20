@@ -6,5 +6,5 @@ import { countWaitingReview } from '@/lib/custom-orders'
 export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session?.user?.isAdmin) return NextResponse.json({ count: 0 })
-  return NextResponse.json({ count: countWaitingReview() })
+  return NextResponse.json({ count: await countWaitingReview() })
 }

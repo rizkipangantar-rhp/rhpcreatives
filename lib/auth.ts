@@ -40,7 +40,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
-        const user = findUserByEmail(credentials.email)
+        const user = await findUserByEmail(credentials.email)
         if (!user) return null
         if (user.provider !== 'credentials' || !user.hashedPassword) return null
         if (user.suspended) return null
@@ -59,7 +59,7 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account }) {
       if (account?.provider === 'google') {
         try {
-          upsertGoogleUser({
+          await upsertGoogleUser({
             id: 'google_' + user.id,
             name: user.name ?? '',
             email: user.email ?? '',
@@ -75,7 +75,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, account, trigger }) {
       // On session refresh triggered by client update()
       if (trigger === 'update') {
-        const dbUser = findUserById(token.sub as string)
+        const dbUser = await findUserById(token.sub as string)
         if (dbUser) {
           token.onboardingDone = dbUser.onboardingDone
           token.isAdmin = dbUser.isAdmin
@@ -91,7 +91,7 @@ export const authOptions: NextAuthOptions = {
           token.sub = 'google_' + user.id
         }
         // sub is now correct (google_ prefix or cred_ from credentials)
-        const dbUser = findUserById(token.sub as string)
+        const dbUser = await findUserById(token.sub as string)
         token.onboardingDone = dbUser?.onboardingDone ?? true
         token.isAdmin = dbUser?.isAdmin ?? false
         token.role = dbUser?.role

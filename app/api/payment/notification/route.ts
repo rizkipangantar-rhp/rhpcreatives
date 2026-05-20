@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     const orderIdMatch = order_id.match(/^(RHP-\d{8}-[A-Z0-9]{5})/)
     const actualOrderId = orderIdMatch?.[1] ?? order_id
 
-    const order = getOrderById(actualOrderId)
+    const order = await getOrderById(actualOrderId)
     if (!order) {
       return NextResponse.json({ message: 'Order not found' }, { status: 404 })
     }
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
       newStatus = 'cancelled'
     }
 
-    updateOrderStatus(actualOrderId, newStatus)
+    await updateOrderStatus(actualOrderId, newStatus)
 
     return NextResponse.json({ message: 'OK' })
   } catch (err) {

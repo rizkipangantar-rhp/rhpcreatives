@@ -9,8 +9,8 @@ export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session?.user?.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
-  const users = readUsers()
-  const orders = getAllOrders()
+  const users = await readUsers()
+  const orders = await getAllOrders()
 
   const result = users.map(u => {
     const userOrders = orders.filter(o => o.userId === u.id)

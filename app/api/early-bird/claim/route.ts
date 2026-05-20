@@ -15,7 +15,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const claim = addClaim({
+    const claim = await addClaim({
       userId: session.user.id,
       name: name.trim(),
       email: session.user.email,

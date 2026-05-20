@@ -9,8 +9,10 @@ export async function GET() {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
 
-  const quota = getQuota()
-  const rawClaim = findRawClaim(session.user.id) ?? null
+  const [quota, rawClaim] = await Promise.all([
+    getQuota(),
+    findRawClaim(session.user.id),
+  ])
   const claimExpired = rawClaim ? isClaimExpired(rawClaim) : false
   const claim = rawClaim && !claimExpired ? rawClaim : null
 

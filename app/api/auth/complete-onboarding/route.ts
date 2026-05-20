@@ -15,13 +15,13 @@ export async function POST(req: Request) {
   if (referralCode && typeof referralCode === 'string') {
     const normalized = referralCode.trim().toUpperCase()
     if (normalized.startsWith('RHP-')) {
-      const referrer = findUserByReferralCode(normalized)
+      const referrer = await findUserByReferralCode(normalized)
       if (referrer && referrer.id !== session.user.id) {
         referredBy = normalized
       }
     }
   }
 
-  completeOnboarding(session.user.id, referredBy)
+  await completeOnboarding(session.user.id, referredBy)
   return NextResponse.json({ ok: true })
 }

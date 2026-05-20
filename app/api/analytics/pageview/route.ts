@@ -5,7 +5,7 @@ export async function POST(req: Request) {
   try {
     const { path } = await req.json() as { path?: string }
     if (typeof path === 'string' && path) {
-      recordPageview(path)
+      await recordPageview(path)
     }
   } catch {
     // Analytics failures are non-fatal

@@ -7,6 +7,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'missing_fields' }, { status: 400 })
   }
 
-  addWaitlist(email.trim(), wa.trim())
+  await addWaitlist(email.trim(), wa.trim())
   return NextResponse.json({ ok: true })
 }

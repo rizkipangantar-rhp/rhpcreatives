@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Data tidak lengkap' }, { status: 400 })
     }
 
-    const order = getOrderById(orderId)
+    const order = await getOrderById(orderId)
     if (!order) {
       return NextResponse.json({ error: 'Order tidak ditemukan' }, { status: 404 })
     }
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
         va = result.va_numbers?.[0]?.va_number
       }
 
-      updateOrderPaymentInfo(orderId, {
+      await updateOrderPaymentInfo(orderId, {
         midtransOrderId,
         paymentMethod: 'bank_transfer',
         paymentBank: bank,
@@ -102,7 +102,7 @@ export async function POST(req: Request) {
       const qrAction = result.actions?.find(a => a.name === 'generate-qr-code')
       const qrUrl = qrAction?.url
 
-      updateOrderPaymentInfo(orderId, {
+      await updateOrderPaymentInfo(orderId, {
         midtransOrderId,
         paymentMethod: 'qris',
         paymentQrUrl: qrUrl,
@@ -116,7 +116,7 @@ export async function POST(req: Request) {
       const qrAction = result.actions?.find(a => a.name === 'generate-qr-code')
       const deepLinkAction = result.actions?.find(a => a.name === 'deeplink-redirect')
 
-      updateOrderPaymentInfo(orderId, {
+      await updateOrderPaymentInfo(orderId, {
         midtransOrderId,
         paymentMethod: 'gopay',
         paymentQrUrl: qrAction?.url,
@@ -137,7 +137,7 @@ export async function POST(req: Request) {
       const deepLinkAction = result.actions?.find(a => a.name === 'deeplink-redirect')
       const qrAction = result.actions?.find(a => a.name === 'generate-qr-code')
 
-      updateOrderPaymentInfo(orderId, {
+      await updateOrderPaymentInfo(orderId, {
         midtransOrderId,
         paymentMethod: 'shopeepay',
         paymentQrUrl: qrAction?.url,

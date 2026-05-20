@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     }
 
     const normalizedEmail = email.trim().toLowerCase()
-    const existing = findUserByEmail(normalizedEmail)
+    const existing = await findUserByEmail(normalizedEmail)
     if (existing) {
       return NextResponse.json({ error: 'Email sudah terdaftar.' }, { status: 409 })
     }
@@ -24,14 +24,14 @@ export async function POST(req: Request) {
     let validatedReferredBy: string | undefined
     if (referralCode && typeof referralCode === 'string') {
       const normalized = referralCode.trim().toUpperCase()
-      const referrer = findUserByReferralCode(normalized)
+      const referrer = await findUserByReferralCode(normalized)
       if (referrer) {
         validatedReferredBy = normalized
       }
     }
 
     const hashedPassword = await bcrypt.hash(password, 12)
-    const user = createUser({
+    const user = await createUser({
       name: name.trim(),
       email: normalizedEmail,
       hashedPassword,

@@ -16,7 +16,7 @@ export async function PATCH(
   try {
     const { notes } = await req.json() as { notes: string }
 
-    const order = getOrderById(order_id)
+    const order = await getOrderById(order_id)
     if (!order) {
       return NextResponse.json({ error: 'Order tidak ditemukan' }, { status: 404 })
     }
@@ -24,7 +24,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    updateOrderNotes(order_id, notes ?? '')
+    await updateOrderNotes(order_id, notes ?? '')
     return NextResponse.json({ ok: true })
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)

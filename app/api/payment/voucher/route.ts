@@ -21,12 +21,12 @@ export async function POST(req: Request) {
         return NextResponse.json({ valid: false, message: 'Format kode tidak valid' })
       }
 
-      const claim = findClaimByCode(normalized)
+      const claim = await findClaimByCode(normalized)
       if (!claim) {
         return NextResponse.json({ valid: false, message: 'Kode voucher tidak ditemukan' })
       }
 
-      if (isCodeUsed(normalized)) {
+      if (await isCodeUsed(normalized)) {
         return NextResponse.json({ valid: false, message: 'Kode Early Bird kamu udah kepake nih! Satu kode cuma bisa dipakai sekali ya bestie 😅' })
       }
 
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ valid: false, message: 'Login dulu untuk pakai kode referral' })
       }
 
-      const referrer = findUserByReferralCode(normalized)
+      const referrer = await findUserByReferralCode(normalized)
       if (!referrer) {
         return NextResponse.json({ valid: false, message: 'Kode referral tidak ditemukan' })
       }
@@ -55,12 +55,12 @@ export async function POST(req: Request) {
       }
 
       // Check if user is trying to use this as an invitee discount (first order only)
-      const currentUser = findUserById(session.user.id)
+      const currentUser = await findUserById(session.user.id)
       if (!currentUser) {
         return NextResponse.json({ valid: false, message: 'User tidak ditemukan' })
       }
 
-      if (hasUserUsedReferral(session.user.id)) {
+      if (await hasUserUsedReferral(session.user.id)) {
         return NextResponse.json({ valid: false, message: 'Kamu udah pernah pakai kode referral sebelumnya ya! Kode referral cuma buat order pertama 😊' })
       }
 

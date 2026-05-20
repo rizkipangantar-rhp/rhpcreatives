@@ -9,7 +9,8 @@ export async function GET() {
   if (!session?.user?.isAdmin || session.user.role !== 'super_admin') {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 })
   }
-  const admins = readUsers().filter(u => u.isAdmin)
+  const users = await readUsers()
+  const admins = users.filter(u => u.isAdmin)
   return NextResponse.json(admins.map(u => ({
     id: u.id,
     name: u.name,
@@ -27,6 +28,6 @@ export async function PATCH(req: Request) {
   }
   const { userId, role } = await req.json() as { userId: string; role: AdminRole | null }
   if (!userId) return NextResponse.json({ error: 'missing userId' }, { status: 400 })
-  setUserRole(userId, role)
+  await setUserRole(userId, role)
   return NextResponse.json({ ok: true })
 }

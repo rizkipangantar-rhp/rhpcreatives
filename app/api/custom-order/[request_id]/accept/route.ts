@@ -12,7 +12,7 @@ export async function PUT(
   if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { request_id } = await params
-  const request = getRequestById(request_id)
+  const request = await getRequestById(request_id)
   if (!request) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   if (request.user_id !== session.user.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   if (request.status !== 'price_sent') return NextResponse.json({ error: 'Cannot accept at this stage' }, { status: 400 })
@@ -27,7 +27,7 @@ export async function PUT(
   if (!final_price) return NextResponse.json({ error: 'Invalid pricing' }, { status: 400 })
 
   // Create a regular order for payment
-  const order = createOrder({
+  const order = await createOrder({
     userId: request.user_id,
     name: request.customer.name,
     email: request.customer.email,
@@ -47,11 +47,11 @@ export async function PUT(
   })
 
   // Link the order to the request
-  updateRequest(request_id, {
+  await updateRequest(request_id, {
     order_id: order.orderId,
     status: 'payment_pending',
   })
-  pushStatusHistory(request_id, 'payment_pending', 'Customer accepted the offer')
+  await pushStatusHistory(request_id, 'payment_pending', 'Customer accepted the offer')
 
   return NextResponse.json({ order_id: order.orderId })
 }

@@ -7,6 +7,6 @@ export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session?.user?.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
-  const orders = getAllOrders()
+  const orders = await getAllOrders()
   return NextResponse.json(orders)
 }

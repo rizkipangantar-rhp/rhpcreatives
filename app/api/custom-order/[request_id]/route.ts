@@ -11,7 +11,7 @@ export async function GET(
   if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { request_id } = await params
-  const request = getRequestById(request_id)
+  const request = await getRequestById(request_id)
   if (!request) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   if (!session.user.isAdmin && request.user_id !== session.user.id) {

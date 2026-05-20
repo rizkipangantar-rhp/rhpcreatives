@@ -16,7 +16,7 @@ export async function GET(
   }
 
   try {
-    const order = getOrderById(order_id)
+    const order = await getOrderById(order_id)
     if (!order) {
       return NextResponse.json({ error: 'Order tidak ditemukan' }, { status: 404 })
     }
@@ -44,7 +44,7 @@ export async function GET(
       itemPrice: order.totalPrice,
     })
 
-    updateOrderPaymentInfo(order_id, {
+    await updateOrderPaymentInfo(order_id, {
       midtransOrderId,
       paymentMethod: 'credit_card',
     })

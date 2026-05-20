@@ -11,18 +11,18 @@ export async function PUT(
   if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { request_id } = await params
-  const request = getRequestById(request_id)
+  const request = await getRequestById(request_id)
   if (!request) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   if (request.user_id !== session.user.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   if (request.status !== 'price_sent') return NextResponse.json({ error: 'Cannot reject at this stage' }, { status: 400 })
 
   const { reason } = await req.json() as { reason?: string }
 
-  updateRequest(request_id, {
+  await updateRequest(request_id, {
     status: 'rejected_by_customer',
     notes: { ...request.notes, rejection_reason: reason || 'Customer menolak penawaran' },
   })
-  pushStatusHistory(request_id, 'rejected_by_customer', reason)
+  await pushStatusHistory(request_id, 'rejected_by_customer', reason)
 
   return NextResponse.json({ ok: true })
 }

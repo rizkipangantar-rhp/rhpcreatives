@@ -1,8 +1,5 @@
-import fs from 'fs'
-import path from 'path'
-import { getDataPath } from '@/lib/data-path'
+import { dbGet, dbSet } from '@/lib/store'
 
-const DB_PATH = () => getDataPath('early-bird.json')
 export const QUOTA = 20
 export const EXPIRY_MS = 24 * 60 * 60 * 1000 // 24 hours
 
@@ -29,21 +26,12 @@ type EarlyBirdData = {
   waitlist: WaitlistEntry[]
 }
 
-function read(): EarlyBirdData {
-  try {
-    const p = DB_PATH()
-    if (!fs.existsSync(p)) return { claims: [], waitlist: [] }
-    return JSON.parse(fs.readFileSync(p, 'utf-8')) as EarlyBirdData
-  } catch {
-    return { claims: [], waitlist: [] }
-  }
+async function read(): Promise<EarlyBirdData> {
+  return dbGet<EarlyBirdData>('rhp:early-bird', 'early-bird.json', { claims: [], waitlist: [] })
 }
 
-function write(data: EarlyBirdData) {
-  const p = DB_PATH()
-  const dir = path.dirname(p)
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
-  fs.writeFileSync(p, JSON.stringify(data, null, 2), 'utf-8')
+async function write(data: EarlyBirdData): Promise<void> {
+  return dbSet('rhp:early-bird', 'early-bird.json', data)
 }
 
 function generateCode(): string {
@@ -58,27 +46,29 @@ export function isClaimExpired(claim: ClaimEntry): boolean {
   return Date.now() - new Date(claim.claimedAt).getTime() > EXPIRY_MS
 }
 
-export function getQuota() {
-  const { claims } = read()
+export async function getQuota(): Promise<{ total: number; used: number; remaining: number }> {
+  const { claims } = await read()
   // Only non-expired claims occupy a slot (used claims always count)
   const activeCount = claims.filter(c => !isClaimExpired(c)).length
   return { total: QUOTA, used: activeCount, remaining: QUOTA - activeCount }
 }
 
 /** Returns the claim only if it is active (not expired or already used). */
-export function findClaim(userId: string): ClaimEntry | undefined {
-  const claim = read().claims.find(c => c.userId === userId)
+export async function findClaim(userId: string): Promise<ClaimEntry | undefined> {
+  const data = await read()
+  const claim = data.claims.find(c => c.userId === userId)
   if (!claim || isClaimExpired(claim)) return undefined
   return claim
 }
 
 /** Returns the raw claim regardless of expiry status — for checking expiry state. */
-export function findRawClaim(userId: string): ClaimEntry | undefined {
-  return read().claims.find(c => c.userId === userId)
+export async function findRawClaim(userId: string): Promise<ClaimEntry | undefined> {
+  const data = await read()
+  return data.claims.find(c => c.userId === userId)
 }
 
-export function addClaim(entry: Omit<ClaimEntry, 'voucherCode' | 'claimedAt'>): ClaimEntry {
-  const data = read()
+export async function addClaim(entry: Omit<ClaimEntry, 'voucherCode' | 'claimedAt'>): Promise<ClaimEntry> {
+  const data = await read()
 
   // Check by userId (primary key)
   const existingByUser = data.claims.findIndex(c => c.userId === entry.userId)
@@ -100,33 +90,34 @@ export function addClaim(entry: Omit<ClaimEntry, 'voucherCode' | 'claimedAt'>): 
   if (activeCount >= QUOTA) throw new Error('quota_full')
   const claim: ClaimEntry = { ...entry, voucherCode: generateCode(), claimedAt: new Date().toISOString() }
   data.claims.push(claim)
-  write(data)
+  await write(data)
   return claim
 }
 
-export function findClaimByCode(code: string): ClaimEntry | undefined {
-  return read().claims.find(c => c.voucherCode === code)
+export async function findClaimByCode(code: string): Promise<ClaimEntry | undefined> {
+  const data = await read()
+  return data.claims.find(c => c.voucherCode === code)
 }
 
-export function isCodeUsed(code: string): boolean {
-  const claim = findClaimByCode(code)
+export async function isCodeUsed(code: string): Promise<boolean> {
+  const claim = await findClaimByCode(code)
   return !!claim?.usedAt
 }
 
-export function markCodeUsed(code: string, orderId: string): boolean {
-  const data = read()
+export async function markCodeUsed(code: string, orderId: string): Promise<boolean> {
+  const data = await read()
   const idx = data.claims.findIndex(c => c.voucherCode === code)
   if (idx === -1) return false
   data.claims[idx].usedOrderId = orderId
   data.claims[idx].usedAt = new Date().toISOString()
-  write(data)
+  await write(data)
   return true
 }
 
-export function addWaitlist(email: string, wa: string): void {
-  const data = read()
+export async function addWaitlist(email: string, wa: string): Promise<void> {
+  const data = await read()
   if (!data.waitlist.find(w => w.email.toLowerCase() === email.toLowerCase())) {
     data.waitlist.push({ email, wa, addedAt: new Date().toISOString() })
-    write(data)
+    await write(data)
   }
 }

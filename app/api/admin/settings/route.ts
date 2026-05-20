@@ -6,13 +6,13 @@ import { getSettings, updateSettings } from '@/lib/settings'
 export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session?.user?.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-  return NextResponse.json(getSettings())
+  return NextResponse.json(await getSettings())
 }
 
 export async function PATCH(req: Request) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   const data = await req.json()
-  updateSettings(data)
+  await updateSettings(data)
   return NextResponse.json({ ok: true })
 }

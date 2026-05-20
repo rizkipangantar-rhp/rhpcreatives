@@ -1,8 +1,4 @@
-import fs from 'fs'
-import { getDataPath } from '@/lib/data-path'
-import { safeWriteJson } from '@/lib/safe-write'
-
-const DB_PATH = () => getDataPath('custom-orders.json')
+import { dbGet, dbSet } from '@/lib/store'
 
 export type ServiceCategory = 'Layanan Digital' | 'Layanan Desain' | 'Lainnya'
 
@@ -59,18 +55,12 @@ export type CustomOrderRequest = {
 
 type DB = { requests: CustomOrderRequest[] }
 
-function read(): DB {
-  try {
-    const p = DB_PATH()
-    if (!fs.existsSync(p)) return { requests: [] }
-    return JSON.parse(fs.readFileSync(p, 'utf-8')) as DB
-  } catch {
-    return { requests: [] }
-  }
+async function read(): Promise<DB> {
+  return dbGet<DB>('rhp:custom-orders', 'custom-orders.json', { requests: [] })
 }
 
-function write(data: DB): void {
-  safeWriteJson(DB_PATH(), data)
+async function write(data: DB): Promise<void> {
+  return dbSet('rhp:custom-orders', 'custom-orders.json', data)
 }
 
 function generateRequestId(): string {
@@ -82,28 +72,32 @@ function generateRequestId(): string {
   return `REQ-${dateStr}-${suffix}`
 }
 
-export function getAllRequests(): CustomOrderRequest[] {
-  return read().requests.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+export async function getAllRequests(): Promise<CustomOrderRequest[]> {
+  const db = await read()
+  return db.requests.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 }
 
-export function getRequestById(requestId: string): CustomOrderRequest | undefined {
-  return read().requests.find(r => r.request_id === requestId)
+export async function getRequestById(requestId: string): Promise<CustomOrderRequest | undefined> {
+  const db = await read()
+  return db.requests.find(r => r.request_id === requestId)
 }
 
-export function getRequestsByUser(userId: string): CustomOrderRequest[] {
-  return read().requests
+export async function getRequestsByUser(userId: string): Promise<CustomOrderRequest[]> {
+  const db = await read()
+  return db.requests
     .filter(r => r.user_id === userId)
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 }
 
-export function countWaitingReview(): number {
-  return read().requests.filter(r => r.status === 'waiting_review').length
+export async function countWaitingReview(): Promise<number> {
+  const db = await read()
+  return db.requests.filter(r => r.status === 'waiting_review').length
 }
 
-export function createRequest(
+export async function createRequest(
   data: Omit<CustomOrderRequest, 'request_id' | 'created_at' | 'updated_at' | 'status_history'>
-): CustomOrderRequest {
-  const db = read()
+): Promise<CustomOrderRequest> {
+  const db = await read()
   const req: CustomOrderRequest = {
     ...data,
     request_id: generateRequestId(),
@@ -112,27 +106,27 @@ export function createRequest(
     updated_at: new Date().toISOString(),
   }
   db.requests.push(req)
-  write(db)
+  await write(db)
   return req
 }
 
-export function updateRequest(requestId: string, updates: Partial<CustomOrderRequest>): boolean {
-  const db = read()
+export async function updateRequest(requestId: string, updates: Partial<CustomOrderRequest>): Promise<boolean> {
+  const db = await read()
   const idx = db.requests.findIndex(r => r.request_id === requestId)
   if (idx === -1) return false
   db.requests[idx] = { ...db.requests[idx], ...updates, updated_at: new Date().toISOString() }
-  write(db)
+  await write(db)
   return true
 }
 
-export function pushStatusHistory(requestId: string, status: RequestStatus, note?: string): boolean {
-  const db = read()
+export async function pushStatusHistory(requestId: string, status: RequestStatus, note?: string): Promise<boolean> {
+  const db = await read()
   const idx = db.requests.findIndex(r => r.request_id === requestId)
   if (idx === -1) return false
   if (!db.requests[idx].status_history) db.requests[idx].status_history = []
   db.requests[idx].status_history.push({ status, note, changed_at: new Date().toISOString() })
   db.requests[idx].status = status
   db.requests[idx].updated_at = new Date().toISOString()
-  write(db)
+  await write(db)
   return true
 }

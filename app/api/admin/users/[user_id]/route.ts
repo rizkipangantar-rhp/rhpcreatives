@@ -13,13 +13,13 @@ export async function GET(
   if (!session?.user?.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
   const { user_id } = await params
-  const user = findUserById(user_id)
+  const user = await findUserById(user_id)
   if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-  const orders = getOrdersByUser(user_id)
+  const orders = await getOrdersByUser(user_id)
   const paidOrders = orders.filter(o => ['paid', 'processing', 'completed'].includes(o.status))
   const referralCode = getUserReferralCode(user)
-  const stats = getReferralStats(referralCode)
+  const stats = await getReferralStats(referralCode)
 
   return NextResponse.json({
     id: user.id,
@@ -51,7 +51,7 @@ export async function PATCH(
 
   const { user_id } = await params
   const { suspended } = await req.json() as { suspended: boolean }
-  setUserSuspended(user_id, suspended)
+  await setUserSuspended(user_id, suspended)
   return NextResponse.json({ ok: true })
 }
 
@@ -63,10 +63,10 @@ export async function DELETE(
   if (!session?.user?.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
   const { user_id } = await params
-  const user = findUserById(user_id)
+  const user = await findUserById(user_id)
   if (!user) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   if (user.isAdmin) return NextResponse.json({ error: 'Tidak bisa hapus akun admin' }, { status: 400 })
 
-  deleteUser(user_id)
+  await deleteUser(user_id)
   return NextResponse.json({ ok: true })
 }

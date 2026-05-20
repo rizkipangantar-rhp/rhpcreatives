@@ -1,9 +1,4 @@
-import fs from 'fs'
-import path from 'path'
-import { getDataPath } from '@/lib/data-path'
-import { safeWriteJson } from '@/lib/safe-write'
-
-const DB_PATH = () => getDataPath('orders.json')
+import { dbGet, dbSet } from '@/lib/store'
 
 export type OrderStatus = 'pending' | 'paid' | 'processing' | 'completed' | 'cancelled'
 
@@ -47,18 +42,12 @@ export type Order = {
 
 type OrdersData = { orders: Order[] }
 
-function read(): OrdersData {
-  try {
-    const p = DB_PATH()
-    if (!fs.existsSync(p)) return { orders: [] }
-    return JSON.parse(fs.readFileSync(p, 'utf-8')) as OrdersData
-  } catch {
-    return { orders: [] }
-  }
+async function read(): Promise<OrdersData> {
+  return dbGet<OrdersData>('rhp:orders', 'orders.json', { orders: [] })
 }
 
-function write(data: OrdersData) {
-  safeWriteJson(DB_PATH(), data)
+async function write(data: OrdersData): Promise<void> {
+  return dbSet('rhp:orders', 'orders.json', data)
 }
 
 function generateOrderId(): string {
@@ -70,22 +59,25 @@ function generateOrderId(): string {
   return `RHP-${dateStr}-${suffix}`
 }
 
-export function getAllOrders(): Order[] {
-  return read().orders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+export async function getAllOrders(): Promise<Order[]> {
+  const db = await read()
+  return db.orders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 }
 
-export function getOrderById(orderId: string): Order | undefined {
-  return read().orders.find(o => o.orderId === orderId)
+export async function getOrderById(orderId: string): Promise<Order | undefined> {
+  const db = await read()
+  return db.orders.find(o => o.orderId === orderId)
 }
 
-export function getOrdersByUser(userId: string): Order[] {
-  return read().orders
+export async function getOrdersByUser(userId: string): Promise<Order[]> {
+  const db = await read()
+  return db.orders
     .filter(o => o.userId === userId)
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 }
 
-export function createOrder(data: Omit<Order, 'orderId' | 'createdAt' | 'updatedAt'>): Order {
-  const db = read()
+export async function createOrder(data: Omit<Order, 'orderId' | 'createdAt' | 'updatedAt'>): Promise<Order> {
+  const db = await read()
   const order: Order = {
     ...data,
     orderId: generateOrderId(),
@@ -93,74 +85,74 @@ export function createOrder(data: Omit<Order, 'orderId' | 'createdAt' | 'updated
     updatedAt: new Date().toISOString(),
   }
   db.orders.push(order)
-  write(db)
+  await write(db)
   return order
 }
 
-export function updateOrderStatus(orderId: string, status: OrderStatus): boolean {
-  const db = read()
+export async function updateOrderStatus(orderId: string, status: OrderStatus): Promise<boolean> {
+  const db = await read()
   const idx = db.orders.findIndex(o => o.orderId === orderId)
   if (idx === -1) return false
   db.orders[idx].status = status
   db.orders[idx].updatedAt = new Date().toISOString()
-  write(db)
+  await write(db)
   return true
 }
 
-export function updateOrderSnapToken(orderId: string, snapToken: string): boolean {
-  const db = read()
+export async function updateOrderSnapToken(orderId: string, snapToken: string): Promise<boolean> {
+  const db = await read()
   const idx = db.orders.findIndex(o => o.orderId === orderId)
   if (idx === -1) return false
   db.orders[idx].snapToken = snapToken
   db.orders[idx].updatedAt = new Date().toISOString()
-  write(db)
+  await write(db)
   return true
 }
 
-export function updateOrderAdminData(orderId: string, data: { adminNotes?: string; resultUrl?: string }): boolean {
-  const db = read()
+export async function updateOrderAdminData(orderId: string, data: { adminNotes?: string; resultUrl?: string }): Promise<boolean> {
+  const db = await read()
   const idx = db.orders.findIndex(o => o.orderId === orderId)
   if (idx === -1) return false
   if (data.adminNotes !== undefined) db.orders[idx].adminNotes = data.adminNotes
   if (data.resultUrl !== undefined) db.orders[idx].resultUrl = data.resultUrl
   db.orders[idx].updatedAt = new Date().toISOString()
-  write(db)
+  await write(db)
   return true
 }
 
-export function addOrderStatusHistory(orderId: string, status: OrderStatus, note: string): boolean {
-  const db = read()
+export async function addOrderStatusHistory(orderId: string, status: OrderStatus, note: string): Promise<boolean> {
+  const db = await read()
   const idx = db.orders.findIndex(o => o.orderId === orderId)
   if (idx === -1) return false
   if (!db.orders[idx].statusHistory) db.orders[idx].statusHistory = []
   db.orders[idx].statusHistory!.push({ status, note, changedAt: new Date().toISOString() })
   db.orders[idx].status = status
   db.orders[idx].updatedAt = new Date().toISOString()
-  write(db)
+  await write(db)
   return true
 }
 
-export function updateOrderNotes(orderId: string, notes: string): boolean {
-  const db = read()
+export async function updateOrderNotes(orderId: string, notes: string): Promise<boolean> {
+  const db = await read()
   const idx = db.orders.findIndex(o => o.orderId === orderId)
   if (idx === -1) return false
   db.orders[idx].notes = notes
   db.orders[idx].updatedAt = new Date().toISOString()
-  write(db)
+  await write(db)
   return true
 }
 
-export function updateOrderPaymentInfo(
+export async function updateOrderPaymentInfo(
   orderId: string,
   info: Partial<Pick<Order,
     'midtransOrderId' | 'paymentMethod' | 'paymentBank' | 'paymentVa' |
     'paymentBillerCode' | 'paymentBillKey' | 'paymentQrUrl' | 'paymentDeepLink' | 'paymentExpiry' | 'status'
   >>
-): boolean {
-  const db = read()
+): Promise<boolean> {
+  const db = await read()
   const idx = db.orders.findIndex(o => o.orderId === orderId)
   if (idx === -1) return false
   Object.assign(db.orders[idx], info, { updatedAt: new Date().toISOString() })
-  write(db)
+  await write(db)
   return true
 }

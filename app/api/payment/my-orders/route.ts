@@ -9,6 +9,6 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const orders = getOrdersByUser(session.user.id)
+  const orders = await getOrdersByUser(session.user.id)
   return NextResponse.json(orders)
 }

@@ -13,7 +13,7 @@ export async function GET(
   const { order_id } = await params
   const session = await getServerSession(authOptions)
 
-  const order = getOrderById(order_id)
+  const order = await getOrderById(order_id)
   if (!order) {
     return NextResponse.json({ error: 'Order not found' }, { status: 404 })
   }
@@ -33,12 +33,12 @@ export async function GET(
       const fraud = txStatus.fraud_status
 
       if (s === 'settlement' || (s === 'capture' && fraud === 'accept')) {
-        updateOrderStatus(order_id, 'paid')
-        const updated = getOrderById(order_id)
+        await updateOrderStatus(order_id, 'paid')
+        const updated = await getOrderById(order_id)
         return NextResponse.json(updated)
       } else if (s === 'expire' || s === 'cancel' || s === 'deny') {
-        updateOrderStatus(order_id, 'cancelled')
-        const updated = getOrderById(order_id)
+        await updateOrderStatus(order_id, 'cancelled')
+        const updated = await getOrderById(order_id)
         return NextResponse.json(updated)
       }
     } catch {

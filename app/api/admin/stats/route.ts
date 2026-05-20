@@ -4,16 +4,18 @@ import { authOptions } from '@/lib/auth'
 import { getAllOrders } from '@/lib/orders'
 import { readUsers } from '@/lib/users-internal'
 import { getQuota } from '@/lib/early-bird'
-import { getReferralStats } from '@/lib/referral'
 import { getAnalyticsSummary } from '@/lib/analytics'
 
 export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session?.user?.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
-  const orders = getAllOrders()
-  const users = readUsers()
-  const quota = getQuota()
+  const [orders, users, quota, analytics] = await Promise.all([
+    getAllOrders(),
+    readUsers(),
+    getQuota(),
+    getAnalyticsSummary(),
+  ])
 
   const now = new Date()
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
@@ -48,7 +50,6 @@ export async function GET() {
   }
 
   const activeReferralCodes = users.filter(u => u.referralCode).length
-  const analytics = getAnalyticsSummary()
 
   return NextResponse.json({
     totalOrders: orders.length,

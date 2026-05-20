@@ -1,6 +1,4 @@
-import fs from 'fs'
-import path from 'path'
-import { getDataPath } from '@/lib/data-path'
+import { dbGet, dbSet } from '@/lib/store'
 
 export type Settings = {
   earlyBirdQuota: number
@@ -20,22 +18,12 @@ const DEFAULT: Settings = {
   newOrderWaNotif: true,
 }
 
-const DB_PATH = () => getDataPath('settings.json')
-
-export function getSettings(): Settings {
-  try {
-    const p = DB_PATH()
-    if (!fs.existsSync(p)) return DEFAULT
-    return { ...DEFAULT, ...JSON.parse(fs.readFileSync(p, 'utf-8')) }
-  } catch {
-    return DEFAULT
-  }
+export async function getSettings(): Promise<Settings> {
+  const stored = await dbGet<Partial<Settings>>('rhp:settings', 'settings.json', {})
+  return { ...DEFAULT, ...stored }
 }
 
-export function updateSettings(data: Partial<Settings>): void {
-  const current = getSettings()
-  const p = DB_PATH()
-  const dir = path.dirname(p)
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
-  fs.writeFileSync(p, JSON.stringify({ ...current, ...data }, null, 2), 'utf-8')
+export async function updateSettings(data: Partial<Settings>): Promise<void> {
+  const current = await getSettings()
+  await dbSet('rhp:settings', 'settings.json', { ...current, ...data })
 }

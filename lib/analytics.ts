@@ -1,33 +1,23 @@
-import fs from 'fs'
-import { getDataPath } from '@/lib/data-path'
-import { safeWriteJson } from '@/lib/safe-write'
-
-const DB_PATH = () => getDataPath('analytics.json')
+import { dbGet, dbSet } from '@/lib/store'
 
 type DailyRecord = { views: number; paths: Record<string, number> }
 type AnalyticsData = { daily: Record<string, DailyRecord> }
 
-function read(): AnalyticsData {
-  try {
-    const p = DB_PATH()
-    if (!fs.existsSync(p)) return { daily: {} }
-    return JSON.parse(fs.readFileSync(p, 'utf-8')) as AnalyticsData
-  } catch {
-    return { daily: {} }
-  }
+async function read(): Promise<AnalyticsData> {
+  return dbGet<AnalyticsData>('rhp:analytics', 'analytics.json', { daily: {} })
 }
 
-function write(data: AnalyticsData) {
-  safeWriteJson(DB_PATH(), data)
+async function write(data: AnalyticsData): Promise<void> {
+  return dbSet('rhp:analytics', 'analytics.json', data)
 }
 
-export function recordPageview(path: string): void {
+export async function recordPageview(path: string): Promise<void> {
   const day = new Date().toISOString().slice(0, 10)
-  const data = read()
+  const data = await read()
   if (!data.daily[day]) data.daily[day] = { views: 0, paths: {} }
   data.daily[day].views++
   data.daily[day].paths[path] = (data.daily[day].paths[path] ?? 0) + 1
-  write(data)
+  await write(data)
 }
 
 export type AnalyticsSummary = {
@@ -37,8 +27,8 @@ export type AnalyticsSummary = {
   topPaths: { path: string; views: number }[]
 }
 
-export function getAnalyticsSummary(): AnalyticsSummary {
-  const data = read()
+export async function getAnalyticsSummary(): Promise<AnalyticsSummary> {
+  const data = await read()
   const today = new Date().toISOString().slice(0, 10)
   const todayViews = data.daily[today]?.views ?? 0
   const totalViews = Object.values(data.daily).reduce((s, d) => s + d.views, 0)

@@ -10,13 +10,13 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const user = findUserById(session.user.id)
+  const user = await findUserById(session.user.id)
   if (!user) {
     return NextResponse.json({ error: 'User not found' }, { status: 404 })
   }
 
   const referralCode = getUserReferralCode(user)
-  const stats = getReferralStats(referralCode)
+  const stats = await getReferralStats(referralCode)
 
   return NextResponse.json({
     referralCode,

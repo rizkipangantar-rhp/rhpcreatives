@@ -41,10 +41,10 @@ export async function POST(req: Request) {
   const packageNameId = body.customPackageName ?? pkg?.nameId ?? packageId
   const packageNameEn = pkg?.nameEn ?? packageId
 
-  const existingUser = findUserByEmail(email)
+  const existingUser = await findUserByEmail(email)
   const userId = existingUser?.id ?? `custom_${Date.now()}`
 
-  const order = createOrder({
+  const order = await createOrder({
     userId,
     name,
     email,

@@ -12,7 +12,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ valid: false })
   }
 
-  const referrer = findUserByReferralCode(code)
+  const referrer = await findUserByReferralCode(code)
   const valid = !!referrer && referrer.id !== session?.user?.id
   return NextResponse.json({ valid })
 }

@@ -10,12 +10,13 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const user = findUserById(session.user.id)
+  const [user, isFirstOrder] = await Promise.all([
+    findUserById(session.user.id),
+    hasUserUsedReferral(session.user.id).then(used => !used),
+  ])
   if (!user) {
     return NextResponse.json({ error: 'User not found' }, { status: 404 })
   }
-
-  const isFirstOrder = !hasUserUsedReferral(session.user.id)
 
   // Invitee discount: 10% off first order if they were referred
   const inviteeDiscount = {

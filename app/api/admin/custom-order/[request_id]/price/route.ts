@@ -11,7 +11,7 @@ export async function PUT(
   if (!session?.user?.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
   const { request_id } = await params
-  const request = getRequestById(request_id)
+  const request = await getRequestById(request_id)
   if (!request) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   const body = await req.json() as {
@@ -37,7 +37,7 @@ export async function PUT(
   // Offer expires 48 hours from now
   const offer_expires_at = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString()
 
-  updateRequest(request_id, {
+  await updateRequest(request_id, {
     pricing: {
       base_price,
       discount_type: discount_type || null,
@@ -54,7 +54,7 @@ export async function PUT(
     offer_expires_at,
     status: 'price_sent',
   })
-  pushStatusHistory(request_id, 'price_sent', 'Admin sent price offer')
+  await pushStatusHistory(request_id, 'price_sent', 'Admin sent price offer')
 
   return NextResponse.json({ ok: true })
 }
