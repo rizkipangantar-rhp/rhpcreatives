@@ -309,7 +309,12 @@ export default function ProfilCard({ session }: { session: Session }) {
             <AvatarDisplay src={user.image} name={user.name} />
           </div>
           <div className={styles.profileInfo}>
-            <h1 className={styles.name}>{user.name ?? 'User'}</h1>
+            <div className={styles.profileNameRow}>
+              <h1 className={styles.name}>{user.name ?? 'User'}</h1>
+              <button className={styles.logoutBtn} onClick={() => signOut({ callbackUrl: '/' })}>
+                {p.logoutBtn}
+              </button>
+            </div>
             <p className={styles.email}>{user.email}</p>
             <div className={styles.waRow}>
               {waEditing ? (
@@ -344,9 +349,6 @@ export default function ProfilCard({ session }: { session: Session }) {
               )}
             </div>
           </div>
-          <button className={styles.logoutBtn} onClick={() => signOut({ callbackUrl: '/' })}>
-            {p.logoutBtn}
-          </button>
           {waToast && <div className={styles.waToast}>{p.waSaved}</div>}
         </div>
 
