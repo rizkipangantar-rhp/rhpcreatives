@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { getActivePublicPromos, isPromoFull } from '@/lib/promos'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   try {
     const promos = await getActivePublicPromos()
