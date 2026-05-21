@@ -24,7 +24,7 @@ export default function FloatingBadge({ initialPromo }: { initialPromo: PromoBar
   const shortName = promo.name.split(' ').slice(0, 2).join(' ')
   const badgeText = `🔥 ${shortName} ${discountDisplay} OFF`
   const subText = slotsLeft !== null
-    ? (lang === 'id' ? `Cuma ${slotsLeft} slot` : `${slotsLeft} slots left`)
+    ? (lang === 'id' ? `Sisa ${slotsLeft} slot` : `${slotsLeft} slots left`)
     : (lang === 'id' ? 'Terbatas' : 'Limited')
   const href = promo.requires_claim ? `/promo/klaim/${promo.id}` : '/promo'
 
