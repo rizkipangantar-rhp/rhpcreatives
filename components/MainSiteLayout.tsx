@@ -27,7 +27,7 @@ export default function MainSiteLayout({
       <Footer />
       <EarlyBirdPopup />
       <FirstLoginModal />
-      <FloatingBadge />
+      <FloatingBadge initialPromo={initialPromo} />
       <Analytics />
     </>
   )

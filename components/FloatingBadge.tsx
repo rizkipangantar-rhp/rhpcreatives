@@ -3,19 +3,19 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useLanguage } from '@/context/LanguageContext'
 import styles from './FloatingBadge.module.css'
+import type { PromoBarInfo } from './AnnouncementBar'
 
-type PromoInfo = { id: string; requires_claim: boolean }
-
-export default function FloatingBadge() {
+export default function FloatingBadge({ initialPromo }: { initialPromo: PromoBarInfo | null }) {
   const { tr } = useLanguage()
   const f = tr.floatingBadge
-  const [promo, setPromo] = useState<PromoInfo | null | undefined>(undefined)
+  const [promo, setPromo] = useState<PromoBarInfo | null>(initialPromo)
 
+  // Background refresh
   useEffect(() => {
     fetch('/api/promos')
       .then(r => r.json())
       .then(data => setPromo(data.promos?.[0] ?? null))
-      .catch(() => setPromo(null))
+      .catch(() => {})
   }, [])
 
   if (!promo) return null
