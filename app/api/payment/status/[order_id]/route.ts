@@ -4,8 +4,6 @@ import { authOptions } from '@/lib/auth'
 import { getOrderById, updateOrderStatus } from '@/lib/orders'
 import { checkTransactionStatus } from '@/lib/payment'
 
-const ADMIN_EMAIL = 'rhpcreativesid@gmail.com'
-
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ order_id: string }> }
@@ -18,7 +16,7 @@ export async function GET(
     return NextResponse.json({ error: 'Order not found' }, { status: 404 })
   }
 
-  const isAdmin = session?.user?.email === ADMIN_EMAIL
+  const isAdmin = !!session?.user?.isAdmin
   const isOwner = session?.user?.id === order.userId
 
   if (!isAdmin && !isOwner) {

@@ -5,12 +5,13 @@ import { updateOrderStatus, getOrderById, type OrderStatus } from '@/lib/orders'
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const { order_id, status_code, gross_amount, signature_key, transaction_status } = body as {
+    const { order_id, status_code, gross_amount, signature_key, transaction_status, fraud_status } = body as {
       order_id: string
       status_code: string
       gross_amount: string
       signature_key: string
       transaction_status: string
+      fraud_status?: string
     }
 
     const serverKey = process.env.MIDTRANS_SERVER_KEY ?? ''
@@ -37,7 +38,9 @@ export async function POST(req: Request) {
     }
 
     let newStatus: OrderStatus = 'pending'
-    if (transaction_status === 'settlement' || transaction_status === 'capture') {
+    if (transaction_status === 'settlement') {
+      newStatus = 'paid'
+    } else if (transaction_status === 'capture' && fraud_status === 'accept') {
       newStatus = 'paid'
     } else if (transaction_status === 'pending') {
       newStatus = 'pending'

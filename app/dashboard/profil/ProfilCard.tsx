@@ -247,7 +247,11 @@ export default function ProfilCard({ session }: { session: Session }) {
       const data = await res.json() as { order_id?: string; error?: string }
       if (res.ok && data.order_id) {
         router.push(`/order/payment/${data.order_id}`)
+      } else {
+        setNegoError(data.error ?? (lang === 'id' ? 'Gagal memproses. Coba lagi.' : 'Failed to process. Try again.'))
       }
+    } catch {
+      setNegoError(lang === 'id' ? 'Terjadi kesalahan. Coba lagi.' : 'An error occurred. Try again.')
     } finally {
       setActionLoading(null)
     }
@@ -261,7 +265,12 @@ export default function ProfilCard({ session }: { session: Session }) {
         setCustomRequests(prev => prev.map(r =>
           r.request_id === requestId ? { ...r, status: 'rejected_by_customer' as RequestStatus } : r
         ))
+      } else {
+        const data = await res.json().catch(() => ({})) as { error?: string }
+        setNegoError(data.error ?? (lang === 'id' ? 'Gagal membatalkan. Coba lagi.' : 'Failed to cancel. Try again.'))
       }
+    } catch {
+      setNegoError(lang === 'id' ? 'Terjadi kesalahan. Coba lagi.' : 'An error occurred. Try again.')
     } finally {
       setActionLoading(null)
     }
