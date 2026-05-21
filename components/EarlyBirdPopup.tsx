@@ -87,6 +87,9 @@ export default function EarlyBirdPopup() {
   const slotsLeft = promo.remaining ?? (slots ? Math.max(0, slots - promo.claimed) : null)
   const taken = slots && slotsLeft !== null ? slots - slotsLeft : 0
   const headline = lang === 'id' ? promo.announcement_text_id : promo.announcement_text_en
+  const subText = lang === 'id'
+    ? `Diskon ${discountDisplay} lagi aktif nih${slotsLeft !== null ? `, tinggal ${slotsLeft} slot tersisa` : ''}! Gasken sebelum kehabisan bestie`
+    : `${discountDisplay} off is live${slotsLeft !== null ? ` — only ${slotsLeft} slots left` : ''}! Grab yours before it runs out bestie`
 
   return (
     <div className={styles.overlay} onClick={close}>
@@ -95,7 +98,7 @@ export default function EarlyBirdPopup() {
 
         <div className={styles.badge}>{promo.name}</div>
         <h2 className={styles.headline}>{headline || `Diskon ${discountDisplay}!`}</h2>
-        <p className={styles.sub}>{p.sub}</p>
+        <p className={styles.sub}>{subText}</p>
 
         {slots !== null && (
           <div className={styles.slots}>

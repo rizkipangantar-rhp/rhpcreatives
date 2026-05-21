@@ -44,18 +44,6 @@ function Confetti() {
   )
 }
 
-function VoucherBox({ code }: { code: string }) {
-  const [copied, setCopied] = useState(false)
-  return (
-    <div className={styles.voucherWrap}>
-      <div className={styles.voucherLabel}>Kode Voucher Kamu</div>
-      <div className={styles.voucherCode}>{code}</div>
-      <button className={styles.copyBtn} onClick={() => { navigator.clipboard.writeText(code); setCopied(true); setTimeout(() => setCopied(false), 2000) }}>
-        {copied ? 'Tersalin!' : 'Salin Kode'}
-      </button>
-    </div>
-  )
-}
 
 export default function KlaimPromoPage() {
   const { promo_id } = useParams<{ promo_id: string }>()
@@ -197,11 +185,10 @@ export default function KlaimPromoPage() {
         {justClaimed && <Confetti />}
         <div className={styles.card}>
           <div className={styles.successIcon}>🎉</div>
-          <h1 className={styles.title}>{lang === 'id' ? 'Klaim berhasil!' : 'Claimed successfully!'}</h1>
-          <p className={styles.sub}>{lang === 'id' ? `Diskon ${discountDisplay} sudah aktif. Pakai kode di bawah saat checkout.` : `${discountDisplay} discount is active. Use the code below at checkout.`}</p>
-          <VoucherBox code={claim.voucher_code} />
+          <h1 className={styles.title}>{lang === 'id' ? `Yeay, diskon ${discountDisplay} aktif!` : `Discount ${discountDisplay} activated!`}</h1>
+          <p className={styles.sub}>{lang === 'id' ? `Diskon ${discountDisplay} kamu otomatis aktif pas checkout nanti. Gasken order sekarang bestie!` : `Your ${discountDisplay} discount kicks in automatically at checkout. Let's go bestie!`}</p>
           <div className={styles.ctaGroup}>
-            <Link href="/order" className={styles.primaryCta}>{lang === 'id' ? 'Order Sekarang' : 'Order Now'}</Link>
+            <Link href="/order" className={styles.primaryCta}>{lang === 'id' ? 'Gasken Order Sekarang' : 'Order Now'}</Link>
             <Link href="/dashboard/profil?tab=orders" className={styles.secondaryCta}>{lang === 'id' ? 'Riwayat Order' : 'Order History'}</Link>
           </div>
         </div>
@@ -214,11 +201,10 @@ export default function KlaimPromoPage() {
       <main className={styles.page}>
         <div className={styles.card}>
           <div className={styles.topBadge}>✅ {promo?.name}</div>
-          <h1 className={styles.title}>{lang === 'id' ? 'Sudah klaim!' : 'Already claimed!'}</h1>
-          <p className={styles.sub}>{lang === 'id' ? 'Kamu sudah punya voucher aktif untuk promo ini.' : 'You already have an active voucher for this promo.'}</p>
-          <VoucherBox code={claim.voucher_code} />
+          <h1 className={styles.title}>{lang === 'id' ? `Diskon ${discountDisplay} kamu masih aktif! 🔥` : `Your ${discountDisplay} discount is still live! 🔥`}</h1>
+          <p className={styles.sub}>{lang === 'id' ? `Tenang, diskon ${discountDisplay} kamu otomatis aktif pas checkout. Tinggal order aja!` : `Chill — your ${discountDisplay} discount applies automatically at checkout. Just order!`}</p>
           <div className={styles.ctaGroup}>
-            <Link href="/order" className={styles.primaryCta}>{lang === 'id' ? 'Order Sekarang' : 'Order Now'}</Link>
+            <Link href="/order" className={styles.primaryCta}>{lang === 'id' ? 'Gasken Order Sekarang' : 'Order Now'}</Link>
           </div>
         </div>
       </main>
@@ -230,10 +216,10 @@ export default function KlaimPromoPage() {
       <main className={styles.page}>
         <div className={styles.card}>
           <div className={styles.successIcon}>🎊</div>
-          <h1 className={styles.title}>{lang === 'id' ? 'Voucher sudah dipakai' : 'Voucher already used'}</h1>
-          <p className={styles.sub}>{lang === 'id' ? 'Voucher promo ini sudah pernah kamu pakai di order sebelumnya.' : 'You have already used this promo voucher in a previous order.'}</p>
+          <h1 className={styles.title}>{lang === 'id' ? `Diskon ${discountDisplay} udah kepake! 🎊` : `${discountDisplay} discount used! 🎊`}</h1>
+          <p className={styles.sub}>{lang === 'id' ? `Diskon ${discountDisplay} kamu udah berhasil dipake di order sebelumnya. Hasilnya pasti worth it banget!` : `Your ${discountDisplay} discount was used in a previous order. Bet the results are totally worth it!`}</p>
           <div className={styles.ctaGroup}>
-            <Link href="/dashboard/profil?tab=orders" className={styles.primaryCta}>{lang === 'id' ? 'Lihat Order' : 'View Orders'}</Link>
+            <Link href="/dashboard/profil?tab=orders" className={styles.primaryCta}>{lang === 'id' ? 'Lihat Order Kamu' : 'View Your Orders'}</Link>
           </div>
         </div>
       </main>
