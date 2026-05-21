@@ -1,7 +1,6 @@
 .nav {
   position: fixed;
   top: var(--bar-h); left: 0; right: 0;
-  transition: top 0.3s ease;
   z-index: 100;
   display: flex;
   align-items: center;

@@ -4,9 +4,6 @@ import { useSession } from 'next-auth/react'
 import s from '@/components/admin/admin.module.css'
 
 type Settings = {
-  earlyBirdQuota: number
-  earlyBirdActive: boolean
-  earlyBirdEndDate: string
   waNumber: string
   maintenanceMode: boolean
   newOrderWaNotif: boolean
@@ -124,54 +121,11 @@ export default function PengaturanPage() {
 
   if (loading || !settings) return <div className={s.loading}><div className={s.spinner} /></div>
 
-  const endDateLocal = settings.earlyBirdEndDate
-    ? new Date(settings.earlyBirdEndDate).toISOString().slice(0, 16)
-    : ''
-
   return (
     <div>
       <div className={s.pageHeader}>
         <h1 className={s.pageTitle}>Pengaturan</h1>
         <p className={s.pageSub}>Konfigurasi sistem RHP Creatives</p>
-      </div>
-
-      {/* Early Bird */}
-      <div className={s.card} style={{ padding: 24, marginBottom: 20 }}>
-        <div className={s.cardTitle} style={{ marginBottom: 20 }}>Early Bird</div>
-
-        <div className={s.twoCol} style={{ marginBottom: 0 }}>
-          <div>
-            <SettingField label="Kuota Early Bird" hint="Jumlah slot total yang tersedia">
-              <input
-                type="number"
-                min={1}
-                max={1000}
-                className={s.searchInput}
-                style={{ width: '100%' }}
-                value={settings.earlyBirdQuota}
-                onChange={e => set('earlyBirdQuota', parseInt(e.target.value) || 1)}
-              />
-            </SettingField>
-          </div>
-          <div>
-            <SettingField label="Tanggal Berakhir" hint="Early bird otomatis nonaktif setelah tanggal ini">
-              <input
-                type="datetime-local"
-                className={s.searchInput}
-                style={{ width: '100%' }}
-                value={endDateLocal}
-                onChange={e => set('earlyBirdEndDate', new Date(e.target.value).toISOString())}
-              />
-            </SettingField>
-          </div>
-        </div>
-
-        <SettingToggle
-          label="Aktifkan Early Bird"
-          hint="Aktifkan atau nonaktifkan program early bird secara manual"
-          checked={settings.earlyBirdActive}
-          onChange={v => set('earlyBirdActive', v)}
-        />
       </div>
 
       {/* WhatsApp */}
