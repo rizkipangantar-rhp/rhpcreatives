@@ -26,7 +26,7 @@ export default function TermsPage() {
         <div className={styles.content}>
 
           <div className={styles.section}>
-            <h2><span>1.</span>{isID ? 'CONDITIONS OF USE' : 'CONDITIONS OF USE'}</h2>
+            <h2><span>1.</span>{isID ? 'Ketentuan Penggunaan' : 'CONDITIONS OF USE'}</h2>
             {isID ? (
               <p>RHP Creatives menyediakan layanan jasa digital dan desain kepada Anda dengan syarat penerimaan semua ketentuan yang tercantum di sini. Dengan mengakses dan menggunakan website ini, Anda menyatakan telah membaca, memahami, dan menyetujui untuk terikat oleh syarat dan ketentuan ini. Jika Anda tidak menyetujui salah satu ketentuan, harap hentikan penggunaan layanan kami.</p>
             ) : (
@@ -37,7 +37,7 @@ export default function TermsPage() {
           <hr className={styles.divider} />
 
           <div className={styles.section}>
-            <h2><span>2.</span>{isID ? 'OVERVIEW' : 'OVERVIEW'}</h2>
+            <h2><span>2.</span>{isID ? 'Gambaran Umum' : 'OVERVIEW'}</h2>
             {isID ? (
               <p>Penggunaan website ini berarti Anda menyetujui semua syarat dan ketentuan yang berlaku. RHP Creatives berhak mengubah syarat dan ketentuan ini kapan saja. Versi terbaru akan selalu tersedia di halaman ini. Penggunaan berkelanjutan setelah perubahan berarti Anda menerima ketentuan yang diperbarui.</p>
             ) : (
@@ -48,7 +48,7 @@ export default function TermsPage() {
           <hr className={styles.divider} />
 
           <div className={styles.section}>
-            <h2><span>3.</span>{isID ? 'MODIFICATION' : 'MODIFICATION'}</h2>
+            <h2><span>3.</span>{isID ? 'Perubahan' : 'MODIFICATION'}</h2>
             {isID ? (
               <p>RHP Creatives berhak mengubah harga layanan, daftar layanan yang tersedia, dan ketentuan penggunaan sewaktu-waktu tanpa pemberitahuan sebelumnya. Perubahan harga berlaku untuk order baru setelah tanggal perubahan. Order yang sudah dikonfirmasi dan dibayar tidak akan terpengaruh oleh perubahan harga.</p>
             ) : (
@@ -59,7 +59,7 @@ export default function TermsPage() {
           <hr className={styles.divider} />
 
           <div className={styles.section}>
-            <h2><span>4.</span>{isID ? 'COPYRIGHTS' : 'COPYRIGHTS'}</h2>
+            <h2><span>4.</span>{isID ? 'Hak Cipta' : 'COPYRIGHTS'}</h2>
             {isID ? (
               <>
                 <p>Semua konten yang tersedia di website ini — termasuk namun tidak terbatas pada teks, grafis, logo, ikon, gambar, klip audio, unduhan digital, dan kompilasi data — adalah milik RHP Creatives dan dilindungi oleh hukum hak cipta yang berlaku di Indonesia.</p>
@@ -76,7 +76,7 @@ export default function TermsPage() {
           <hr className={styles.divider} />
 
           <div className={styles.section}>
-            <h2><span>5.</span>{isID ? 'SIGN UP & AKUN' : 'SIGN UP & ACCOUNT'}</h2>
+            <h2><span>5.</span>{isID ? 'Daftar & Akun' : 'SIGN UP & ACCOUNT'}</h2>
             {isID ? (
               <>
                 <p>Anda bertanggung jawab penuh untuk menjaga kerahasiaan akun dan password Anda. Semua aktivitas yang terjadi di bawah akun Anda adalah tanggung jawab Anda sepenuhnya.</p>
@@ -93,7 +93,7 @@ export default function TermsPage() {
           <hr className={styles.divider} />
 
           <div className={styles.section}>
-            <h2><span>6.</span>{isID ? 'ELECTRONIC COMMUNICATIONS' : 'ELECTRONIC COMMUNICATIONS'}</h2>
+            <h2><span>6.</span>{isID ? 'Komunikasi Elektronik' : 'ELECTRONIC COMMUNICATIONS'}</h2>
             {isID ? (
               <p>Dengan mendaftar di RHP Creatives, Anda setuju untuk menerima komunikasi elektronik dari kami terkait layanan, update order, konfirmasi pembayaran, dan informasi promo. Anda dapat berhenti berlangganan dari komunikasi promosi kapan saja dengan menghubungi kami. Komunikasi terkait transaksi aktif tetap akan dikirimkan.</p>
             ) : (
@@ -144,7 +144,7 @@ export default function TermsPage() {
           <hr className={styles.divider} />
 
           <div className={styles.section}>
-            <h2><span>9.</span>{isID ? 'PRIVACY POLICY' : 'PRIVACY POLICY'}</h2>
+            <h2><span>9.</span>{isID ? 'Kebijakan Privasi' : 'PRIVACY POLICY'}</h2>
             {isID ? (
               <>
                 <p>Data pribadi Anda — termasuk nama, alamat email, dan nomor WhatsApp — hanya digunakan untuk keperluan pemrosesan order, komunikasi terkait layanan, dan peningkatan pengalaman pengguna.</p>
@@ -163,7 +163,7 @@ export default function TermsPage() {
           <hr className={styles.divider} />
 
           <div className={styles.section}>
-            <h2><span>10.</span>{isID ? 'INDEMNITY' : 'INDEMNITY'}</h2>
+            <h2><span>10.</span>{isID ? 'Ganti Rugi' : 'INDEMNITY'}</h2>
             {isID ? (
               <p>Anda setuju untuk tidak menyalahgunakan layanan RHP Creatives untuk tujuan ilegal, menipu, atau yang merugikan pihak lain. Anda setuju untuk membebaskan RHP Creatives dari segala klaim, kerugian, biaya, dan tanggung jawab yang timbul akibat pelanggaran Anda terhadap syarat dan ketentuan ini atau penyalahgunaan layanan kami.</p>
             ) : (
@@ -174,7 +174,7 @@ export default function TermsPage() {
           <hr className={styles.divider} />
 
           <div className={styles.section}>
-            <h2><span>11.</span>{isID ? 'DISCLAIMER' : 'DISCLAIMER'}</h2>
+            <h2><span>11.</span>{isID ? 'Penafian' : 'DISCLAIMER'}</h2>
             {isID ? (
               <>
                 <p>RHP Creatives menyediakan layanan "sebagaimana adanya" dan tidak memberikan jaminan tertulis maupun tersirat tentang kelengkapan, akurasi, keandalan, kesesuaian, atau ketersediaan layanan.</p>
@@ -191,7 +191,7 @@ export default function TermsPage() {
           <hr className={styles.divider} />
 
           <div className={styles.section}>
-            <h2><span>12.</span>{isID ? 'APPLICABLE LAWS' : 'APPLICABLE LAWS'}</h2>
+            <h2><span>12.</span>{isID ? 'Hukum yang Berlaku' : 'APPLICABLE LAWS'}</h2>
             {isID ? (
               <p>Syarat dan ketentuan ini diatur oleh dan ditafsirkan sesuai dengan hukum yang berlaku di Negara Kesatuan Republik Indonesia. Setiap sengketa yang timbul dari atau berkaitan dengan syarat dan ketentuan ini akan diselesaikan secara musyawarah. Jika tidak tercapai kesepakatan, sengketa akan diselesaikan melalui jalur hukum yang berlaku di Indonesia.</p>
             ) : (

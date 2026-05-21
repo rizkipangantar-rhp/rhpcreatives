@@ -1,7 +1,7 @@
 .page {
   min-height: 100vh;
   background: var(--bg);
-  padding: calc(var(--bar-h, 0px) + 4rem) 1rem 4rem;
+  padding: calc(var(--bar-h) + 5.5rem) 1rem 4rem;
   position: relative;
   overflow: hidden;
 }
@@ -87,7 +87,7 @@
   border-radius: 1rem;
   padding: 1.5rem;
   position: sticky;
-  top: calc(var(--bar-h, 0px) + 5rem);
+  top: calc(var(--bar-h) + 5rem);
 }
 
 .summaryTitle {
