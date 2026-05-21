@@ -19,10 +19,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     if (p) {
       initialPromo = {
         id: p.id,
+        name: p.name,
         announcement_text_id: p.announcement_text_id,
         announcement_text_en: p.announcement_text_en,
         end_date: p.end_date,
         requires_claim: p.requires_claim,
+        discount_type: p.discount_type,
+        discount_value: p.discount_value,
+        quota: p.quota,
+        claimed: p.claimed,
+        remaining: p.quota === 0 ? null : Math.max(0, p.quota - p.claimed),
       }
     }
   } catch { /* Redis unavailable — bar loads client-side */ }

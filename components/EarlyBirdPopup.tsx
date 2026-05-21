@@ -72,7 +72,7 @@ export default function EarlyBirdPopup() {
   function handleCta() {
     close()
     if (!promo) return
-    const href = promo.requires_claim ? `/promo/klaim/${promo.id}` : '/promo'
+    const href = promo.requires_claim ? `/promo/klaim/${promo.id}` : '/order'
     if (status === 'authenticated') {
       router.push(href)
     } else {
@@ -86,18 +86,25 @@ export default function EarlyBirdPopup() {
   const slots = promo.quota > 0 ? promo.quota : null
   const slotsLeft = promo.remaining ?? (slots ? Math.max(0, slots - promo.claimed) : null)
   const taken = slots && slotsLeft !== null ? slots - slotsLeft : 0
-  const headline = lang === 'id' ? promo.announcement_text_id : promo.announcement_text_en
+  const isEarlyBird = promo.name.toLowerCase().includes('early bird')
   const subText = lang === 'id'
-    ? `Diskon ${discountDisplay} lagi aktif nih${slotsLeft !== null ? `, tinggal ${slotsLeft} slot tersisa` : ''}! Gasken sebelum kehabisan bestie`
-    : `${discountDisplay} off is live${slotsLeft !== null ? ` — only ${slotsLeft} slots left` : ''}! Grab yours before it runs out bestie`
+    ? slots
+      ? `${promo.name} lagi jalan nih — diskon ${discountDisplay} buat ${slots} klien pertama doang. No cap, ini real.`
+      : `${promo.name} lagi jalan nih — diskon ${discountDisplay}. No cap, ini real.`
+    : slots
+      ? `${promo.name} is live — ${discountDisplay} off for the first ${slots} clients only. No cap, for real.`
+      : `${promo.name} is live — ${discountDisplay} off. No cap, for real.`
+  const ctaText = promo.requires_claim
+    ? (lang === 'id' ? 'Klaim Sekarang' : 'Claim Now')
+    : (lang === 'id' ? 'Gasken Order Sekarang' : 'Order Now')
 
   return (
     <div className={styles.overlay} onClick={close}>
       <div className={styles.card} onClick={e => e.stopPropagation()}>
         <button className={styles.closeBtn} onClick={close} aria-label="Tutup">✕</button>
 
-        <div className={styles.badge}>{promo.name}</div>
-        <h2 className={styles.headline}>{headline || `Diskon ${discountDisplay}!`}</h2>
+        <div className={styles.badge}>{isEarlyBird ? '🔥 ' : ''}{promo.name}</div>
+        <h2 className={styles.headline}>{p.headline}</h2>
         <p className={styles.sub}>{subText}</p>
 
         {slots !== null && (
@@ -114,7 +121,7 @@ export default function EarlyBirdPopup() {
           </div>
         )}
 
-        <button className={styles.cta} onClick={handleCta}>{p.cta}</button>
+        <button className={styles.cta} onClick={handleCta}>{ctaText}</button>
         <button className={styles.dismiss} onClick={close}>{p.dismiss}</button>
       </div>
     </div>

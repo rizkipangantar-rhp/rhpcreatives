@@ -6,10 +6,16 @@ import styles from './AnnouncementBar.module.css'
 
 export type PromoBarInfo = {
   id: string
+  name: string
   announcement_text_id: string
   announcement_text_en: string
   end_date: string | null
   requires_claim: boolean
+  discount_type: 'percent' | 'nominal'
+  discount_value: number
+  quota: number
+  claimed: number
+  remaining: number | null
 }
 
 function getTimeLeft(deadline: Date) {
@@ -82,7 +88,15 @@ export default function AnnouncementBar({ initialPromo }: { initialPromo: PromoB
   if (promo.end_date && countdownReady && time === null) return null
 
   const href = promo.requires_claim ? `/promo/klaim/${promo.id}` : '/promo'
-  const text = lang === 'id' ? promo.announcement_text_id : promo.announcement_text_en
+  const discountDisplay = promo.discount_type === 'percent' ? `${promo.discount_value}%` : `Rp${promo.discount_value.toLocaleString('id-ID')}`
+  const quotaText = promo.quota > 0 ? String(promo.quota) : null
+  const text = lang === 'id'
+    ? quotaText
+      ? `${promo.name} ${discountDisplay} OFF — Cuma buat ${quotaText} klien pertama! Jangan sampe nyesel ya bestie`
+      : `${promo.name} ${discountDisplay} OFF — Jangan sampe nyesel ya bestie`
+    : quotaText
+      ? `${promo.name} ${discountDisplay} OFF — First ${quotaText} clients only! Don't sleep on this bestie`
+      : `${promo.name} ${discountDisplay} OFF — Don't sleep on this bestie`
 
   return (
     <div ref={barRef} className={styles.bar}>

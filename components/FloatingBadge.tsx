@@ -6,8 +6,7 @@ import styles from './FloatingBadge.module.css'
 import type { PromoBarInfo } from './AnnouncementBar'
 
 export default function FloatingBadge({ initialPromo }: { initialPromo: PromoBarInfo | null }) {
-  const { tr } = useLanguage()
-  const f = tr.floatingBadge
+  const { lang } = useLanguage()
   const [promo, setPromo] = useState<PromoBarInfo | null>(initialPromo)
 
   // Background refresh
@@ -20,13 +19,19 @@ export default function FloatingBadge({ initialPromo }: { initialPromo: PromoBar
 
   if (!promo) return null
 
+  const discountDisplay = promo.discount_type === 'percent' ? `${promo.discount_value}%` : `Rp${promo.discount_value.toLocaleString('id-ID')}`
+  const slotsLeft = promo.remaining ?? (promo.quota > 0 ? Math.max(0, promo.quota - promo.claimed) : null)
+  const badgeText = `${discountDisplay} OFF ${promo.name}`
+  const subText = slotsLeft !== null
+    ? (lang === 'id' ? `Cuma ${slotsLeft} slot` : `${slotsLeft} slots left`)
+    : (lang === 'id' ? 'Terbatas' : 'Limited')
   const href = promo.requires_claim ? `/promo/klaim/${promo.id}` : '/promo'
 
   return (
-    <Link href={href} className={styles.badge} aria-label={f.text}>
+    <Link href={href} className={styles.badge} aria-label={badgeText}>
       <span className={styles.pulse} />
-      <span className={styles.text}>{f.text}</span>
-      <span className={styles.sub}>{f.sub}</span>
+      <span className={styles.text}>{badgeText}</span>
+      <span className={styles.sub}>{subText}</span>
     </Link>
   )
 }
