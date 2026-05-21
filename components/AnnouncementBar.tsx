@@ -90,6 +90,8 @@ export default function AnnouncementBar({ initialPromo }: { initialPromo: PromoB
   const href = promo.requires_claim ? `/promo/klaim/${promo.id}` : '/promo'
   const discountDisplay = promo.discount_type === 'percent' ? `${promo.discount_value}%` : `Rp${promo.discount_value.toLocaleString('id-ID')}`
   const quotaText = promo.quota > 0 ? String(promo.quota) : null
+  // First 2 words of promo name for compact layouts
+  const shortName = promo.name.split(' ').slice(0, 2).join(' ')
   const text = lang === 'id'
     ? quotaText
       ? `${promo.name} ${discountDisplay} OFF — Cuma buat ${quotaText} klien pertama! Jangan sampe nyesel ya bestie`
@@ -97,12 +99,14 @@ export default function AnnouncementBar({ initialPromo }: { initialPromo: PromoB
     : quotaText
       ? `${promo.name} ${discountDisplay} OFF — First ${quotaText} clients only! Don't sleep on this bestie`
       : `${promo.name} ${discountDisplay} OFF — Don't sleep on this bestie`
+  // Mobile bar text — kept short so it never overflows alongside the countdown
+  const shortText = `${shortName} ${discountDisplay} OFF`
 
   return (
     <div ref={barRef} className={styles.bar}>
       <div className={styles.shimmer} />
       <span className={styles.textFull}>{text}</span>
-      <Link href={href} className={styles.textShort}>{text}</Link>
+      <Link href={href} className={styles.textShort}>{shortText}</Link>
       <Link href={href} className={styles.ctaLink}>{lang === 'id' ? 'Klaim →' : 'Claim →'}</Link>
       {time && (
         <span className={styles.countdown}>
