@@ -55,7 +55,7 @@ export default function EarlyBirdPopup() {
     if (pathname !== '/') return
     if (hasClaim === null) return
     if (hasClaim) return
-    const timer = setTimeout(() => setVisible(true), 2_000)
+    const timer = setTimeout(() => setVisible(true), 600)
     return () => clearTimeout(timer)
   }, [pathname, hasClaim])
 
