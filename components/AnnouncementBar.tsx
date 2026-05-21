@@ -94,13 +94,13 @@ export default function AnnouncementBar({ initialPromo }: { initialPromo: PromoB
   const shortName = promo.name.split(' ').slice(0, 2).join(' ')
   const text = lang === 'id'
     ? quotaText
-      ? `${promo.name} ${discountDisplay} OFF — Cuma buat ${quotaText} klien pertama! Jangan sampe nyesel ya bestie`
-      : `${promo.name} ${discountDisplay} OFF — Jangan sampe nyesel ya bestie`
+      ? `🔥 ${promo.name} ${discountDisplay} OFF — Cuma buat ${quotaText} klien pertama! Jangan sampe nyesel ya bestie`
+      : `🔥 ${promo.name} ${discountDisplay} OFF — Jangan sampe nyesel ya bestie`
     : quotaText
-      ? `${promo.name} ${discountDisplay} OFF — First ${quotaText} clients only! Don't sleep on this bestie`
-      : `${promo.name} ${discountDisplay} OFF — Don't sleep on this bestie`
+      ? `🔥 ${promo.name} ${discountDisplay} OFF — First ${quotaText} clients only! Don't sleep on this bestie`
+      : `🔥 ${promo.name} ${discountDisplay} OFF — Don't sleep on this bestie`
   // Mobile bar text — kept short so it never overflows alongside the countdown
-  const shortText = `${shortName} ${discountDisplay} OFF`
+  const shortText = `🔥 ${shortName} ${discountDisplay} OFF`
 
   return (
     <div ref={barRef} className={styles.bar}>
