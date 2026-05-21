@@ -148,6 +148,7 @@ export default function ProfilCard({ session }: { session: Session }) {
   const [negoNote, setNegoNote] = useState('')
   const [negoPrice, setNegoPrice] = useState('')
   const [negoError, setNegoError] = useState('')
+  const [negoSuccessId, setNegoSuccessId] = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/referral/stats')
@@ -288,10 +289,22 @@ export default function ProfilCard({ session }: { session: Session }) {
       })
       const data = await res.json() as { ok?: boolean; adminWaUrl?: string; error?: string }
       if (!res.ok) { setNegoError(data.error ?? 'Gagal nego. Coba lagi.'); return }
+      const newEntry: NegotiationEntry = {
+        by: 'customer',
+        note: negoNote.trim(),
+        counter_price: negoPrice ? (parseInt(negoPrice.replace(/\D/g, ''), 10) || null) : null,
+        created_at: new Date().toISOString(),
+      }
       setCustomRequests(prev => prev.map(r =>
-        r.request_id === requestId ? { ...r, status: 'negotiating' as RequestStatus } : r
+        r.request_id === requestId ? {
+          ...r,
+          status: 'negotiating' as RequestStatus,
+          negotiation_history: [...(r.negotiation_history ?? []), newEntry],
+        } : r
       ))
       setNegoOpen(null); setNegoNote(''); setNegoPrice('')
+      setNegoSuccessId(requestId)
+      setTimeout(() => setNegoSuccessId(null), 4000)
       if (data.adminWaUrl) setTimeout(() => window.open(data.adminWaUrl, '_blank'), 500)
     } finally {
       setActionLoading(null)
@@ -694,6 +707,13 @@ export default function ProfilCard({ session }: { session: Session }) {
                               </div>
                             </div>
                           )}
+                        </div>
+                      )}
+
+                      {/* Nego success toast */}
+                      {negoSuccessId === req.request_id && (
+                        <div style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.25)', borderRadius: 10, padding: '10px 14px', fontSize: '0.82rem', color: '#34d399', fontWeight: 600, marginBottom: 8 }}>
+                          {lang === 'id' ? 'Nego kamu udah terkirim! Tunggu respons admin ya.' : "Your counter-offer has been sent! Wait for the admin's response."}
                         </div>
                       )}
 
