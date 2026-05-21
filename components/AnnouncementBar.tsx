@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useLanguage } from '@/context/LanguageContext'
 import styles from './AnnouncementBar.module.css'
 
-type PromoInfo = {
+export type PromoBarInfo = {
   id: string
   announcement_text_id: string
   announcement_text_en: string
@@ -24,13 +24,16 @@ function getTimeLeft(deadline: Date) {
 
 function pad(n: number) { return String(n).padStart(2, '0') }
 
-export default function AnnouncementBar() {
+export default function AnnouncementBar({ initialPromo }: { initialPromo: PromoBarInfo | null }) {
   const { lang, tr } = useLanguage()
   const p = tr.promoBar
   const barRef = useRef<HTMLDivElement>(null)
   const [dismissed, setDismissed] = useState(false)
-  const [promo, setPromo] = useState<PromoInfo | null | undefined>(undefined) // undefined = loading
+  // Start with SSR data — no undefined/loading state needed
+  const [promo, setPromo] = useState<PromoBarInfo | null>(initialPromo)
   const [time, setTime] = useState<{ d: number; h: number; m: number; s: number } | null>(null)
+  // Guard: only hide for expired after client has computed the countdown
+  const [countdownReady, setCountdownReady] = useState(false)
 
   useLayoutEffect(() => {
     function sync() {
@@ -43,20 +46,27 @@ export default function AnnouncementBar() {
     return () => ro.disconnect()
   }, [dismissed, promo])
 
+  // Background refresh — keeps data fresh after SSR
   useEffect(() => {
     fetch('/api/promos')
       .then(r => r.json())
       .then(data => {
-        const first: PromoInfo | null = data.promos?.[0] ?? null
+        const first: PromoBarInfo | null = data.promos?.[0] ?? null
         setPromo(first)
       })
-      .catch(() => setPromo(null))
+      .catch(() => {})
   }, [])
 
   useEffect(() => {
-    if (!promo?.end_date) return
+    if (!promo?.end_date) {
+      setCountdownReady(true)
+      return
+    }
     const deadline = new Date(promo.end_date)
-    function tick() { setTime(getTimeLeft(deadline)) }
+    function tick() {
+      setTime(getTimeLeft(deadline))
+      setCountdownReady(true)
+    }
     tick()
     const id = setInterval(tick, 1_000)
     return () => clearInterval(id)
@@ -67,12 +77,9 @@ export default function AnnouncementBar() {
     document.documentElement.style.setProperty('--bar-h', '0px')
   }
 
-  // Still loading or no active promo — set bar-h to 0 and render nothing
   if (dismissed || promo === null) return null
-  if (promo === undefined) return null  // loading — will re-render once fetched
-
-  // If promo has an end_date and it's expired, hide
-  if (promo.end_date && time === null) return null
+  // Only hide for expiry after countdown is computed (avoids flicker on hydration)
+  if (promo.end_date && countdownReady && time === null) return null
 
   const href = promo.requires_claim ? `/promo/klaim/${promo.id}` : '/promo'
   const text = lang === 'id' ? promo.announcement_text_id : promo.announcement_text_en
