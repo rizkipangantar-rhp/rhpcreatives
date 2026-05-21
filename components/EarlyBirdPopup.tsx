@@ -5,136 +5,113 @@ import { useSession } from 'next-auth/react'
 import { useLanguage } from '@/context/LanguageContext'
 import styles from './EarlyBirdPopup.module.css'
 
-const SLOTS_TOTAL = 20
-
-function claimCacheKey(uid: string) {
-  return `eb-claimed:${uid}`
+type PromoInfo = {
+  id: string; name: string
+  discount_type: 'percent' | 'nominal'; discount_value: number
+  quota: number; claimed: number; remaining: number | null; is_full: boolean
+  requires_claim: boolean; announcement_text_id: string; announcement_text_en: string
 }
 
 export default function EarlyBirdPopup() {
-  const { tr } = useLanguage()
+  const { tr, lang } = useLanguage()
   const p = tr.earlyBirdPopup
   const pathname = usePathname()
   const router = useRouter()
   const { data: session, status } = useSession()
   const [visible, setVisible] = useState(false)
-  const [slotsLeft, setSlotsLeft] = useState<number | null>(null)
+  const [promo, setPromo] = useState<PromoInfo | null>(null)
   const [hasClaim, setHasClaim] = useState<boolean | null>(null)
 
-  // Suppress popup for users who have already claimed.
-  // Uses three layers so it survives Vercel lambda isolation (ephemeral /tmp):
-  //   1. Cookie eb_claimed=1 — set by the claim page, no session-email dependency
-  //   2. localStorage keyed by user email — user-specific, cleared with browser data
-  //   3. API call — ground truth, may be stale on a cold lambda
   useEffect(() => {
     if (status === 'loading') return
 
-    // Unauthenticated users always see the popup (cookie may be stale from a previous session)
     if (status === 'unauthenticated') { setHasClaim(false); return }
 
-    // Layer 1: cookie (fastest, most reliable) — only checked for authenticated users
+    // Check if already claimed via cookie (fastest)
     if (document.cookie.includes('eb_claimed=1')) {
-      setHasClaim(true)
-      return
+      setHasClaim(true); return
     }
 
-    // Layer 2: localStorage
     const uid = session?.user?.email ?? session?.user?.id ?? ''
-    if (uid && localStorage.getItem(claimCacheKey(uid)) === '1') {
-      setHasClaim(true)
-      return
+    if (uid && localStorage.getItem(`eb-claimed:${uid}`) === '1') {
+      setHasClaim(true); return
     }
 
-    // Layer 3: API
-    fetch('/api/early-bird/status')
+    // Check via API
+    fetch('/api/promos/my-claims')
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(data => {
-        const claimed = !!data.claim
+        const claimed = (data.claims ?? []).length > 0
         if (claimed) {
           document.cookie = 'eb_claimed=1; max-age=31536000; path=/; SameSite=Lax'
-          if (uid) localStorage.setItem(claimCacheKey(uid), '1')
+          if (uid) localStorage.setItem(`eb-claimed:${uid}`, '1')
         }
         setHasClaim(claimed)
       })
-      .catch(() => {}) // keep null on error — popup stays suppressed
+      .catch(() => setHasClaim(false))
   }, [status, session?.user?.email, session?.user?.id])
 
   useEffect(() => {
     if (pathname !== '/') return
-    if (hasClaim === null) return  // wait until claim status is known
-    if (hasClaim) return           // already claimed — never show
+    if (hasClaim === null) return
+    if (hasClaim) return
     const timer = setTimeout(() => setVisible(true), 2_000)
     return () => clearTimeout(timer)
   }, [pathname, hasClaim])
 
   useEffect(() => {
     if (!visible) return
-    // Initialise from localStorage cache so we never flash a higher number
-    const cached = parseInt(localStorage.getItem('eb-remaining') ?? String(SLOTS_TOTAL), 10)
-    setSlotsLeft(cached)
-
-    fetch('/api/early-bird/quota')
+    fetch('/api/promos')
       .then(r => r.json())
-      .then(data => {
-        if (typeof data.remaining !== 'number') return
-        // If server reports higher than cache a reset occurred — trust server.
-        // Otherwise show the lower value (stale lambdas can over-count).
-        const shown = data.remaining > cached ? data.remaining : Math.min(data.remaining, cached)
-        setSlotsLeft(shown)
-        localStorage.setItem('eb-remaining', String(shown))
-      })
+      .then(data => { setPromo(data.promos?.[0] ?? null) })
       .catch(() => {})
   }, [visible])
 
-  function close() {
-    setVisible(false)
-  }
+  function close() { setVisible(false) }
 
   function handleCta() {
     close()
+    if (!promo) return
+    const href = promo.requires_claim ? `/promo/klaim/${promo.id}` : '/promo'
     if (status === 'authenticated') {
-      router.push('/promo/klaim-early-bird')
+      router.push(href)
     } else {
-      router.push('/login?callbackUrl=%2Fpromo%2Fklaim-early-bird')
+      router.push(`/login?callbackUrl=${encodeURIComponent(href)}`)
     }
   }
 
-  if (!visible) return null
+  if (!visible || !promo) return null
 
-  const displaySlots = slotsLeft ?? SLOTS_TOTAL
-  const taken = SLOTS_TOTAL - displaySlots
+  const discountDisplay = promo.discount_type === 'percent' ? `${promo.discount_value}%` : `Rp${promo.discount_value.toLocaleString('id-ID')}`
+  const slots = promo.quota > 0 ? promo.quota : null
+  const slotsLeft = promo.remaining ?? (slots ? Math.max(0, slots - promo.claimed) : null)
+  const taken = slots && slotsLeft !== null ? slots - slotsLeft : 0
+  const headline = lang === 'id' ? promo.announcement_text_id : promo.announcement_text_en
 
   return (
     <div className={styles.overlay} onClick={close}>
       <div className={styles.card} onClick={e => e.stopPropagation()}>
         <button className={styles.closeBtn} onClick={close} aria-label="Tutup">✕</button>
 
-        <div className={styles.badge}>🔥 Early Bird</div>
-        <h2 className={styles.headline}>{p.headline}</h2>
+        <div className={styles.badge}>{promo.name}</div>
+        <h2 className={styles.headline}>{headline || `Diskon ${discountDisplay}!`}</h2>
         <p className={styles.sub}>{p.sub}</p>
 
-        <div className={styles.slots}>
-          <div className={styles.slotBar}>
-            {Array.from({ length: SLOTS_TOTAL }).map((_, i) => (
-              <div
-                key={i}
-                className={`${styles.slotDot} ${i < taken ? styles.slotDotTaken : ''}`}
-              />
-            ))}
+        {slots !== null && (
+          <div className={styles.slots}>
+            <div className={styles.slotBar}>
+              {Array.from({ length: slots }).map((_, i) => (
+                <div key={i} className={`${styles.slotDot} ${i < taken ? styles.slotDotTaken : ''}`} />
+              ))}
+            </div>
+            <div className={styles.slotText}>
+              {slotsLeft === null ? <span className={styles.slotNum}>…</span> : <span className={styles.slotNum}>{slotsLeft}</span>}
+              {' '}{p.slotsLeft}
+            </div>
           </div>
-          <div className={styles.slotText}>
-            {slotsLeft === null ? (
-              <span className={styles.slotNum}>…</span>
-            ) : (
-              <span className={styles.slotNum}>{displaySlots}</span>
-            )}
-            {' '}{p.slotsLeft}
-          </div>
-        </div>
+        )}
 
-        <button className={styles.cta} onClick={handleCta}>
-          {p.cta}
-        </button>
+        <button className={styles.cta} onClick={handleCta}>{p.cta}</button>
         <button className={styles.dismiss} onClick={close}>{p.dismiss}</button>
       </div>
     </div>

@@ -13,7 +13,7 @@ const NAV: NavItem[] = [
   { href: '/admin/orders',         icon: '📦', label: 'Orders' },
   { href: '/admin/custom-orders',  icon: '✨', label: 'Custom Orders' },
   { href: '/admin/users',          icon: '👥', label: 'Users' },
-  { href: '/admin/early-bird',     icon: '🎫', label: 'Early Bird' },
+  { href: '/admin/promo',          icon: '🎫', label: 'Promo' },
   { href: '/admin/referral',       icon: '🔗', label: 'Referral' },
   { href: '/admin/pendapatan',     icon: '💰', label: 'Pendapatan' },
   { href: '/admin/pengaturan',     icon: '⚙️', label: 'Pengaturan', minRole: 'super_admin' },

@@ -1,4 +1,5 @@
 'use client'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useLanguage } from '@/context/LanguageContext'
 import styles from './PromoContent.module.css'
@@ -19,38 +20,120 @@ const STEP_ICONS = [
   </svg>,
 ]
 
+type PromoInfo = {
+  id: string; name: string; description: string
+  discount_type: 'percent' | 'nominal'; discount_value: number
+  quota: number; claimed: number; remaining: number | null; is_full: boolean
+  end_date: string | null; requires_claim: boolean
+}
+
+function PromoCard({ promo, lang }: { promo: PromoInfo; lang: string }) {
+  const discountDisplay = promo.discount_type === 'percent'
+    ? `${promo.discount_value}%`
+    : `Rp${promo.discount_value.toLocaleString('id-ID')}`
+
+  const href = promo.requires_claim ? `/promo/klaim/${promo.id}` : '/order'
+  const isFull = promo.is_full
+
+  return (
+    <div className={styles.earlyBirdInner} style={{ opacity: isFull ? 0.65 : 1 }}>
+      {isFull && <div className={styles.earlyBirdBadge} style={{ background: 'rgba(239,68,68,0.2)', color: '#f87171' }}>
+        {lang === 'id' ? '🚫 HABIS' : '🚫 SOLD OUT'}
+      </div>}
+      {!isFull && <div className={styles.earlyBirdBadge}>🔥 PROMO AKTIF</div>}
+      <div className={styles.earlyBirdLabel}>{promo.name}</div>
+      <h2 className={styles.earlyBirdTitle}>Diskon {discountDisplay}</h2>
+      <p className={styles.earlyBirdDesc}>{promo.description}</p>
+
+      <div className={styles.earlyBirdStats}>
+        <div className={styles.earlyBirdStat}>
+          <div className={styles.earlyBirdStatNum}>{discountDisplay}</div>
+          <div className={styles.earlyBirdStatLabel}>{lang === 'id' ? 'Diskon' : 'Discount'}</div>
+        </div>
+        {promo.quota > 0 && (
+          <>
+            <div className={styles.earlyBirdDivider} />
+            <div className={styles.earlyBirdStat}>
+              <div className={styles.earlyBirdStatNum}>{promo.remaining ?? Math.max(0, promo.quota - promo.claimed)}</div>
+              <div className={styles.earlyBirdStatLabel}>{lang === 'id' ? 'Slot Tersisa' : 'Slots Left'}</div>
+            </div>
+          </>
+        )}
+        {promo.end_date && (
+          <>
+            <div className={styles.earlyBirdDivider} />
+            <div className={styles.earlyBirdStat}>
+              <div className={styles.earlyBirdStatNum} style={{ fontSize: '0.95rem' }}>
+                {new Date(promo.end_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+              </div>
+              <div className={styles.earlyBirdStatLabel}>{lang === 'id' ? 'Berakhir' : 'Ends'}</div>
+            </div>
+          </>
+        )}
+      </div>
+
+      {!isFull && (
+        <Link href={href} className={styles.earlyBirdCta}>
+          {promo.requires_claim
+            ? (lang === 'id' ? 'Klaim Sekarang →' : 'Claim Now →')
+            : (lang === 'id' ? 'Order Sekarang →' : 'Order Now →')}
+        </Link>
+      )}
+      {isFull && (
+        <span className={styles.earlyBirdCta} style={{ opacity: 0.4, cursor: 'not-allowed' }}>
+          {lang === 'id' ? 'Slot Habis' : 'Sold Out'}
+        </span>
+      )}
+    </div>
+  )
+}
 
 export default function PromoContent() {
-  const { tr } = useLanguage()
+  const { tr, lang } = useLanguage()
   const promo = tr.promo
+  const [promos, setPromos] = useState<PromoInfo[]>([])
+
+  useEffect(() => {
+    fetch('/api/promos')
+      .then(r => r.json())
+      .then(data => setPromos(data.promos ?? []))
+      .catch(() => {})
+  }, [])
 
   return (
     <>
-      {/* ── Early Bird ── */}
-      <section className={styles.earlyBirdSection}>
-        <div className={styles.earlyBirdInner}>
-          <div className={styles.earlyBirdBadge}>{promo.earlyBird.badge}</div>
-          <div className={styles.earlyBirdLabel}>{promo.earlyBird.label}</div>
-          <h2 className={styles.earlyBirdTitle}>{promo.earlyBird.title}</h2>
-          <p className={styles.earlyBirdDesc}>{promo.earlyBird.desc}</p>
+      {/* ── Dynamic Promos ── */}
+      {promos.map(p => (
+        <section key={p.id} className={styles.earlyBirdSection}>
+          <PromoCard promo={p} lang={lang} />
+        </section>
+      ))}
 
-          <div className={styles.earlyBirdStats}>
-            <div className={styles.earlyBirdStat}>
-              <div className={styles.earlyBirdStatNum}>{promo.earlyBird.discount}</div>
-              <div className={styles.earlyBirdStatLabel}>Diskon</div>
+      {/* Fallback if no promos loaded yet */}
+      {promos.length === 0 && (
+        <section className={styles.earlyBirdSection}>
+          <div className={styles.earlyBirdInner}>
+            <div className={styles.earlyBirdBadge}>{promo.earlyBird.badge}</div>
+            <div className={styles.earlyBirdLabel}>{promo.earlyBird.label}</div>
+            <h2 className={styles.earlyBirdTitle}>{promo.earlyBird.title}</h2>
+            <p className={styles.earlyBirdDesc}>{promo.earlyBird.desc}</p>
+            <div className={styles.earlyBirdStats}>
+              <div className={styles.earlyBirdStat}>
+                <div className={styles.earlyBirdStatNum}>{promo.earlyBird.discount}</div>
+                <div className={styles.earlyBirdStatLabel}>Diskon</div>
+              </div>
+              <div className={styles.earlyBirdDivider} />
+              <div className={styles.earlyBirdStat}>
+                <div className={styles.earlyBirdStatNum}>{promo.earlyBird.quota}</div>
+                <div className={styles.earlyBirdStatLabel}>Kuota</div>
+              </div>
             </div>
-            <div className={styles.earlyBirdDivider} />
-            <div className={styles.earlyBirdStat}>
-              <div className={styles.earlyBirdStatNum}>{promo.earlyBird.quota}</div>
-              <div className={styles.earlyBirdStatLabel}>Kuota</div>
-            </div>
+            <Link href="/promo/klaim/promo_early_bird" className={styles.earlyBirdCta}>
+              {promo.earlyBird.cta}
+            </Link>
           </div>
-
-          <Link href="/promo/klaim-early-bird" className={styles.earlyBirdCta}>
-            {promo.earlyBird.cta}
-          </Link>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── Bundling ── */}
       <section className={styles.bundlingSection}>
@@ -117,7 +200,6 @@ export default function PromoContent() {
           </Link>
         </div>
       </section>
-
     </>
   )
 }

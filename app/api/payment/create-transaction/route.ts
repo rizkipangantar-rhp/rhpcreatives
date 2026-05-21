@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { findPackageById, findServiceById } from '@/lib/packages'
 import { createOrder } from '@/lib/orders'
 import { findClaim, findClaimByCode, isCodeUsed, markCodeUsed } from '@/lib/early-bird'
+import { findClaimByVoucherCode, markClaimUsed, getPromoById } from '@/lib/promos'
 import { findUserByReferralCode, findUserById, useReferralReward, getUserReferralCode } from '@/lib/users'
 import { hasUserUsedReferral, recordReferralUsage } from '@/lib/referral'
 
@@ -22,8 +23,7 @@ export async function POST(req: Request) {
       wa: string
       notes?: string
       voucherCode?: string
-      // 'referrer_reward' = 15% own reward | 'invitee' = 10% referral | 'ebird' = 25% early bird (auto) | undefined/none = no discount
-      discountMode?: 'referrer_reward' | 'invitee' | 'ebird' | 'none'
+      discountMode?: 'referrer_reward' | 'invitee' | 'ebird' | 'promo' | 'none'
     }
 
     if (!packageId || !name || !email || !wa) {
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
 
     let discountAmount = 0
     let appliedVoucher: string | undefined
-    let discountType: 'early_bird' | 'referral_invitee' | 'referral_referrer' | null = null
+    let discountType: 'early_bird' | 'referral_invitee' | 'referral_referrer' | 'promo' | null = null
     let referralCodeUsed: string | undefined
     let referrerId: string | undefined
 
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // ── 3. Auto Early Bird (user selected early bird option, no voucher code required)
+    // ── 3. Auto Early Bird (legacy mode — looks up early bird claim for user)
     else if (discountMode === 'ebird') {
       const claim = await findClaim(session.user.id)
       if (claim && !claim.usedAt) {
@@ -83,16 +83,39 @@ export async function POST(req: Request) {
       }
     }
 
-    // ── 4. Legacy: manual voucher code entered in field
+    // ── 4. Generic promo voucher (new system)
+    else if (discountMode === 'promo' && voucherCode) {
+      const normalized = voucherCode.trim().toUpperCase()
+      const claim = await findClaimByVoucherCode(normalized)
+      if (claim && claim.status === 'active') {
+        const promo = await getPromoById(claim.promo_id)
+        if (promo && promo.is_active) {
+          const amt = promo.discount_type === 'percent'
+            ? Math.round(pkg.price * (promo.discount_value / 100))
+            : Math.min(promo.discount_value, pkg.price)
+          discountAmount = amt
+          discountType = claim.promo_id === 'promo_early_bird' ? 'early_bird' : 'promo'
+          appliedVoucher = normalized
+        }
+      }
+    }
+
+    // ── 5. Legacy: manual voucher code entered in field
     else if (voucherCode && discountMode !== 'none') {
       const normalized = voucherCode.trim().toUpperCase()
 
-      if (normalized.startsWith('EBIRD-')) {
-        const claim = await findClaimByCode(normalized)
-        if (claim && !await isCodeUsed(normalized)) {
-          discountAmount = Math.round(pkg.price * 0.25)
-          discountType = 'early_bird'
-          appliedVoucher = normalized
+      if (normalized.startsWith('EBIRD-') || /^[A-Z]{2,10}-[A-Z0-9]{5}$/.test(normalized)) {
+        const claim = await findClaimByVoucherCode(normalized)
+        if (claim && claim.status === 'active') {
+          const promo = await getPromoById(claim.promo_id)
+          if (promo && promo.is_active) {
+            const amt = promo.discount_type === 'percent'
+              ? Math.round(pkg.price * (promo.discount_value / 100))
+              : Math.min(promo.discount_value, pkg.price)
+            discountAmount = amt
+            discountType = claim.promo_id === 'promo_early_bird' ? 'early_bird' : 'promo'
+            appliedVoucher = normalized
+          }
         }
       } else if (normalized.startsWith('RHP-')) {
         const referrer = await findUserByReferralCode(normalized)
@@ -131,11 +154,10 @@ export async function POST(req: Request) {
     })
 
     // Post-order side effects
-    if (discountType === 'early_bird' && appliedVoucher) {
-      await markCodeUsed(appliedVoucher, order.orderId)
+    if ((discountType === 'early_bird' || discountType === 'promo') && appliedVoucher) {
+      await markClaimUsed(appliedVoucher, order.orderId)
     }
     if (discountType === 'referral_invitee' && referralCodeUsed) {
-      // Records usage and issues a +1 reward to the referrer
       await recordReferralUsage(session.user.id, referralCodeUsed, order.orderId)
     }
 

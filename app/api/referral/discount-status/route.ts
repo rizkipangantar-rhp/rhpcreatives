@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { findUserById, getUserReferralCode } from '@/lib/users'
 import { hasUserUsedReferral } from '@/lib/referral'
-import { findRawClaim, isClaimExpired } from '@/lib/early-bird'
+import { getActiveClaimsForUser } from '@/lib/promos'
 
 export async function GET() {
   const session = await getServerSession(authOptions)
@@ -11,23 +11,21 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const [user, isFirstOrder, rawClaim] = await Promise.all([
+  const [user, isFirstOrder, promoDiscounts] = await Promise.all([
     findUserById(session.user.id),
     hasUserUsedReferral(session.user.id).then(used => !used),
-    findRawClaim(session.user.id),
+    getActiveClaimsForUser(session.user.id),
   ])
   if (!user) {
     return NextResponse.json({ error: 'User not found' }, { status: 404 })
   }
 
-  // Invitee discount: 10% off first order if they were referred
   const inviteeDiscount = {
     available: !!(user.referredBy && isFirstOrder),
     code: user.referredBy ?? null,
     percent: 10,
   }
 
-  // Referrer reward: 15% off for each time their code was used
   const referrerReward = {
     available: (user.referralRewardsAvailable ?? 0) > 0,
     count: user.referralRewardsAvailable ?? 0,
@@ -35,12 +33,25 @@ export async function GET() {
     code: getUserReferralCode(user),
   }
 
-  // Early bird: 25% off if user has an active (non-expired, not yet used) claim
+  // Legacy earlyBird shape — backed by new promo system
+  const ebClaim = promoDiscounts.find(c => c.promo_id === 'promo_early_bird')
   const earlyBird = {
-    available: !!(rawClaim && !isClaimExpired(rawClaim) && !rawClaim.usedAt),
-    used: !!(rawClaim?.usedAt),
-    percent: 25,
+    available: !!ebClaim,
+    used: false,
+    percent: ebClaim?.promo.discount_value ?? 25,
+    voucher_code: ebClaim?.voucher_code,
   }
 
-  return NextResponse.json({ inviteeDiscount, referrerReward, earlyBird })
+  // All active promo claims for this user
+  const promoDiscountsFormatted = promoDiscounts.map(c => ({
+    claim_id: c.claim_id,
+    promo_id: c.promo_id,
+    promo_name: c.promo.name,
+    discount_type: c.promo.discount_type,
+    discount_value: c.promo.discount_value,
+    voucher_code: c.voucher_code,
+    status: c.status,
+  }))
+
+  return NextResponse.json({ inviteeDiscount, referrerReward, earlyBird, promoDiscounts: promoDiscountsFormatted })
 }

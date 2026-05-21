@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { findClaimByCode, isCodeUsed } from '@/lib/early-bird'
+import { findClaimByVoucherCode, getPromoById } from '@/lib/promos'
 import { findUserByReferralCode, findUserById } from '@/lib/users'
 import { hasUserUsedReferral } from '@/lib/referral'
 
@@ -15,26 +15,33 @@ export async function POST(req: Request) {
 
     const normalized = code.trim().toUpperCase()
 
-    // Early Bird voucher
-    if (normalized.startsWith('EBIRD-')) {
-      if (normalized.length < 10) {
-        return NextResponse.json({ valid: false, message: 'Format kode tidak valid' })
-      }
-
-      const claim = await findClaimByCode(normalized)
+    // Promo voucher (any prefix with format XXXX-XXXXX)
+    const promoVoucherMatch = /^([A-Z]{2,10})-[A-Z0-9]{5}$/.exec(normalized)
+    if (promoVoucherMatch) {
+      const claim = await findClaimByVoucherCode(normalized)
       if (!claim) {
         return NextResponse.json({ valid: false, message: 'Kode voucher tidak ditemukan' })
       }
-
-      if (await isCodeUsed(normalized)) {
-        return NextResponse.json({ valid: false, message: 'Kode Early Bird kamu udah kepake nih! Satu kode cuma bisa dipakai sekali ya bestie 😅' })
+      if (claim.status === 'used') {
+        return NextResponse.json({ valid: false, message: 'Kode voucher ini sudah dipakai. Satu kode hanya bisa dipakai sekali ya 😊' })
       }
+
+      const promo = await getPromoById(claim.promo_id)
+      if (!promo || !promo.is_active) {
+        return NextResponse.json({ valid: false, message: 'Promo sudah tidak aktif' })
+      }
+
+      const discountDisplay = promo.discount_type === 'percent'
+        ? `${promo.discount_value}%`
+        : `Rp${promo.discount_value.toLocaleString('id-ID')}`
 
       return NextResponse.json({
         valid: true,
-        type: 'ebird',
-        discount: 0.25,
-        message: 'Voucher Early Bird berhasil! Diskon 25%',
+        type: 'promo',
+        promo_id: promo.id,
+        discount_type: promo.discount_type,
+        discount: promo.discount_type === 'percent' ? promo.discount_value / 100 : promo.discount_value,
+        message: `Voucher ${promo.name} berhasil! Diskon ${discountDisplay}`,
       })
     }
 
@@ -54,7 +61,6 @@ export async function POST(req: Request) {
         return NextResponse.json({ valid: false, message: 'Tidak bisa pakai kode referral sendiri' })
       }
 
-      // Check if user is trying to use this as an invitee discount (first order only)
       const currentUser = await findUserById(session.user.id)
       if (!currentUser) {
         return NextResponse.json({ valid: false, message: 'User tidak ditemukan' })

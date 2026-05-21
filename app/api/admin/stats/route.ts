@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { getAllOrders } from '@/lib/orders'
 import { readUsers } from '@/lib/users-internal'
-import { getQuota } from '@/lib/early-bird'
+import { getEarlyBirdQuota } from '@/lib/promos'
 import { getAnalyticsSummary } from '@/lib/analytics'
 
 export async function GET() {
@@ -13,7 +13,7 @@ export async function GET() {
   const [orders, users, quota, analytics] = await Promise.all([
     getAllOrders(),
     readUsers(),
-    getQuota(),
+    getEarlyBirdQuota(),
     getAnalyticsSummary(),
   ])
 
