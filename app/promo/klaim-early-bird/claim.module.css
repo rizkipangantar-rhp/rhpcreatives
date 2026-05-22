@@ -1,9 +1,10 @@
 .page {
-  min-height: 100vh;
+  min-height: calc(100svh - var(--bar-h) - 64px);
+  margin-top: calc(var(--bar-h) + 64px);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: calc(var(--bar-h) + 80px) 1rem 4rem;
+  padding: 2rem 1rem;
   position: relative;
   overflow: hidden;
 }
