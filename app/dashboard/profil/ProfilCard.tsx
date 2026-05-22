@@ -416,11 +416,25 @@ export default function ProfilCard({ session }: { session: Session }) {
             {/* Rewards card */}
             <div className={styles.card}>
               <div className={styles.cardLabel}>{p.rewardsAvailableLabel}</div>
-              <div className={styles.rewardCount}>
-                <span className={styles.rewardNum}>{referralStats?.rewardsAvailable ?? '—'}</span>
-                <span className={styles.rewardUnit}>reward</span>
+              <div className={styles.activeDiscountList}>
+                {(referralStats?.rewardsAvailable ?? 0) > 0 && (
+                  <div className={styles.activeDiscountItem}>
+                    <span className={styles.activeDiscountCount}>{referralStats!.rewardsAvailable}×</span>
+                    <span className={styles.activeDiscountName}>{p.referrerTitle}</span>
+                    <span className={styles.activeDiscountPct}>15%</span>
+                  </div>
+                )}
+                {ebirdStatus?.available && (
+                  <div className={styles.activeDiscountItem}>
+                    <span className={styles.activeDiscountIcon}>🔥</span>
+                    <span className={styles.activeDiscountName}>{p.earlyBirdLabel}</span>
+                    <span className={styles.activeDiscountPct}>25%</span>
+                  </div>
+                )}
+                {!ebirdStatus?.available && (referralStats?.rewardsAvailable ?? 0) === 0 && (
+                  <p className={styles.historyEmpty}>{p.noActiveDiscounts}</p>
+                )}
               </div>
-              <p className={styles.rewardDesc}>{p.rewardsAvailableDesc}</p>
               {(referralStats?.rewardsUsed ?? 0) > 0 && (
                 <p className={styles.rewardUsed}>{p.rewardsUsedLabel}: {referralStats!.rewardsUsed}</p>
               )}
@@ -459,26 +473,6 @@ export default function ProfilCard({ session }: { session: Session }) {
               </div>
               <p className={styles.cardNote}>{p.statsNote}</p>
             </div>
-
-            {/* Early bird status card — only show when available */}
-            {ebirdStatus?.available && (
-              <div className={`${styles.card} ${styles.cardWide}`}>
-                <div className={styles.cardLabel}>{p.earlyBirdLabel}</div>
-                <div className={styles.rewardCount}>
-                  <span className={styles.rewardNum} style={{ fontSize: '1rem' }}>
-                    {p.earlyBirdActive}
-                  </span>
-                </div>
-                <p className={styles.rewardDesc}>{p.earlyBirdAutoDiscount}</p>
-              </div>
-            )}
-
-            {/* No active discounts message */}
-            {!ebirdStatus?.available && (referralStats?.rewardsAvailable ?? 0) === 0 && (
-              <div className={`${styles.card} ${styles.cardWide}`}>
-                <p className={styles.historyEmpty}>{p.noActiveDiscounts}</p>
-              </div>
-            )}
 
             {/* Usage history card */}
             <div className={`${styles.card} ${styles.cardWide}`}>

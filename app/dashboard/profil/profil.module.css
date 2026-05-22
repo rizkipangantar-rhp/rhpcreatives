@@ -533,6 +533,64 @@
 .shareWaBtn:hover { background: rgba(37,211,102,0.12); border-color: rgba(37,211,102,0.6); }
 .shareWaBtn:active { opacity: 0.7; transform: scale(0.96); }
 
+/* ── Active discount list ── */
+.activeDiscountList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.activeDiscountItem {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.75rem;
+  background: rgba(139,92,246,0.07);
+  border: 1px solid rgba(139,92,246,0.18);
+  border-radius: var(--r);
+}
+
+.activeDiscountCount {
+  min-width: 28px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 800;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  flex-shrink: 0;
+}
+
+.activeDiscountIcon {
+  min-width: 28px;
+  text-align: center;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.activeDiscountName {
+  flex: 1;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.activeDiscountPct {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--purple-light);
+  background: rgba(139,92,246,0.12);
+  border: 1px solid rgba(139,92,246,0.25);
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 /* ── Rewards ── */
 .rewardCount {
   display: flex;
