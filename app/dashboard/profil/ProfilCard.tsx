@@ -65,6 +65,12 @@ type ReferralUsage = {
   referrerId: string
   orderId: string
   usedAt: string
+  userName?: string | null
+}
+
+function getInitials(name?: string | null): string {
+  if (!name) return '?'
+  return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()
 }
 
 type ReferralStatsData = {
@@ -483,11 +489,12 @@ export default function ProfilCard({ session }: { session: Session }) {
                 <div className={styles.historyList}>
                   {referralStats.usages.map((usage, i) => (
                     <div key={i} className={styles.historyItem}>
-                      <div className={styles.historyDot} />
+                      <div className={styles.historyAvatar}>{getInitials(usage.userName)}</div>
                       <div className={styles.historyContent}>
-                        <span className={styles.historyLabel}>#{i + 1} {usage.orderId ? p.historyOrdered : p.historyJoined}</span>
+                        <span className={styles.historyLabel}>{usage.orderId ? p.historyOrdered : p.historyJoined}</span>
                         <span className={styles.historyDate}>{new Date(usage.usedAt).toLocaleDateString(lang === 'id' ? 'id-ID' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                       </div>
+                      <span className={styles.historyVoucher}>+1 Voucher</span>
                     </div>
                   ))}
                 </div>

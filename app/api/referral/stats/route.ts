@@ -18,10 +18,17 @@ export async function GET() {
   const referralCode = getUserReferralCode(user)
   const stats = await getReferralStats(referralCode)
 
+  const usages = await Promise.all(
+    stats.usages.map(async (u) => {
+      const invitee = await findUserById(u.userId)
+      return { ...u, userName: invitee?.name ?? null }
+    })
+  )
+
   return NextResponse.json({
     referralCode,
     count: stats.count,
-    usages: stats.usages,
+    usages,
     rewardsAvailable: user.referralRewardsAvailable ?? 0,
     rewardsUsed: user.referralRewardsUsed ?? 0,
   })
