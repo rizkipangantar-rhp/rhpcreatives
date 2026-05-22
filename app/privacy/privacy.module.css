@@ -112,10 +112,41 @@
 }
 
 .section ul li::before {
-  content: '—';
+  content: '•';
   flex-shrink: 0;
-  color: var(--dim);
+  color: var(--purple-light);
   margin-top: 0.05rem;
+  font-size: 0.75rem;
+  line-height: 1.7;
+}
+
+/* ── Definition list (term | description two-column grid) ── */
+.defList {
+  gap: 0.65rem;
+}
+
+.defList li {
+  display: grid;
+  grid-template-columns: minmax(110px, 160px) 1fr;
+  gap: 0 1rem;
+  align-items: baseline;
+}
+
+.defList li::before {
+  display: none;
+}
+
+.defList li strong {
+  font-weight: 700;
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+
+.defDesc {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.7;
 }
 
 .section a {
@@ -227,21 +258,16 @@
   .pageFooter { flex-direction: column; align-items: flex-start; }
   .dataTable th, .dataTable td { padding: 0.5rem 0.6rem; }
 
-  /* Definition-style list items (term — description) */
+  /* Definition list: single-column on mobile */
   .defList li {
-    flex-direction: column;
-    gap: 0.15rem;
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
     border-left: 2px solid rgba(139, 92, 246, 0.25);
     padding-left: 0.75rem;
   }
-  .defList li::before {
-    display: none;
-  }
   .defList li strong {
-    display: block;
-    color: var(--purple-light) !important;
+    color: var(--purple-light);
     font-size: 0.85rem;
-    font-weight: 700;
     line-height: 1.4;
   }
 }

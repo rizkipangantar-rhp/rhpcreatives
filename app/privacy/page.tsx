@@ -156,11 +156,11 @@ export default function PrivacyPage() {
               <>
                 <p>Kami menggunakan langkah-langkah keamanan teknis yang sesuai untuk melindungi data Anda:</p>
                 <ul className={styles.defList}>
-                  <li><strong style={{ color: 'var(--text)' }}>Upstash Redis</strong> — Data pengguna disimpan di Upstash Redis, layanan database cloud dengan enkripsi data in-transit (TLS) dan at-rest.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>Password hashing</strong> — Password akun dienkripsi menggunakan bcrypt dengan salt factor 12 sebelum disimpan. Kami tidak pernah menyimpan password dalam bentuk plaintext.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>HTTPS</strong> — Semua komunikasi antara browser Anda dan server kami dienkripsi menggunakan HTTPS/TLS.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>NextAuth.js</strong> — Autentikasi dikelola menggunakan NextAuth.js dengan strategi JWT yang aman.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>Midtrans</strong> — Data kartu pembayaran diproses langsung oleh Midtrans (PCI-DSS compliant). Kami tidak menyimpan data kartu pembayaran Anda.</li>
+                  <li><strong>Upstash Redis</strong><span className={styles.defDesc}>Data pengguna disimpan di Upstash Redis, layanan database cloud dengan enkripsi data in-transit (TLS) dan at-rest.</span></li>
+                  <li><strong>Password hashing</strong><span className={styles.defDesc}>Password akun dienkripsi menggunakan bcrypt dengan salt factor 12 sebelum disimpan. Kami tidak pernah menyimpan password dalam bentuk plaintext.</span></li>
+                  <li><strong>HTTPS</strong><span className={styles.defDesc}>Semua komunikasi antara browser Anda dan server kami dienkripsi menggunakan HTTPS/TLS.</span></li>
+                  <li><strong>NextAuth.js</strong><span className={styles.defDesc}>Autentikasi dikelola menggunakan NextAuth.js dengan strategi JWT yang aman.</span></li>
+                  <li><strong>Midtrans</strong><span className={styles.defDesc}>Data kartu pembayaran diproses langsung oleh Midtrans (PCI-DSS compliant). Kami tidak menyimpan data kartu pembayaran Anda.</span></li>
                 </ul>
                 <p>Meskipun kami menerapkan praktik keamanan terbaik, tidak ada sistem yang 100% aman. Kami mendorong Anda untuk menggunakan password yang kuat dan tidak membagikan kredensial akun Anda.</p>
               </>
@@ -168,11 +168,11 @@ export default function PrivacyPage() {
               <>
                 <p>We use appropriate technical security measures to protect your data:</p>
                 <ul className={styles.defList}>
-                  <li><strong style={{ color: 'var(--text)' }}>Upstash Redis</strong> — User data is stored in Upstash Redis, a cloud database service with in-transit (TLS) and at-rest encryption.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>Password hashing</strong> — Account passwords are encrypted using bcrypt with a salt factor of 12 before storage. We never store passwords in plaintext.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>HTTPS</strong> — All communication between your browser and our servers is encrypted via HTTPS/TLS.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>NextAuth.js</strong> — Authentication is managed using NextAuth.js with a secure JWT strategy.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>Midtrans</strong> — Payment card data is processed directly by Midtrans (PCI-DSS compliant). We do not store your payment card data.</li>
+                  <li><strong>Upstash Redis</strong><span className={styles.defDesc}>User data is stored in Upstash Redis, a cloud database service with in-transit (TLS) and at-rest encryption.</span></li>
+                  <li><strong>Password hashing</strong><span className={styles.defDesc}>Account passwords are encrypted using bcrypt with a salt factor of 12 before storage. We never store passwords in plaintext.</span></li>
+                  <li><strong>HTTPS</strong><span className={styles.defDesc}>All communication between your browser and our servers is encrypted via HTTPS/TLS.</span></li>
+                  <li><strong>NextAuth.js</strong><span className={styles.defDesc}>Authentication is managed using NextAuth.js with a secure JWT strategy.</span></li>
+                  <li><strong>Midtrans</strong><span className={styles.defDesc}>Payment card data is processed directly by Midtrans (PCI-DSS compliant). We do not store your payment card data.</span></li>
                 </ul>
                 <p>While we implement best security practices, no system is 100% secure. We encourage you to use a strong password and not share your account credentials.</p>
               </>
@@ -187,11 +187,11 @@ export default function PrivacyPage() {
               <>
                 <p>Anda memiliki hak atas data pribadi Anda. Anda dapat menghubungi kami untuk:</p>
                 <ul className={styles.defList}>
-                  <li><strong style={{ color: 'var(--text)' }}>Mengakses data</strong> — Meminta salinan data pribadi yang kami simpan tentang Anda.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>Memperbarui data</strong> — Memperbarui nama atau nomor WhatsApp Anda langsung melalui halaman profil, atau menghubungi kami untuk perubahan lainnya.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>Menghapus data</strong> — Meminta penghapusan akun dan semua data pribadi Anda. Permintaan ini akan diproses dalam 7 hari kerja. Data transaksi yang sudah selesai dapat tetap disimpan untuk keperluan hukum.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>Portabilitas data</strong> — Meminta ekspor data Anda dalam format yang dapat dibaca mesin.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>Opt-out komunikasi promo</strong> — Berhenti menerima email atau pesan promo kapan saja dengan menghubungi kami.</li>
+                  <li><strong>Mengakses data</strong><span className={styles.defDesc}>Meminta salinan data pribadi yang kami simpan tentang Anda.</span></li>
+                  <li><strong>Memperbarui data</strong><span className={styles.defDesc}>Memperbarui nama atau nomor WhatsApp Anda langsung melalui halaman profil, atau menghubungi kami untuk perubahan lainnya.</span></li>
+                  <li><strong>Menghapus data</strong><span className={styles.defDesc}>Meminta penghapusan akun dan semua data pribadi Anda. Permintaan ini akan diproses dalam 7 hari kerja. Data transaksi yang sudah selesai dapat tetap disimpan untuk keperluan hukum.</span></li>
+                  <li><strong>Portabilitas data</strong><span className={styles.defDesc}>Meminta ekspor data Anda dalam format yang dapat dibaca mesin.</span></li>
+                  <li><strong>Opt-out komunikasi promo</strong><span className={styles.defDesc}>Berhenti menerima email atau pesan promo kapan saja dengan menghubungi kami.</span></li>
                 </ul>
                 <p>Untuk menggunakan hak-hak ini, silakan hubungi kami melalui email atau WhatsApp yang tersedia di bawah.</p>
               </>
@@ -199,11 +199,11 @@ export default function PrivacyPage() {
               <>
                 <p>You have rights over your personal data. You may contact us to:</p>
                 <ul className={styles.defList}>
-                  <li><strong style={{ color: 'var(--text)' }}>Access data</strong> — Request a copy of the personal data we hold about you.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>Update data</strong> — Update your name or WhatsApp number directly through the profile page, or contact us for other changes.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>Delete data</strong> — Request deletion of your account and all personal data. This will be processed within 7 business days. Completed transaction data may be retained for legal purposes.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>Data portability</strong> — Request an export of your data in a machine-readable format.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>Opt-out of promo communications</strong> — Stop receiving promotional emails or messages at any time by contacting us.</li>
+                  <li><strong>Access data</strong><span className={styles.defDesc}>Request a copy of the personal data we hold about you.</span></li>
+                  <li><strong>Update data</strong><span className={styles.defDesc}>Update your name or WhatsApp number directly through the profile page, or contact us for other changes.</span></li>
+                  <li><strong>Delete data</strong><span className={styles.defDesc}>Request deletion of your account and all personal data. This will be processed within 7 business days. Completed transaction data may be retained for legal purposes.</span></li>
+                  <li><strong>Data portability</strong><span className={styles.defDesc}>Request an export of your data in a machine-readable format.</span></li>
+                  <li><strong>Opt-out of promo communications</strong><span className={styles.defDesc}>Stop receiving promotional emails or messages at any time by contacting us.</span></li>
                 </ul>
                 <p>To exercise these rights, please contact us via the email or WhatsApp listed below.</p>
               </>
@@ -218,20 +218,20 @@ export default function PrivacyPage() {
               <>
                 <p>RHP Creatives tidak menjual atau menyewakan data pribadi Anda kepada pihak ketiga. Data Anda hanya dapat dibagikan dalam kondisi terbatas berikut:</p>
                 <ul className={styles.defList}>
-                  <li><strong style={{ color: 'var(--text)' }}>Midtrans</strong> — Penyedia payment gateway untuk memproses transaksi pembayaran Anda secara aman.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>Google</strong> — Jika Anda memilih login via Google, Google mengautentikasi identitas Anda sesuai kebijakan privasi Google.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>Upstash</strong> — Penyedia infrastruktur database yang menyimpan data akun dan transaksi Anda.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>Kewajiban hukum</strong> — Jika diwajibkan oleh hukum atau perintah pengadilan yang berlaku di Indonesia.</li>
+                  <li><strong>Midtrans</strong><span className={styles.defDesc}>Penyedia payment gateway untuk memproses transaksi pembayaran Anda secara aman.</span></li>
+                  <li><strong>Google</strong><span className={styles.defDesc}>Jika Anda memilih login via Google, Google mengautentikasi identitas Anda sesuai kebijakan privasi Google.</span></li>
+                  <li><strong>Upstash</strong><span className={styles.defDesc}>Penyedia infrastruktur database yang menyimpan data akun dan transaksi Anda.</span></li>
+                  <li><strong>Kewajiban hukum</strong><span className={styles.defDesc}>Jika diwajibkan oleh hukum atau perintah pengadilan yang berlaku di Indonesia.</span></li>
                 </ul>
               </>
             ) : (
               <>
                 <p>RHP Creatives does not sell or rent your personal data to third parties. Your data may only be shared under the following limited circumstances:</p>
                 <ul className={styles.defList}>
-                  <li><strong style={{ color: 'var(--text)' }}>Midtrans</strong> — Payment gateway provider for securely processing your payment transactions.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>Google</strong> — If you choose to log in via Google, Google authenticates your identity per Google&apos;s privacy policy.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>Upstash</strong> — Database infrastructure provider that stores your account and transaction data.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>Legal obligation</strong> — If required by law or court order applicable in Indonesia.</li>
+                  <li><strong>Midtrans</strong><span className={styles.defDesc}>Payment gateway provider for securely processing your payment transactions.</span></li>
+                  <li><strong>Google</strong><span className={styles.defDesc}>If you choose to log in via Google, Google authenticates your identity per Google&apos;s privacy policy.</span></li>
+                  <li><strong>Upstash</strong><span className={styles.defDesc}>Database infrastructure provider that stores your account and transaction data.</span></li>
+                  <li><strong>Legal obligation</strong><span className={styles.defDesc}>If required by law or court order applicable in Indonesia.</span></li>
                 </ul>
               </>
             )}
@@ -245,9 +245,9 @@ export default function PrivacyPage() {
               <>
                 <p>Website kami menggunakan cookie dan teknologi penyimpanan lokal serupa untuk meningkatkan pengalaman pengguna:</p>
                 <ul className={styles.defList}>
-                  <li><strong style={{ color: 'var(--text)' }}>Cookie sesi</strong> — Menyimpan status login Anda agar tidak perlu login ulang setiap kali membuka halaman.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>localStorage</strong> — Menyimpan preferensi bahasa (ID/EN), status Early Bird popup, dan preferensi tampilan lainnya secara lokal di browser Anda.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>Cookie analitik</strong> — Kami menggunakan data kunjungan halaman secara anonim untuk memahami bagaimana pengguna berinteraksi dengan website kami.</li>
+                  <li><strong>Cookie sesi</strong><span className={styles.defDesc}>Menyimpan status login Anda agar tidak perlu login ulang setiap kali membuka halaman.</span></li>
+                  <li><strong>localStorage</strong><span className={styles.defDesc}>Menyimpan preferensi bahasa (ID/EN), status Early Bird popup, dan preferensi tampilan lainnya secara lokal di browser Anda.</span></li>
+                  <li><strong>Cookie analitik</strong><span className={styles.defDesc}>Kami menggunakan data kunjungan halaman secara anonim untuk memahami bagaimana pengguna berinteraksi dengan website kami.</span></li>
                 </ul>
                 <p>Anda dapat menghapus cookie dan data penyimpanan lokal kapan saja melalui pengaturan browser Anda. Namun, ini dapat mempengaruhi fungsionalitas website termasuk status login Anda.</p>
               </>
@@ -255,9 +255,9 @@ export default function PrivacyPage() {
               <>
                 <p>Our website uses cookies and similar local storage technologies to enhance user experience:</p>
                 <ul className={styles.defList}>
-                  <li><strong style={{ color: 'var(--text)' }}>Session cookies</strong> — Store your login state so you don&apos;t need to log in again each time you open a page.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>localStorage</strong> — Stores language preferences (ID/EN), Early Bird popup status, and other display preferences locally in your browser.</li>
-                  <li><strong style={{ color: 'var(--text)' }}>Analytics cookies</strong> — We use anonymous page visit data to understand how users interact with our website.</li>
+                  <li><strong>Session cookies</strong><span className={styles.defDesc}>Store your login state so you don&apos;t need to log in again each time you open a page.</span></li>
+                  <li><strong>localStorage</strong><span className={styles.defDesc}>Stores language preferences (ID/EN), Early Bird popup status, and other display preferences locally in your browser.</span></li>
+                  <li><strong>Analytics cookies</strong><span className={styles.defDesc}>We use anonymous page visit data to understand how users interact with our website.</span></li>
                 </ul>
                 <p>You can delete cookies and local storage data at any time through your browser settings. However, this may affect website functionality including your login status.</p>
               </>
