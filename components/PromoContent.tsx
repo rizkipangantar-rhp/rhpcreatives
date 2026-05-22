@@ -143,7 +143,7 @@ export default function PromoContent() {
 
         <div className={styles.bundleGrid}>
           {promo.bundling.items.map((item, i) => (
-            <div key={item.name} className={`${styles.bundleCard} ${i === 3 ? styles.bundleCardFeatured : ''}`}>
+            <div key={item.name} className={`${styles.bundleCard} ${i === promo.bundling.items.length - 1 ? styles.bundleCardFeatured : ''}`}>
               <div className={styles.bundleName}>{item.name}</div>
               <div className={styles.bundleIncludes}>{item.includes}</div>
               <div className={styles.bundlePriceRow}>
