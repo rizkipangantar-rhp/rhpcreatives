@@ -120,16 +120,17 @@
   line-height: 1.7;
 }
 
-/* ── Definition list (term | description two-column grid) ── */
+/* ── Definition list: grid on ul so all rows share one column track ── */
 .defList {
-  gap: 0.65rem;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 1.5rem;
+  row-gap: 0.55rem;
+  align-items: baseline;
 }
 
 .defList li {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  gap: 0 1.25rem;
-  align-items: baseline;
+  display: contents;
 }
 
 .defList li::before {
@@ -141,6 +142,7 @@
   color: var(--text);
   font-size: 0.88rem;
   line-height: 1.7;
+  white-space: nowrap;
 }
 
 .defDesc {
@@ -258,14 +260,21 @@
   .pageFooter { flex-direction: column; align-items: flex-start; }
   .dataTable th, .dataTable td { padding: 0.5rem 0.6rem; }
 
-  /* Definition list: single-column on mobile */
+  /* Definition list: revert to stacked on mobile */
+  .defList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
   .defList li {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 0.1rem;
     border-left: 2px solid rgba(139, 92, 246, 0.25);
     padding-left: 0.75rem;
   }
   .defList li strong {
+    white-space: normal;
     color: var(--purple-light);
     font-size: 0.85rem;
     line-height: 1.4;
