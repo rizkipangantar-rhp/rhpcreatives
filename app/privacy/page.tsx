@@ -39,6 +39,7 @@ export default function PrivacyPage() {
             {isID ? (
               <>
                 <p>Kami mengumpulkan beberapa kategori data untuk memberikan layanan yang optimal:</p>
+                <div className={styles.tableWrap}>
                 <table className={styles.dataTable}>
                   <thead>
                     <tr>
@@ -75,10 +76,12 @@ export default function PrivacyPage() {
                     </tr>
                   </tbody>
                 </table>
+                </div>
               </>
             ) : (
               <>
                 <p>We collect several categories of data to provide optimal service:</p>
+                <div className={styles.tableWrap}>
                 <table className={styles.dataTable}>
                   <thead>
                     <tr>
@@ -115,6 +118,7 @@ export default function PrivacyPage() {
                     </tr>
                   </tbody>
                 </table>
+                </div>
               </>
             )}
           </div>
@@ -151,7 +155,7 @@ export default function PrivacyPage() {
             {isID ? (
               <>
                 <p>Kami menggunakan langkah-langkah keamanan teknis yang sesuai untuk melindungi data Anda:</p>
-                <ul>
+                <ul className={styles.defList}>
                   <li><strong style={{ color: 'var(--text)' }}>Upstash Redis</strong> — Data pengguna disimpan di Upstash Redis, layanan database cloud dengan enkripsi data in-transit (TLS) dan at-rest.</li>
                   <li><strong style={{ color: 'var(--text)' }}>Password hashing</strong> — Password akun dienkripsi menggunakan bcrypt dengan salt factor 12 sebelum disimpan. Kami tidak pernah menyimpan password dalam bentuk plaintext.</li>
                   <li><strong style={{ color: 'var(--text)' }}>HTTPS</strong> — Semua komunikasi antara browser Anda dan server kami dienkripsi menggunakan HTTPS/TLS.</li>
@@ -163,7 +167,7 @@ export default function PrivacyPage() {
             ) : (
               <>
                 <p>We use appropriate technical security measures to protect your data:</p>
-                <ul>
+                <ul className={styles.defList}>
                   <li><strong style={{ color: 'var(--text)' }}>Upstash Redis</strong> — User data is stored in Upstash Redis, a cloud database service with in-transit (TLS) and at-rest encryption.</li>
                   <li><strong style={{ color: 'var(--text)' }}>Password hashing</strong> — Account passwords are encrypted using bcrypt with a salt factor of 12 before storage. We never store passwords in plaintext.</li>
                   <li><strong style={{ color: 'var(--text)' }}>HTTPS</strong> — All communication between your browser and our servers is encrypted via HTTPS/TLS.</li>
@@ -182,7 +186,7 @@ export default function PrivacyPage() {
             {isID ? (
               <>
                 <p>Anda memiliki hak atas data pribadi Anda. Anda dapat menghubungi kami untuk:</p>
-                <ul>
+                <ul className={styles.defList}>
                   <li><strong style={{ color: 'var(--text)' }}>Mengakses data</strong> — Meminta salinan data pribadi yang kami simpan tentang Anda.</li>
                   <li><strong style={{ color: 'var(--text)' }}>Memperbarui data</strong> — Memperbarui nama atau nomor WhatsApp Anda langsung melalui halaman profil, atau menghubungi kami untuk perubahan lainnya.</li>
                   <li><strong style={{ color: 'var(--text)' }}>Menghapus data</strong> — Meminta penghapusan akun dan semua data pribadi Anda. Permintaan ini akan diproses dalam 7 hari kerja. Data transaksi yang sudah selesai dapat tetap disimpan untuk keperluan hukum.</li>
@@ -194,7 +198,7 @@ export default function PrivacyPage() {
             ) : (
               <>
                 <p>You have rights over your personal data. You may contact us to:</p>
-                <ul>
+                <ul className={styles.defList}>
                   <li><strong style={{ color: 'var(--text)' }}>Access data</strong> — Request a copy of the personal data we hold about you.</li>
                   <li><strong style={{ color: 'var(--text)' }}>Update data</strong> — Update your name or WhatsApp number directly through the profile page, or contact us for other changes.</li>
                   <li><strong style={{ color: 'var(--text)' }}>Delete data</strong> — Request deletion of your account and all personal data. This will be processed within 7 business days. Completed transaction data may be retained for legal purposes.</li>
@@ -213,7 +217,7 @@ export default function PrivacyPage() {
             {isID ? (
               <>
                 <p>RHP Creatives tidak menjual atau menyewakan data pribadi Anda kepada pihak ketiga. Data Anda hanya dapat dibagikan dalam kondisi terbatas berikut:</p>
-                <ul>
+                <ul className={styles.defList}>
                   <li><strong style={{ color: 'var(--text)' }}>Midtrans</strong> — Penyedia payment gateway untuk memproses transaksi pembayaran Anda secara aman.</li>
                   <li><strong style={{ color: 'var(--text)' }}>Google</strong> — Jika Anda memilih login via Google, Google mengautentikasi identitas Anda sesuai kebijakan privasi Google.</li>
                   <li><strong style={{ color: 'var(--text)' }}>Upstash</strong> — Penyedia infrastruktur database yang menyimpan data akun dan transaksi Anda.</li>
@@ -223,7 +227,7 @@ export default function PrivacyPage() {
             ) : (
               <>
                 <p>RHP Creatives does not sell or rent your personal data to third parties. Your data may only be shared under the following limited circumstances:</p>
-                <ul>
+                <ul className={styles.defList}>
                   <li><strong style={{ color: 'var(--text)' }}>Midtrans</strong> — Payment gateway provider for securely processing your payment transactions.</li>
                   <li><strong style={{ color: 'var(--text)' }}>Google</strong> — If you choose to log in via Google, Google authenticates your identity per Google&apos;s privacy policy.</li>
                   <li><strong style={{ color: 'var(--text)' }}>Upstash</strong> — Database infrastructure provider that stores your account and transaction data.</li>
@@ -240,7 +244,7 @@ export default function PrivacyPage() {
             {isID ? (
               <>
                 <p>Website kami menggunakan cookie dan teknologi penyimpanan lokal serupa untuk meningkatkan pengalaman pengguna:</p>
-                <ul>
+                <ul className={styles.defList}>
                   <li><strong style={{ color: 'var(--text)' }}>Cookie sesi</strong> — Menyimpan status login Anda agar tidak perlu login ulang setiap kali membuka halaman.</li>
                   <li><strong style={{ color: 'var(--text)' }}>localStorage</strong> — Menyimpan preferensi bahasa (ID/EN), status Early Bird popup, dan preferensi tampilan lainnya secara lokal di browser Anda.</li>
                   <li><strong style={{ color: 'var(--text)' }}>Cookie analitik</strong> — Kami menggunakan data kunjungan halaman secara anonim untuk memahami bagaimana pengguna berinteraksi dengan website kami.</li>
@@ -250,7 +254,7 @@ export default function PrivacyPage() {
             ) : (
               <>
                 <p>Our website uses cookies and similar local storage technologies to enhance user experience:</p>
-                <ul>
+                <ul className={styles.defList}>
                   <li><strong style={{ color: 'var(--text)' }}>Session cookies</strong> — Store your login state so you don&apos;t need to log in again each time you open a page.</li>
                   <li><strong style={{ color: 'var(--text)' }}>localStorage</strong> — Stores language preferences (ID/EN), Early Bird popup status, and other display preferences locally in your browser.</li>
                   <li><strong style={{ color: 'var(--text)' }}>Analytics cookies</strong> — We use anonymous page visit data to understand how users interact with our website.</li>

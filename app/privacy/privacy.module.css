@@ -132,6 +132,13 @@
 }
 
 /* ── Data table ── */
+.tableWrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 0.5rem;
+  border-radius: var(--r-md);
+}
+
 .dataTable {
   width: 100%;
   border-collapse: collapse;
@@ -219,4 +226,22 @@
   .title { font-size: 1.5rem; }
   .pageFooter { flex-direction: column; align-items: flex-start; }
   .dataTable th, .dataTable td { padding: 0.5rem 0.6rem; }
+
+  /* Definition-style list items (term — description) */
+  .defList li {
+    flex-direction: column;
+    gap: 0.15rem;
+    border-left: 2px solid rgba(139, 92, 246, 0.25);
+    padding-left: 0.75rem;
+  }
+  .defList li::before {
+    display: none;
+  }
+  .defList li strong {
+    display: block;
+    color: var(--purple-light) !important;
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1.4;
+  }
 }
