@@ -25,7 +25,15 @@ export default function FloatingScrollBtn() {
   }, [])
 
   function scrollToHarga() {
-    document.getElementById('harga')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    const el = document.getElementById('harga')
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    const barH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--bar-h') || '44')
+    const headerH = barH + 64
+    const availableH = window.innerHeight - headerH
+    const visibleElH = Math.min(rect.height, availableH)
+    const offsetTop = window.scrollY + rect.top - headerH - (availableH - visibleElH) / 2
+    window.scrollTo({ top: Math.max(0, offsetTop), behavior: 'smooth' })
   }
 
   return (
