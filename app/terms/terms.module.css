@@ -96,10 +96,12 @@
 }
 
 .section ul li::before {
-  content: '—';
+  content: '•';
   flex-shrink: 0;
-  color: var(--dim);
+  color: var(--purple-light);
   margin-top: 0.05rem;
+  font-size: 0.75rem;
+  line-height: 1.7;
 }
 
 .section a {
