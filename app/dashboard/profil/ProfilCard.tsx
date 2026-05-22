@@ -721,7 +721,7 @@ export default function ProfilCard({ session }: { session: Session }) {
                                 }}>
                                   <span style={{ fontWeight: 700, color: entry.by === 'customer' ? '#fbbf24' : '#a78bfa' }}>
                                     {entry.by === 'customer' ? (lang === 'id' ? '[Kamu]' : '[You]') : '[Admin]'}
-                                    {entry.counter_price ? ` — Rp${entry.counter_price.toLocaleString('id-ID')}` : ''}
+                                    {entry.counter_price ? ` (Rp${entry.counter_price.toLocaleString('id-ID')})` : ''}
                                   </span>
                                   <span style={{ color: '#94a3b8', marginLeft: 6 }}>{entry.note}</span>
                                   <span style={{ color: '#475569', marginLeft: 6 }}>

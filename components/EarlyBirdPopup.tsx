@@ -83,11 +83,11 @@ export default function EarlyBirdPopup() {
   const isEarlyBird = promo.name.toLowerCase().includes('early bird')
   const subText = lang === 'id'
     ? slots
-      ? `${promo.name} lagi jalan nih — diskon ${discountDisplay} buat ${slots} klien pertama doang. No cap, ini real.`
-      : `${promo.name} lagi jalan nih — diskon ${discountDisplay}. No cap, ini real.`
+      ? `${promo.name} lagi jalan nih, diskon ${discountDisplay} buat ${slots} klien pertama doang. No cap, ini real.`
+      : `${promo.name} lagi jalan nih, diskon ${discountDisplay}. No cap, ini real.`
     : slots
-      ? `${promo.name} is live — ${discountDisplay} off for the first ${slots} clients only. No cap, for real.`
-      : `${promo.name} is live — ${discountDisplay} off. No cap, for real.`
+      ? `${promo.name} is live, ${discountDisplay} off for the first ${slots} clients only. No cap, for real.`
+      : `${promo.name} is live, ${discountDisplay} off. No cap, for real.`
   const ctaText = promo.requires_claim
     ? (lang === 'id' ? 'Klaim Sekarang' : 'Claim Now')
     : (lang === 'id' ? 'Gasken Order Sekarang' : 'Order Now')

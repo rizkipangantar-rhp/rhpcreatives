@@ -205,7 +205,7 @@ export default function KlaimPromoPage() {
         <div className={styles.card}>
           <div className={styles.topBadge}>✅ {promo?.name}</div>
           <h1 className={styles.title}>{lang === 'id' ? `Diskon ${discountDisplay} kamu masih aktif! 🔥` : `Your ${discountDisplay} discount is still live! 🔥`}</h1>
-          <p className={styles.sub}>{lang === 'id' ? `Tenang, diskon ${discountDisplay} kamu otomatis aktif pas checkout. Tinggal order aja!` : `Chill — your ${discountDisplay} discount applies automatically at checkout. Just order!`}</p>
+          <p className={styles.sub}>{lang === 'id' ? `Tenang, diskon ${discountDisplay} kamu otomatis aktif pas checkout. Tinggal order aja!` : `Chill, your ${discountDisplay} discount applies automatically at checkout. Just order!`}</p>
           <div className={styles.ctaGroup}>
             <Link href="/order" className={styles.primaryCta}>{lang === 'id' ? 'Gasken Order Sekarang' : 'Order Now'}</Link>
           </div>
