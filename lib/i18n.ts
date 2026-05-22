@@ -177,6 +177,7 @@ export type Tr = {
     discountAutoEarlyBirdBadge: string
     discountNone: string
     noDiscountsPromo: string
+    noDiscountMsg: string
     voucherLabel: string
     voucherPlaceholder: string
     voucherApply: string
@@ -676,8 +677,9 @@ export const t: Record<Lang, Tr> = {
       discountManualLabel: 'Punya kode voucher atau referral lain?',
       discountAutoEarlyBird: 'Early Bird — Diskon 25%',
       discountAutoEarlyBirdBadge: '🔥 25% OFF',
-      discountNone: 'Tanpa diskon',
-      noDiscountsPromo: 'Lihat promo menarik',
+      discountNone: 'Tanpa Diskon',
+      noDiscountsPromo: 'Gasken Cek Promo',
+      noDiscountMsg: 'Yah, kamu belum punya diskon nih 😅',
       voucherLabel: 'Masukkan Kode',
       voucherPlaceholder: 'EBIRD-XXXXX atau RHP-XXXXX',
       voucherApply: 'Terapkan',
@@ -1509,8 +1511,9 @@ export const t: Record<Lang, Tr> = {
       discountManualLabel: 'Have a voucher or another referral code?',
       discountAutoEarlyBird: 'Early Bird — 25% Discount',
       discountAutoEarlyBirdBadge: '🔥 25% OFF',
-      discountNone: 'No discount',
-      noDiscountsPromo: 'View promotions',
+      discountNone: 'No Discount',
+      noDiscountsPromo: 'Check Out Promos',
+      noDiscountMsg: "Hmm, no discounts for you yet 😅",
       voucherLabel: 'Enter Code',
       voucherPlaceholder: 'EBIRD-XXXXX or RHP-XXXXX',
       voucherApply: 'Apply',

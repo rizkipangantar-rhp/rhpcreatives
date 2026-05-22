@@ -349,6 +349,39 @@
   color: #f87171;
 }
 
+.noDiscountBanner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.875rem 1rem;
+  background: rgba(248, 113, 113, 0.06);
+  border: 1px solid rgba(248, 113, 113, 0.18);
+  border-radius: 10px;
+  margin-top: 0.25rem;
+}
+
+.noDiscountMsg {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #f87171;
+  font-family: var(--font-body);
+}
+
+.promoBtn {
+  display: inline-block;
+  background: linear-gradient(135deg, #7c3aed, #be185d);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 0.42rem 1.1rem;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.promoBtn:hover { opacity: 0.82; }
+
 .promoLink {
   color: #a78bfa;
   text-decoration: underline;

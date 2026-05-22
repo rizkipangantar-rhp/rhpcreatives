@@ -449,9 +449,10 @@ export default function OrderPage() {
                 </div>
 
                 {!hasAutoDiscount && discountStatus !== null && (
-                  <p className={styles.voucherError}>
-                    {p.discountNone} — <Link href="/promo" className={styles.promoLink}>{p.noDiscountsPromo}</Link>
-                  </p>
+                  <div className={styles.noDiscountBanner}>
+                    <p className={styles.noDiscountMsg}>{p.noDiscountMsg}</p>
+                    <Link href="/promo" className={styles.promoBtn}>{p.noDiscountsPromo}</Link>
+                  </div>
                 )}
               </section>
             )}
