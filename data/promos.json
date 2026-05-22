@@ -1,0 +1,26 @@
+{
+  "promos": [
+    {
+      "id": "promo_early_bird",
+      "name": "Early Bird Launch",
+      "description": "Diskon 25% untuk semua layanan, cuma buat 20 klien pertama. Yang dateng duluan, yang untung duluan!",
+      "prefix": "EBIRD",
+      "discount_type": "percent",
+      "discount_value": 25,
+      "quota": 20,
+      "claimed": 0,
+      "used": 0,
+      "start_date": null,
+      "end_date": null,
+      "is_active": true,
+      "show_on_website": true,
+      "requires_claim": true,
+      "announcement_text_id": "Early Bird 25% OFF — Cuma 20 slot! Klaim sekarang",
+      "announcement_text_en": "Early Bird 25% OFF — Only 20 slots! Claim now",
+      "theme_color": "#8b5cf6",
+      "priority": 10,
+      "created_at": "2026-05-21T12:41:47.062Z",
+      "waitlist": []
+    }
+  ]
+}

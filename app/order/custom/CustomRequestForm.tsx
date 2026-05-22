@@ -8,6 +8,10 @@ import styles from './custom.module.css'
 
 const ADMIN_WA = '6285179992598'
 const CATEGORIES = ['Layanan Digital', 'Layanan Desain', 'Lainnya'] as const
+const CATEGORY_LABELS: Record<'id' | 'en', Record<typeof CATEGORIES[number], string>> = {
+  id: { 'Layanan Digital': 'Layanan Digital', 'Layanan Desain': 'Layanan Desain', 'Lainnya': 'Lainnya' },
+  en: { 'Layanan Digital': 'Digital Services', 'Layanan Desain': 'Design Services', 'Lainnya': 'Other' },
+}
 
 type Step = 'form' | 'confirm'
 
@@ -101,7 +105,7 @@ export default function CustomRequestForm({ session }: { session: Session | null
       })
       const data = await res.json() as { request_id?: string; error?: string }
       if (!res.ok) {
-        setError(data.error ?? 'Gagal mengirim request. Coba lagi.')
+        setError(data.error ?? (lang === 'id' ? 'Oops, gagal kirim nih. Coba lagi dong!' : 'Oops, submission failed. Try again!'))
         return
       }
       setRequestId(data.request_id!)
@@ -122,7 +126,7 @@ export default function CustomRequestForm({ session }: { session: Session | null
         window.open(`https://wa.me/${ADMIN_WA}?text=${waMsg}`, '_blank')
       }, 800)
     } catch {
-      setError('Terjadi kesalahan. Coba lagi.')
+      setError(lang === 'id' ? 'Ada error nih. Coba lagi ya!' : 'Something went wrong. Give it another shot!')
     } finally {
       setLoading(false)
     }
@@ -268,7 +272,7 @@ export default function CustomRequestForm({ session }: { session: Session | null
                 onChange={e => set('category', e.target.value as typeof CATEGORIES[number])}
                 required
               >
-                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                {CATEGORIES.map(c => <option key={c} value={c}>{CATEGORY_LABELS[lang][c]}</option>)}
               </select>
             </div>
             <div className={styles.fieldGroup}>

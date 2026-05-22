@@ -1,0 +1,16 @@
+{
+  "daily": {
+    "2026-05-22": {
+      "views": 38,
+      "paths": {
+        "/": 3,
+        "/privacy": 8,
+        "/order/custom": 1,
+        "/terms": 3,
+        "/layanan-digital": 1,
+        "/layanan-desain": 1,
+        "/promo": 21
+      }
+    }
+  }
+}

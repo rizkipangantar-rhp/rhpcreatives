@@ -45,18 +45,6 @@ type CustomRequest = {
   negotiation_history?: NegotiationEntry[]
 }
 
-const REQ_STATUS_LABELS: Record<RequestStatus, string> = {
-  waiting_review: 'Menunggu Review',
-  price_sent: 'Harga Dikirim',
-  negotiating: 'Negosiasi',
-  accepted: 'Diterima',
-  payment_pending: 'Menunggu Bayar',
-  paid: 'Dibayar',
-  in_progress: 'Diproses',
-  done: 'Selesai',
-  rejected_by_admin: 'Ditolak Admin',
-  rejected_by_customer: 'Ditolak Customer',
-}
 
 const REQ_STATUS_CLS: Partial<Record<RequestStatus, string>> = {
   waiting_review: styles.statusPending,
@@ -535,7 +523,7 @@ export default function ProfilCard({ session }: { session: Session }) {
             ) : orders.length === 0 ? (
               <div className={styles.ordersEmpty}>
                 <p>{p.noOrders}</p>
-                <Link href="/order" className={styles.orderNowBtn}>Order Sekarang</Link>
+                <Link href="/order" className={styles.orderNowBtn}>{p.orderNowBtn}</Link>
               </div>
             ) : (
               <div className={styles.ordersList}>
@@ -600,7 +588,7 @@ export default function ProfilCard({ session }: { session: Session }) {
                           </div>
                         </div>
                         <span className={`${styles.statusBadge} ${REQ_STATUS_CLS[req.status] ?? styles.statusPending}`}>
-                          {REQ_STATUS_LABELS[req.status]}
+                          {p.customReqStatuses[req.status] ?? req.status}
                         </span>
                       </div>
 

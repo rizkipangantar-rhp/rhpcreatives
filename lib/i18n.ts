@@ -149,6 +149,8 @@ export type Tr = {
     noActiveDiscounts: string
     historyJoined: string
     historyOrdered: string
+    orderNowBtn: string
+    customReqStatuses: Record<string, string>
   }
   orderPage: {
     tag: string
@@ -264,6 +266,8 @@ export type Tr = {
     notesPlaceholder: string
     notesSaving: string
     notesSaved: string
+    snapError: string
+    closeBar: string
   }
   adminOrders: {
     title: string
@@ -466,6 +470,11 @@ export type Tr = {
     historyBtn: string
     waLabel: string
     waSavedHint: string
+    categories: string[]
+    categoryLabel: string
+    submitError: string
+    submitErrorGeneral: string
+    waFollowUpMsg: string
   }
   promo: {
     earlyBird: {
@@ -630,6 +639,19 @@ export const t: Record<Lang, Tr> = {
       noActiveDiscounts: 'Belum ada diskon aktif. Ajak teman pakai kode referralmu untuk dapat diskon! 🎉',
       historyJoined: 'Teman bergabung menggunakan kode referralmu',
       historyOrdered: 'Teman melakukan order',
+      orderNowBtn: 'Order Sekarang',
+      customReqStatuses: {
+        waiting_review: 'Menunggu Review',
+        price_sent: 'Harga Dikirim',
+        negotiating: 'Negosiasi',
+        accepted: 'Diterima',
+        payment_pending: 'Menunggu Bayar',
+        paid: 'Dibayar',
+        in_progress: 'Diproses',
+        done: 'Selesai',
+        rejected_by_admin: 'Ditolak Admin',
+        rejected_by_customer: 'Ditolak Customer',
+      },
     },
     orderPage: {
       tag: '✦ Pesan Layanan',
@@ -771,6 +793,8 @@ export const t: Record<Lang, Tr> = {
       notesPlaceholder: 'Tulis request khusus kamu di sini... (misal: tema warna, tanggal acara, nama yang mau dicantumkan, dll)',
       notesSaving: 'Menyimpan...',
       notesSaved: 'Tersimpan ✓',
+      snapError: 'Aduh, payment widget-nya belum ready. Coba refresh ya!',
+      closeBar: 'Tutup',
     },
     adminOrders: {
       title: 'Admin — Daftar Order',
@@ -906,7 +930,7 @@ export const t: Record<Lang, Tr> = {
     pricing: {
       label: 'Harga Transparan',
       title: 'Paket & Harga Layanan',
-      sub: 'Harga bisa disesuaikan sama kebutuhanmu. Hubungi kami dulu kalau mau tanya-tanya, gratis kok!',
+      sub: 'Harganya fleksibel, bisa disesuaiin sama bujet dan kebutuhanmu. Belum yakin? Konsultasi dulu aja, gratis!',
       digitalLabel: '✦ Layanan Digital',
       designLabel: '✦ Layanan Desain',
       note: '* Semua harga estimasi. Konsultasikan kebutuhan kamu buat harga final yang sesuai.',
@@ -1239,6 +1263,11 @@ export const t: Record<Lang, Tr> = {
       historyBtn: 'Lihat Riwayat',
       waLabel: 'Nomor WhatsApp (Opsional)',
       waSavedHint: 'Tersimpan',
+      categories: ['Layanan Digital', 'Layanan Desain', 'Lainnya'],
+      categoryLabel: 'Kategori Layanan',
+      submitError: 'Oops, gagal kirim nih. Coba lagi dong!',
+      submitErrorGeneral: 'Ada error nih. Coba lagi ya!',
+      waFollowUpMsg: 'Halo RHP Creatives! Saya mau follow up order:',
     },
     promo: {
       earlyBird: {
@@ -1443,6 +1472,19 @@ export const t: Record<Lang, Tr> = {
       noActiveDiscounts: 'No active discounts. Invite friends with your referral code to earn discounts! 🎉',
       historyJoined: 'Friend joined using your referral code',
       historyOrdered: 'Friend placed an order',
+      orderNowBtn: 'Order Now',
+      customReqStatuses: {
+        waiting_review: 'Waiting for Review',
+        price_sent: 'Quote Sent',
+        negotiating: 'Negotiating',
+        accepted: 'Accepted',
+        payment_pending: 'Awaiting Payment',
+        paid: 'Paid',
+        in_progress: 'In Progress',
+        done: 'Done',
+        rejected_by_admin: 'Rejected by Admin',
+        rejected_by_customer: 'Declined by You',
+      },
     },
     orderPage: {
       tag: '✦ Place an Order',
@@ -1584,6 +1626,8 @@ export const t: Record<Lang, Tr> = {
       notesPlaceholder: 'Add your special requests here... (e.g. color theme, event date, name to include, etc)',
       notesSaving: 'Saving...',
       notesSaved: 'Saved ✓',
+      snapError: 'Hmm, the payment widget is still loading. Try refreshing!',
+      closeBar: 'Close',
     },
     adminOrders: {
       title: 'Admin — Order List',
@@ -1719,7 +1763,7 @@ export const t: Record<Lang, Tr> = {
     pricing: {
       label: 'Transparent Pricing',
       title: 'Service Packages & Pricing',
-      sub: "Prices can be adjusted to your needs. Hit us up first if you have questions, it's free!",
+      sub: "Prices are flexible — adjusted to your budget and needs. Not sure yet? Just hit us up, consultation is free!",
       digitalLabel: '✦ Digital Services',
       designLabel: '✦ Design Services',
       note: '* All prices are estimates. Chat with us for a final quote tailored to your needs.',
@@ -2052,6 +2096,11 @@ export const t: Record<Lang, Tr> = {
       historyBtn: 'View History',
       waLabel: 'WhatsApp Number (Optional)',
       waSavedHint: 'Saved',
+      categories: ['Digital Services', 'Design Services', 'Other'],
+      categoryLabel: 'Service Category',
+      submitError: 'Oops, submission failed. Try again!',
+      submitErrorGeneral: 'Something went wrong. Give it another shot!',
+      waFollowUpMsg: 'Hi RHP Creatives! I want to follow up on my order:',
     },
     promo: {
       earlyBird: {

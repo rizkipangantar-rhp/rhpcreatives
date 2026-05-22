@@ -152,7 +152,7 @@ export default function PromoContent() {
               </div>
               <div className={styles.bundleSave}>{item.save}</div>
               <a
-                href="https://wa.me/6285179992598?text=Halo%20RHP%20Creatives!%20Mau%20konsultasi%20paket%20bundling%20nih"
+                href={`https://wa.me/6285179992598?text=${encodeURIComponent(lang === 'id' ? 'Halo RHP Creatives! Mau konsultasi paket bundling nih' : 'Hi RHP Creatives! I want to know more about the bundle package')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.bundleBtn}

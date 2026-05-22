@@ -119,7 +119,7 @@ export default function AnnouncementBar({ initialPromo }: { initialPromo: PromoB
           <span className={styles.unit}>{pad(time.s)}<span className={styles.label}>{p.secs}</span></span>
         </span>
       )}
-      <button className={styles.close} onClick={dismiss} aria-label="Tutup">✕</button>
+      <button className={styles.close} onClick={dismiss} aria-label={tr.paymentPage.closeBar}>✕</button>
     </div>
   )
 }

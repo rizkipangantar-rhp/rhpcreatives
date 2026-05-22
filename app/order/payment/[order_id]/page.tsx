@@ -293,7 +293,7 @@ export default function PaymentPage() {
         return
       }
       if (typeof window.snap === 'undefined') {
-        setChargeError('Snap.js belum dimuat. Coba refresh.')
+        setChargeError(p.snapError)
         setCcLoading(false)
         return
       }

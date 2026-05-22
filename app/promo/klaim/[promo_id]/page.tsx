@@ -19,7 +19,10 @@ type ClaimInfo = {
 
 type View = 'loading' | 'form' | 'success' | 'already' | 'used' | 'full' | 'unavailable'
 
-const SERVICES = ['Undangan Online', 'Landing Page', 'Desain Instagram', 'Edit Foto', 'Layanan Lainnya']
+const SERVICES = {
+  id: ['Undangan Online', 'Landing Page', 'Desain Instagram', 'Edit Foto', 'Layanan Lainnya'],
+  en: ['Online Invitation', 'Landing Page', 'Instagram Design', 'Photo Editing', 'Other Services'],
+}
 
 const CONFETTI_COLORS = ['#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#f43f5e', '#ffffff']
 type Piece = { id: number; left: string; delay: string; duration: string; color: string; size: number; shape: string }
@@ -295,7 +298,7 @@ export default function KlaimPromoPage() {
             <label>{lang === 'id' ? 'Layanan yang Diminati' : 'Service of Interest'}</label>
             <select value={service} onChange={e => setService(e.target.value)}>
               <option value="">{lang === 'id' ? 'Pilih layanan (opsional)' : 'Choose service (optional)'}</option>
-              {SERVICES.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+              {SERVICES[lang].map(opt => <option key={opt} value={opt}>{opt}</option>)}
             </select>
           </div>
 
