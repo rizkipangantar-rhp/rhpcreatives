@@ -462,7 +462,7 @@ export default function ProfilCard({ session }: { session: Session }) {
 
             {/* Early bird status card — only show when available */}
             {ebirdStatus?.available && (
-              <div className={styles.card}>
+              <div className={`${styles.card} ${styles.cardWide}`}>
                 <div className={styles.cardLabel}>{p.earlyBirdLabel}</div>
                 <div className={styles.rewardCount}>
                   <span className={styles.rewardNum} style={{ fontSize: '1rem' }}>
@@ -475,7 +475,7 @@ export default function ProfilCard({ session }: { session: Session }) {
 
             {/* No active discounts message */}
             {!ebirdStatus?.available && (referralStats?.rewardsAvailable ?? 0) === 0 && (
-              <div className={styles.card}>
+              <div className={`${styles.card} ${styles.cardWide}`}>
                 <p className={styles.historyEmpty}>{p.noActiveDiscounts}</p>
               </div>
             )}
@@ -501,7 +501,7 @@ export default function ProfilCard({ session }: { session: Session }) {
             </div>
 
             {/* How to use card */}
-            <div className={styles.card}>
+            <div className={`${styles.card} ${styles.cardWide}`}>
               <div className={styles.cardLabel}>{p.howToLabel}</div>
               <ol className={styles.stepList}>
                 {p.steps.map((step, i) => (
