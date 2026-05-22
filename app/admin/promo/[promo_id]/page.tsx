@@ -36,11 +36,24 @@ export default function PromoDetailPage() {
   const [claims, setClaims] = useState<PromoClaim[]>([])
   const [loading, setLoading] = useState(true)
 
+  const [editName, setEditName] = useState('')
+  const [editEndDate, setEditEndDate] = useState('')
+  const [editQuota, setEditQuota] = useState('')
+  const [editSaving, setEditSaving] = useState(false)
+  const [editSaved, setEditSaved] = useState(false)
+
   function load() {
     setLoading(true)
     fetch(`/api/admin/promos/${promo_id}`)
       .then(r => r.json())
-      .then(d => { setPromo(d.promo); setClaims(d.claims ?? []); setLoading(false) })
+      .then(d => {
+        setPromo(d.promo)
+        setClaims(d.claims ?? [])
+        setEditName(d.promo.name)
+        setEditEndDate(d.promo.end_date ? d.promo.end_date.slice(0, 10) : '')
+        setEditQuota(String(d.promo.quota))
+        setLoading(false)
+      })
       .catch(() => setLoading(false))
   }
 
@@ -56,6 +69,23 @@ export default function PromoDetailPage() {
     load()
   }
 
+  async function handleSaveSettings() {
+    setEditSaving(true)
+    await fetch(`/api/admin/promos/${promo_id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: editName,
+        end_date: editEndDate || null,
+        quota: parseInt(editQuota) || 0,
+      }),
+    })
+    setEditSaving(false)
+    setEditSaved(true)
+    setTimeout(() => setEditSaved(false), 2000)
+    load()
+  }
+
   if (loading || !promo) return <div className={s.loading}><div className={s.spinner} /></div>
 
   const st = promoStatus(promo)
@@ -64,6 +94,12 @@ export default function PromoDetailPage() {
   const usedClaims = claims.filter(c => c.status === 'used')
   const activeClaims = claims.filter(c => c.status === 'active')
   const discountDisplay = promo.discount_type === 'percent' ? `${promo.discount_value}%` : `Rp${promo.discount_value.toLocaleString('id-ID')}`
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: 8, color: '#f1f5f9', fontSize: '0.84rem', padding: '8px 12px',
+    outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box',
+  }
 
   return (
     <div>
@@ -76,14 +112,9 @@ export default function PromoDetailPage() {
           </h1>
           <p className={s.pageSub}>{promo.description}</p>
         </div>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button className={s.btnExport} onClick={handleToggle} style={{ color: promo.is_active ? '#fbbf24' : '#34d399' }}>
-            {promo.is_active ? 'Nonaktifkan' : 'Aktifkan'}
-          </button>
-          <Link href={`/admin/promo/${promo_id}/edit`} className={s.btnPrimary} style={{ textDecoration: 'none' }}>
-            Edit Promo
-          </Link>
-        </div>
+        <button className={s.btnExport} onClick={handleToggle} style={{ color: promo.is_active ? '#fbbf24' : '#34d399' }}>
+          {promo.is_active ? 'Nonaktifkan' : 'Aktifkan'}
+        </button>
       </div>
 
       {/* Info cards */}
@@ -100,6 +131,28 @@ export default function PromoDetailPage() {
             <div className={s.statLabel}>{st2.label}</div>
           </div>
         ))}
+      </div>
+
+      {/* Simple settings */}
+      <div className={s.card} style={{ padding: 20, marginBottom: 20 }}>
+        <div className={s.cardTitle} style={{ marginBottom: 16 }}>Pengaturan</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 16 }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.78rem', color: '#64748b', marginBottom: 6 }}>Nama Promo</label>
+            <input style={inputStyle} value={editName} onChange={e => setEditName(e.target.value)} />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.78rem', color: '#64748b', marginBottom: 6 }}>Tanggal Berakhir</label>
+            <input style={inputStyle} type="date" value={editEndDate} onChange={e => setEditEndDate(e.target.value)} />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.78rem', color: '#64748b', marginBottom: 6 }}>Kuota (0 = tidak terbatas)</label>
+            <input style={inputStyle} type="number" min={0} value={editQuota} onChange={e => setEditQuota(e.target.value)} />
+          </div>
+        </div>
+        <button className={s.btnPrimary} onClick={handleSaveSettings} disabled={editSaving} style={{ padding: '8px 24px' }}>
+          {editSaving ? 'Menyimpan...' : editSaved ? 'Tersimpan ✓' : 'Simpan'}
+        </button>
       </div>
 
       {/* Progress bar */}
@@ -119,30 +172,6 @@ export default function PromoDetailPage() {
           </div>
         </div>
       )}
-
-      {/* Promo details */}
-      <div className={s.card} style={{ padding: 20, marginBottom: 20 }}>
-        <div className={s.cardHeader} style={{ padding: '0 0 16px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-          <span className={s.cardTitle}>Detail Promo</span>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px 32px', marginTop: 16, fontSize: '0.84rem' }}>
-          {[
-            ['Prefix Voucher', promo.prefix],
-            ['Tampil di Website', promo.show_on_website ? 'Ya' : 'Tidak'],
-            ['Perlu Klaim', promo.requires_claim ? 'Ya' : 'Tidak'],
-            ['Prioritas', promo.priority],
-            ['Tanggal Mulai', promo.start_date ? new Date(promo.start_date).toLocaleDateString('id-ID') : '—'],
-            ['Tanggal Berakhir', promo.end_date ? new Date(promo.end_date).toLocaleDateString('id-ID') : 'Tidak Terbatas'],
-            ['Bar ID', promo.announcement_text_id || '—'],
-            ['Bar EN', promo.announcement_text_en || '—'],
-          ].map(([k, v]) => (
-            <div key={String(k)}>
-              <span style={{ color: '#64748b' }}>{k}: </span>
-              <span style={{ color: '#cbd5e1', fontWeight: 500 }}>{v}</span>
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* Claims table */}
       <div className={s.card}>
