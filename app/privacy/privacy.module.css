@@ -127,8 +127,8 @@
 
 .defList li {
   display: grid;
-  grid-template-columns: minmax(110px, 160px) 1fr;
-  gap: 0 1rem;
+  grid-template-columns: max-content 1fr;
+  gap: 0 1.25rem;
   align-items: baseline;
 }
 
