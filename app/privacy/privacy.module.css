@@ -120,35 +120,39 @@
   line-height: 1.7;
 }
 
-/* ── Definition list: grid on ul so all rows share one column track ── */
-.defList {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  column-gap: 1.5rem;
-  row-gap: 0.55rem;
-  align-items: baseline;
+/* ── Definition list: inline bold term — description ──
+   Use .section ul.defList (0-2-1) and .section ul.defList li (0-2-2)
+   to beat .section ul li (0-1-2) which sets display:flex */
+.section ul.defList {
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.defList li {
-  display: contents;
+.section ul.defList li {
+  display: block;
+  line-height: 1.8;
+  align-items: initial;
+  gap: 0;
 }
 
-.defList li::before {
+.section ul.defList li::before {
   display: none;
 }
 
-.defList li strong {
+.section ul.defList li strong {
   font-weight: 700;
   color: var(--text);
-  font-size: 0.88rem;
-  line-height: 1.7;
-  white-space: nowrap;
+  font-size: 0.9rem;
+}
+
+.defDesc::before {
+  content: ' \2014\0020'; /* em-dash + space */
+  color: var(--dim);
 }
 
 .defDesc {
   font-size: 0.9rem;
   color: var(--muted);
-  line-height: 1.7;
 }
 
 .section a {
@@ -260,23 +264,12 @@
   .pageFooter { flex-direction: column; align-items: flex-start; }
   .dataTable th, .dataTable td { padding: 0.5rem 0.6rem; }
 
-  /* Definition list: revert to stacked on mobile */
-  .defList {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+  /* Definition list mobile: accent border */
+  .section ul.defList {
+    gap: 0.65rem;
   }
-  .defList li {
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
+  .section ul.defList li {
     border-left: 2px solid rgba(139, 92, 246, 0.25);
     padding-left: 0.75rem;
-  }
-  .defList li strong {
-    white-space: normal;
-    color: var(--purple-light);
-    font-size: 0.85rem;
-    line-height: 1.4;
   }
 }
