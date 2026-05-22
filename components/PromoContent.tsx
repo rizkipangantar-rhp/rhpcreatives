@@ -63,7 +63,7 @@ function PromoCard({ promo, lang }: { promo: PromoInfo; lang: string }) {
           <>
             <div className={styles.earlyBirdDivider} />
             <div className={styles.earlyBirdStat}>
-              <div className={styles.earlyBirdStatNum} style={{ fontSize: '0.95rem' }}>
+              <div className={styles.earlyBirdStatNum}>
                 {new Date(promo.end_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
               </div>
               <div className={styles.earlyBirdStatLabel}>{lang === 'id' ? 'Berakhir' : 'Ends'}</div>
@@ -92,12 +92,14 @@ export default function PromoContent() {
   const { tr, lang } = useLanguage()
   const promo = tr.promo
   const [promos, setPromos] = useState<PromoInfo[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetch('/api/promos')
       .then(r => r.json())
       .then(data => setPromos(data.promos ?? []))
       .catch(() => {})
+      .finally(() => setLoading(false))
   }, [])
 
   return (
@@ -110,7 +112,7 @@ export default function PromoContent() {
       ))}
 
       {/* Fallback if no promos loaded yet */}
-      {promos.length === 0 && (
+      {!loading && promos.length === 0 && (
         <section className={styles.earlyBirdSection}>
           <div className={styles.earlyBirdInner}>
             <div className={styles.earlyBirdBadge}>{promo.earlyBird.badge}</div>
