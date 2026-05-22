@@ -27,25 +27,19 @@ export default function EarlyBirdPopup() {
 
     if (status === 'unauthenticated') { setHasClaim(false); return }
 
-    // Check if already claimed via cookie (fastest)
-    if (document.cookie.includes('eb_claimed=1')) {
-      setHasClaim(true); return
-    }
-
     const uid = session?.user?.email ?? session?.user?.id ?? ''
+
+    // User-specific localStorage check — safe across different accounts on same device
     if (uid && localStorage.getItem(`eb-claimed:${uid}`) === '1') {
       setHasClaim(true); return
     }
 
-    // Check via API
+    // Check via API (authoritative)
     fetch('/api/promos/my-claims')
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(data => {
         const claimed = (data.claims ?? []).length > 0
-        if (claimed) {
-          document.cookie = 'eb_claimed=1; max-age=31536000; path=/; SameSite=Lax'
-          if (uid) localStorage.setItem(`eb-claimed:${uid}`, '1')
-        }
+        if (claimed && uid) localStorage.setItem(`eb-claimed:${uid}`, '1')
         setHasClaim(claimed)
       })
       .catch(() => setHasClaim(false))
