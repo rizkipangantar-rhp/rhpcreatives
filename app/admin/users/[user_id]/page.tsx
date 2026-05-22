@@ -85,7 +85,7 @@ export default function UserDetailPage() {
     <div>
       <div className={s.pageHeader} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <button onClick={() => router.back()} className={s.btnGhost} style={{ marginBottom: 8 }}>← Kembali</button>
+          <button onClick={() => router.back()} className={s.btnGhost} style={{ marginBottom: 8 }}>Kembali</button>
           <h1 className={s.pageTitle}>{user.name}</h1>
           <p className={s.pageSub}>
             {user.email} ·&nbsp;

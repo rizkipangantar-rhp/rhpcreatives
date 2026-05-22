@@ -176,7 +176,7 @@ export default function Navbar() {
 
           <div className={styles.mobileCta}>
             <button className={styles.mobileLangToggle} onClick={toggle}>
-              {lang === 'id' ? 'ID → Switch to English' : 'EN → Ganti ke Indonesia'}
+              {lang === 'id' ? 'Switch to English' : 'Ganti ke Indonesia'}
             </button>
             {session ? (
               <>

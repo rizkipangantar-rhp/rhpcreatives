@@ -153,7 +153,7 @@ export default function AdminPromoPage() {
                 )
               })}
               {promos.length === 0 && (
-                <tr><td colSpan={9} className={s.emptyState}>Belum ada promo. <Link href="/admin/promo/buat" style={{ color: '#60a5fa' }}>Buat sekarang →</Link></td></tr>
+                <tr><td colSpan={9} className={s.emptyState}>Belum ada promo. <Link href="/admin/promo/buat" style={{ color: '#60a5fa' }}>Buat sekarang</Link></td></tr>
               )}
             </tbody>
           </table>

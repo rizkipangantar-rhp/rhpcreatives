@@ -535,7 +535,7 @@ export default function ProfilCard({ session }: { session: Session }) {
             ) : orders.length === 0 ? (
               <div className={styles.ordersEmpty}>
                 <p>{p.noOrders}</p>
-                <Link href="/order" className={styles.orderNowBtn}>Order Sekarang →</Link>
+                <Link href="/order" className={styles.orderNowBtn}>Order Sekarang</Link>
               </div>
             ) : (
               <div className={styles.ordersList}>
@@ -555,7 +555,7 @@ export default function ProfilCard({ session }: { session: Session }) {
                     <div className={styles.orderRight}>
                       <div className={styles.orderAmount}>Rp{order.totalPrice.toLocaleString('id-ID')}</div>
                       <StatusBadge status={order.status} labels={statusLabels} />
-                      <span className={styles.orderViewBtn}>{p.viewOrder} →</span>
+                      <span className={styles.orderViewBtn}>{p.viewOrder}</span>
                     </div>
                   </Link>
                 ))}
@@ -573,7 +573,7 @@ export default function ProfilCard({ session }: { session: Session }) {
               <div className={styles.ordersEmpty}>
                 <p>{lang === 'id' ? 'Belum ada custom order request.' : 'No custom order requests yet.'}</p>
                 <Link href="/order/custom" className={styles.orderNowBtn}>
-                  {lang === 'id' ? 'Buat Request →' : 'Create Request →'}
+                  {lang === 'id' ? 'Buat Request' : 'Create Request'}
                 </Link>
               </div>
             ) : (

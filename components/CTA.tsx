@@ -37,7 +37,7 @@ export default function CTA() {
           💬 Konsultasi via WhatsApp
         </a>
         <a href="mailto:rhpcreativesid@gmail.com" className={styles.secondary}>
-          rhpcreativesid@gmail.com →
+          rhpcreativesid@gmail.com
         </a>
       </div>
 

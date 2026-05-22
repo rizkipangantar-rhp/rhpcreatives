@@ -386,7 +386,7 @@ export default function PaymentPage() {
       <div className={styles.blob1} /><div className={styles.blob2} />
       <div className={styles.container}>
         <div className={styles.header}>
-          <Link href="/order" className={styles.backLink}>← {p.backToOrder}</Link>
+          <Link href="/order" className={styles.backLink}>{p.backToOrder}</Link>
           <h1 className={styles.title}>{p.title}</h1>
         </div>
 
@@ -614,7 +614,7 @@ export default function PaymentPage() {
                             onClick={handleQRIS}
                             disabled={charging}
                           >
-                            Generate QRIS →
+                            Generate QRIS
                           </button>
                         </div>
                       )}

@@ -155,7 +155,7 @@ export default function OrderDetailPage() {
     <div>
       <div className={s.pageHeader} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <button onClick={() => router.back()} className={s.btnGhost} style={{ marginBottom: 8 }}>← Kembali</button>
+          <button onClick={() => router.back()} className={s.btnGhost} style={{ marginBottom: 8 }}>Kembali</button>
           <h1 className={s.pageTitle}>{order.orderId}</h1>
           <p className={s.pageSub}>Dibuat {fmtDate(order.createdAt)} · Diperbarui {fmtDate(order.updatedAt)}</p>
         </div>
@@ -259,7 +259,7 @@ export default function OrderDetailPage() {
             />
             {resultUrl && (
               <a href={resultUrl} target="_blank" rel="noopener noreferrer" className={s.textBlue} style={{ fontSize: '0.78rem' }}>
-                Buka link →
+                Buka link
               </a>
             )}
           </div>

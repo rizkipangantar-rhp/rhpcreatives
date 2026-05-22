@@ -31,7 +31,7 @@ export default function StickyServiceBar() {
 
   return (
     <div className={`${styles.bar} ${visible ? styles.visible : ''}`} aria-hidden={!visible}>
-      <span className={`${styles.label} ${styles.desktopLabel}`}>{s.label} →</span>
+      <span className={`${styles.label} ${styles.desktopLabel}`}>{s.label}</span>
       {/* Desktop actions */}
       <div className={`${styles.actions} ${styles.desktopActions}`}>
         <a href="/order" className={styles.orderBtn}>{s.orderBtn}</a>

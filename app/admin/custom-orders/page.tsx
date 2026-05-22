@@ -138,7 +138,7 @@ export default function AdminCustomOrdersPage() {
                   <td><StatusBadge status={r.status} /></td>
                   <td>
                     <Link href={`/admin/custom-orders/${r.request_id}`} className={s.btnGhost}>
-                      Detail →
+                      Detail
                     </Link>
                   </td>
                 </tr>

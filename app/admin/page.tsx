@@ -168,7 +168,7 @@ export default function AdminOverview() {
       <div className={s.card}>
         <div className={s.cardHeader}>
           <span className={s.cardTitle}>Order Terbaru</span>
-          <Link href="/admin/orders" className={s.cardLink}>Lihat Semua →</Link>
+          <Link href="/admin/orders" className={s.cardLink}>Lihat Semua</Link>
         </div>
         <div className={s.tableWrap}>
           <table className={s.table}>
@@ -197,7 +197,7 @@ export default function AdminOverview() {
       <div className={s.card}>
         <div className={s.cardHeader}>
           <span className={s.cardTitle}>User Terbaru</span>
-          <Link href="/admin/users" className={s.cardLink}>Lihat Semua →</Link>
+          <Link href="/admin/users" className={s.cardLink}>Lihat Semua</Link>
         </div>
         <div className={s.tableWrap}>
           <table className={s.table}>

@@ -107,7 +107,7 @@ export default function AnnouncementBar({ initialPromo }: { initialPromo: PromoB
       <div className={styles.shimmer} />
       <span className={styles.textFull}>{text}</span>
       <Link href={href} className={styles.textShort}>{shortText}</Link>
-      <Link href={href} className={styles.ctaLink}>{lang === 'id' ? 'Klaim →' : 'Claim →'}</Link>
+      <Link href={href} className={styles.ctaLink}>{lang === 'id' ? 'Klaim' : 'Claim'}</Link>
       {time && (
         <span className={styles.countdown}>
           <span className={styles.unit}>{pad(time.d)}<span className={styles.label}>{p.days}</span></span>

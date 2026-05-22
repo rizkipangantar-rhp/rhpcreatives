@@ -99,7 +99,7 @@ export default function EditPromoPage() {
   return (
     <div>
       <div className={s.pageHeader}>
-        <Link href={`/admin/promo/${promo_id}`} style={{ fontSize: '0.82rem', color: '#60a5fa', textDecoration: 'none', marginBottom: 8, display: 'inline-block' }}>← Kembali ke Detail</Link>
+        <Link href={`/admin/promo/${promo_id}`} style={{ fontSize: '0.82rem', color: '#60a5fa', textDecoration: 'none', marginBottom: 8, display: 'inline-block' }}>Kembali ke Detail</Link>
         <h1 className={s.pageTitle}>Edit Promo</h1>
         <p className={s.pageSub}>Perbarui informasi promo</p>
       </div>

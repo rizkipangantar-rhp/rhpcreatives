@@ -180,7 +180,7 @@ export default function AdminCustomOrderDetailPage() {
       {/* Header */}
       <div className={s.pageHeader} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <button onClick={() => router.back()} className={s.btnGhost} style={{ marginBottom: 8 }}>← Kembali</button>
+          <button onClick={() => router.back()} className={s.btnGhost} style={{ marginBottom: 8 }}>Kembali</button>
           <h1 className={s.pageTitle} style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
             <span className={s.mono} style={{ color: '#a78bfa', fontSize: '1.2rem' }}>{request_id}</span>
             <StatusBadge status={request.status} />
@@ -391,7 +391,7 @@ export default function AdminCustomOrderDetailPage() {
           {/* Actions */}
           <div style={{ display: 'flex', gap: 10 }}>
             <button className={s.btnPrimary} onClick={sendPrice} disabled={saving || !basePriceNum}>
-              {saving ? 'Menyimpan...' : saved ? 'Tersimpan ✓' : 'Kirim Penawaran Harga →'}
+              {saving ? 'Menyimpan...' : saved ? 'Tersimpan ✓' : 'Kirim Penawaran Harga'}
             </button>
             {!isTerminal && (
               <button className={s.btnDanger} onClick={() => setShowRejectModal(true)} disabled={saving}>

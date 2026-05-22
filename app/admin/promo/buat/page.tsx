@@ -84,7 +84,7 @@ export default function BuatPromoPage() {
   return (
     <div>
       <div className={s.pageHeader}>
-        <Link href="/admin/promo" style={{ fontSize: '0.82rem', color: '#60a5fa', textDecoration: 'none', marginBottom: 8, display: 'inline-block' }}>← Kembali</Link>
+        <Link href="/admin/promo" style={{ fontSize: '0.82rem', color: '#60a5fa', textDecoration: 'none', marginBottom: 8, display: 'inline-block' }}>Kembali</Link>
         <h1 className={s.pageTitle}>Buat Promo Baru</h1>
         <p className={s.pageSub}>Isi detail promo di bawah ini</p>
       </div>
@@ -160,12 +160,12 @@ export default function BuatPromoPage() {
 
           <div style={fieldStyle()}>
             <label style={labelStyle()}>Teks Announcement Bar (ID)</label>
-            <input style={inputStyle()} value={form.announcement_text_id} onChange={e => set('announcement_text_id', e.target.value)} placeholder="Diskon 25% — Klaim sekarang →" />
+            <input style={inputStyle()} value={form.announcement_text_id} onChange={e => set('announcement_text_id', e.target.value)} placeholder="Diskon 25% — Klaim sekarang" />
           </div>
 
           <div style={fieldStyle()}>
             <label style={labelStyle()}>Teks Announcement Bar (EN)</label>
-            <input style={inputStyle()} value={form.announcement_text_en} onChange={e => set('announcement_text_en', e.target.value)} placeholder="25% off — Claim now →" />
+            <input style={inputStyle()} value={form.announcement_text_en} onChange={e => set('announcement_text_en', e.target.value)} placeholder="25% off — Claim now" />
           </div>
 
           <div style={{ ...fieldStyle(), gridColumn: '1 / -1' }}>

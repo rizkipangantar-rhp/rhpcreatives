@@ -69,7 +69,7 @@ export default function PromoDetailPage() {
     <div>
       <div className={s.pageHeader} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <Link href="/admin/promo" style={{ fontSize: '0.82rem', color: '#60a5fa', textDecoration: 'none', display: 'inline-block', marginBottom: 8 }}>← Semua Promo</Link>
+          <Link href="/admin/promo" style={{ fontSize: '0.82rem', color: '#60a5fa', textDecoration: 'none', display: 'inline-block', marginBottom: 8 }}>Semua Promo</Link>
           <h1 className={s.pageTitle} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {promo.name}
             <span className={`${s.badge} ${st.cls}`}>{st.label}</span>

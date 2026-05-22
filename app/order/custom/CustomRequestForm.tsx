@@ -144,7 +144,7 @@ export default function CustomRequestForm({ session }: { session: Session | null
                 : 'You need to be logged in to submit a custom order request.'}
             </p>
             <Link href="/login?callbackUrl=/order/custom" className={styles.loginBtn}>
-              {lang === 'id' ? 'Masuk Sekarang →' : 'Sign In Now →'}
+              {lang === 'id' ? 'Masuk Sekarang' : 'Sign In Now'}
             </Link>
           </div>
         </div>
@@ -181,7 +181,7 @@ export default function CustomRequestForm({ session }: { session: Session | null
             </div>
             <div className={styles.confirmActions}>
               <Link href="/dashboard/profil?tab=custom" className={styles.profileBtn}>
-                {lang === 'id' ? 'Pantau Status →' : 'Track Status →'}
+                {lang === 'id' ? 'Pantau Status' : 'Track Status'}
               </Link>
               <Link href="/" className={styles.homeBtn}>
                 {lang === 'id' ? 'Kembali ke Beranda' : 'Back to Home'}
@@ -198,7 +198,7 @@ export default function CustomRequestForm({ session }: { session: Session | null
       <div className={styles.blob1} /><div className={styles.blob2} />
       <div className={styles.container}>
         <div className={styles.header}>
-          <Link href="/order" className={styles.backLink}>← {lang === 'id' ? 'Kembali' : 'Back'}</Link>
+          <Link href="/order" className={styles.backLink}>{lang === 'id' ? 'Kembali' : 'Back'}</Link>
           <div className={styles.badge}>Custom Order</div>
           <h1 className={styles.title}>
             {lang === 'id' ? 'Request Layanan Custom' : 'Custom Service Request'}
@@ -343,7 +343,7 @@ export default function CustomRequestForm({ session }: { session: Session | null
           <button type="submit" className={styles.submitBtn} disabled={loading}>
             {loading
               ? (lang === 'id' ? 'Mengirim Request...' : 'Submitting...')
-              : (lang === 'id' ? 'Kirim Request →' : 'Submit Request →')}
+              : (lang === 'id' ? 'Kirim Request' : 'Submit Request')}
           </button>
         </form>
       </div>

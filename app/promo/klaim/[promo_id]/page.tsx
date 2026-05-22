@@ -300,7 +300,7 @@ export default function KlaimPromoPage() {
           </div>
 
           <button type="submit" className={styles.submitBtn} disabled={submitting}>
-            {submitting ? (lang === 'id' ? 'Mengklaim...' : 'Claiming...') : (lang === 'id' ? `Klaim Diskon ${discountDisplay} →` : `Claim ${discountDisplay} Discount →`)}
+            {submitting ? (lang === 'id' ? 'Mengklaim...' : 'Claiming...') : (lang === 'id' ? `Klaim Diskon ${discountDisplay}` : `Claim ${discountDisplay} Discount`)}
           </button>
         </form>
       </div>

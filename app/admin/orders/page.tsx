@@ -183,7 +183,7 @@ export default function AdminOrdersPage() {
                   <td className={s.textGreen} style={{ fontWeight: 600 }}>{fmt(o.totalPrice)}</td>
                   <td><StatusBadge status={o.status} /></td>
                   <td>
-                    <Link href={`/admin/orders/${o.orderId}`} className={s.btnGhost}>Detail →</Link>
+                    <Link href={`/admin/orders/${o.orderId}`} className={s.btnGhost}>Detail</Link>
                   </td>
                 </tr>
               ))}

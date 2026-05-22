@@ -75,8 +75,8 @@ function PromoCard({ promo, lang }: { promo: PromoInfo; lang: string }) {
       {!isFull && (
         <Link href={href} className={styles.earlyBirdCta}>
           {promo.requires_claim
-            ? (lang === 'id' ? 'Klaim Sekarang →' : 'Claim Now →')
-            : (lang === 'id' ? 'Order Sekarang →' : 'Order Now →')}
+            ? (lang === 'id' ? 'Klaim Sekarang' : 'Claim Now')
+            : (lang === 'id' ? 'Order Sekarang' : 'Order Now')}
         </Link>
       )}
       {isFull && (

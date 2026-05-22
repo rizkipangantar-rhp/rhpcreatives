@@ -77,7 +77,7 @@ export default function OrderDetailPage() {
         <div className={styles.container}>
           <p className={styles.notFound}>{lang === 'id' ? 'Order tidak ditemukan.' : 'Order not found.'}</p>
           <Link href="/dashboard/profil?tab=orders" className={styles.backLink}>
-            {lang === 'id' ? '← Kembali ke Riwayat Order' : '← Back to Order History'}
+            {lang === 'id' ? 'Kembali ke Riwayat Order' : 'Back to Order History'}
           </Link>
         </div>
       </main>
@@ -102,7 +102,7 @@ export default function OrderDetailPage() {
       <div className={styles.bgBlob2} />
       <div className={styles.container}>
         <Link href="/dashboard/profil?tab=orders" className={styles.backLink}>
-          {lang === 'id' ? '← Kembali ke Riwayat Order' : '← Back to Order History'}
+          {lang === 'id' ? 'Kembali ke Riwayat Order' : 'Back to Order History'}
         </Link>
 
         {/* Header */}
@@ -194,7 +194,7 @@ export default function OrderDetailPage() {
           <div className={styles.card}>
             <div className={styles.cardLabel}>{lang === 'id' ? 'Hasil Pekerjaan' : 'Deliverable'}</div>
             <a href={order.resultUrl} target="_blank" rel="noopener noreferrer" className={styles.resultLink}>
-              {lang === 'id' ? 'Buka Link Hasil →' : 'Open Result Link →'}
+              {lang === 'id' ? 'Buka Link Hasil' : 'Open Result Link'}
             </a>
           </div>
         )}
@@ -209,7 +209,7 @@ export default function OrderDetailPage() {
 
         <div className={styles.footer}>
           <Link href="/dashboard/profil?tab=orders" className={styles.backBtn}>
-            {lang === 'id' ? '← Semua Order' : '← All Orders'}
+            {lang === 'id' ? 'Semua Order' : 'All Orders'}
           </Link>
           {!['completed', 'cancelled'].includes(order.status) && (
             <a
