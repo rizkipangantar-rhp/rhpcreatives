@@ -129,9 +129,6 @@ export default function AdminPromoPage() {
                         <Link href={`/admin/promo/${p.id}`} className={s.btnExport} style={{ fontSize: '0.75rem', padding: '5px 10px' }}>
                           Detail
                         </Link>
-                        <Link href={`/admin/promo/${p.id}/edit`} className={s.btnExport} style={{ fontSize: '0.75rem', padding: '5px 10px' }}>
-                          Edit
-                        </Link>
                         <button
                           className={s.btnExport}
                           style={{ fontSize: '0.75rem', padding: '5px 10px', color: p.is_active ? '#fbbf24' : '#34d399' }}
