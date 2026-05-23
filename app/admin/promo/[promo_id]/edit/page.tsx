@@ -1,8 +1,9 @@
-'use client'
+﻿'use client'
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import s from '@/components/admin/admin.module.css'
+import AdminLoading from '@/components/admin/AdminLoading'
 import type { Promo } from '@/lib/promos'
 
 const PRESET_COLORS = ['#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444', '#06b6d4']
@@ -94,7 +95,7 @@ export default function EditPromoPage() {
     }
   }
 
-  if (!form) return <div className={s.loading}><div className={s.spinner} /></div>
+  if (!form) return <AdminLoading />
 
   return (
     <div>

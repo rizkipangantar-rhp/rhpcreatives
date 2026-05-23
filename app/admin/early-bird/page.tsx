@@ -1,6 +1,7 @@
-'use client'
+﻿'use client'
 import { useEffect, useState } from 'react'
 import s from '@/components/admin/admin.module.css'
+import AdminLoading from '@/components/admin/AdminLoading'
 
 type ClaimEntry = {
   userId: string
@@ -62,7 +63,7 @@ export default function EarlyBirdPage() {
     load()
   }
 
-  if (loading || !data) return <div className={s.loading}><div className={s.spinner} /></div>
+  if (loading || !data) return <AdminLoading />
 
   const { quota, claims, waitlist } = data
   const usedClaims = claims.filter(c => c.usedAt)

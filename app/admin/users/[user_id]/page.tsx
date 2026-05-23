@@ -1,7 +1,8 @@
-'use client'
+﻿'use client'
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import s from '@/components/admin/admin.module.css'
+import AdminLoading from '@/components/admin/AdminLoading'
 
 type UserDetail = {
   id: string
@@ -78,7 +79,7 @@ export default function UserDetailPage() {
     setSuspending(false)
   }
 
-  if (loading) return <div className={s.loading}><div className={s.spinner} /></div>
+  if (loading) return <AdminLoading />
   if (!user) return <div className={s.emptyState}>User tidak ditemukan.</div>
 
   return (

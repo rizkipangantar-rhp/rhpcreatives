@@ -1,7 +1,8 @@
-'use client'
+﻿'use client'
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import s from '@/components/admin/admin.module.css'
+import AdminLoading from '@/components/admin/AdminLoading'
 import type { CustomOrderRequest, RequestStatus } from '@/lib/custom-orders'
 
 const STATUS_LABELS: Record<RequestStatus, string> = {
@@ -154,7 +155,7 @@ export default function AdminCustomOrderDetailPage() {
     fetch(`/api/custom-order/${request_id}`).then(r => r.json()).then(setRequest)
   }
 
-  if (loading) return <div className={s.loading}><div className={s.spinner} /></div>
+  if (loading) return <AdminLoading />
   if (!request) return <div className={s.emptyState}>Request tidak ditemukan.</div>
 
   const waUrl = `https://wa.me/${request.customer.whatsapp}?text=${encodeURIComponent(`Halo ${request.customer.name}, mengenai Custom Order ${request_id}`)}`

@@ -1,7 +1,8 @@
-'use client'
+﻿'use client'
 import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
 import s from '@/components/admin/admin.module.css'
+import AdminLoading from '@/components/admin/AdminLoading'
 
 type OrderStatus = 'pending' | 'paid' | 'processing' | 'completed' | 'cancelled'
 
@@ -108,7 +109,7 @@ export default function AdminOrdersPage() {
 
   const paidRevenue = orders.filter(o => ['paid', 'processing', 'completed'].includes(o.status)).reduce((s, o) => s + o.totalPrice, 0)
 
-  if (loading) return <div className={s.loading}><div className={s.spinner} /></div>
+  if (loading) return <AdminLoading />
 
   return (
     <div>

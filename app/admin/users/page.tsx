@@ -1,7 +1,8 @@
-'use client'
+﻿'use client'
 import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
 import s from '@/components/admin/admin.module.css'
+import AdminLoading from '@/components/admin/AdminLoading'
 
 type User = {
   id: string
@@ -68,7 +69,7 @@ export default function AdminUsersPage() {
     setDeleting(null)
   }
 
-  if (loading) return <div className={s.loading}><div className={s.spinner} /></div>
+  if (loading) return <AdminLoading />
 
   return (
     <div>

@@ -1,7 +1,8 @@
-'use client'
+﻿'use client'
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import s from '@/components/admin/admin.module.css'
+import AdminLoading from '@/components/admin/AdminLoading'
 
 type OrderStatus = 'pending' | 'paid' | 'processing' | 'completed' | 'cancelled'
 
@@ -146,7 +147,7 @@ export default function OrderDetailPage() {
     setTimeout(() => setSaved(false), 2000)
   }
 
-  if (loading) return <div className={s.loading}><div className={s.spinner} /></div>
+  if (loading) return <AdminLoading />
   if (!order) return <div className={s.emptyState}>Order tidak ditemukan.</div>
 
   const waUrl = `https://wa.me/${order.wa.replace(/\D/g, '')}?text=Halo%20${encodeURIComponent(order.name)}%2C%20mengenai%20order%20${order.orderId}`

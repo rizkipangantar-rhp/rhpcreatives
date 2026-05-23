@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import {
@@ -6,6 +6,7 @@ import {
   XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from 'recharts'
 import s from '@/components/admin/admin.module.css'
+import AdminLoading from '@/components/admin/AdminLoading'
 
 function fmt(n: number) { return `Rp${n.toLocaleString('id-ID')}` }
 function fmtK(n: number) { return n >= 1_000_000 ? `${(n/1_000_000).toFixed(1)}jt` : n >= 1000 ? `${(n/1000).toFixed(0)}rb` : String(n) }
@@ -58,7 +59,7 @@ export default function AdminOverview() {
       .catch(() => setLoading(false))
   }, [])
 
-  if (loading) return <div className={s.loading}><div className={s.spinner} /></div>
+  if (loading) return <AdminLoading />
   if (!data) return <div className={s.emptyState}>Gagal memuat data.</div>
 
   const serviceData = Object.entries(data.ordersByService).map(([k, v]) => ({ name: SERVICE_LABELS[k] ?? k, value: v }))

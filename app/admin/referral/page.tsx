@@ -1,6 +1,7 @@
-'use client'
+﻿'use client'
 import { useEffect, useState } from 'react'
 import s from '@/components/admin/admin.module.css'
+import AdminLoading from '@/components/admin/AdminLoading'
 
 type Usage = {
   userId: string
@@ -48,7 +49,7 @@ export default function ReferralPage() {
       .catch(() => setLoading(false))
   }, [])
 
-  if (loading || !data) return <div className={s.loading}><div className={s.spinner} /></div>
+  if (loading || !data) return <AdminLoading />
 
   return (
     <div>

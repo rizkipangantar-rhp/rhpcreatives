@@ -255,28 +255,92 @@
   gap: 0;
 }
 
-.loading::before {
-  content: 'RHP Creatives';
-  font-size: 1.65rem;
-  font-weight: 800;
+/* ── Loading logo ── */
+.loadingLogo {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 700;
   letter-spacing: -0.02em;
-  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+  color: #f1f5f9;
+  margin-bottom: 28px;
+  animation: logoPulse 2.4s ease-in-out infinite;
+}
+.loadingLogo span {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 22px;
-  line-height: 1;
 }
 
-.loading::after {
-  content: 'Memuat data...';
+@keyframes logoPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}
+
+/* ── Dual-ring spinner ── */
+.loadingRings {
+  position: relative;
+  width: 60px;
+  height: 60px;
+}
+
+.ring1, .ring2 {
+  position: absolute;
+  border-radius: 50%;
+  border: 3px solid transparent;
+}
+
+.ring1 {
+  inset: 0;
+  border-top-color: #8b5cf6;
+  border-right-color: rgba(139,92,246,0.3);
+  animation: spin 0.9s linear infinite;
+}
+
+.ring2 {
+  inset: 9px;
+  border-top-color: #ec4899;
+  border-right-color: rgba(236,72,153,0.3);
+  animation: spin 0.6s linear infinite reverse;
+}
+
+.ringDot {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ringDot::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  animation: dotPulse 0.9s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(0.5); opacity: 0.4; }
+}
+
+/* ── Loading text ── */
+.loadingText {
   font-size: 0.72rem;
   color: #475569;
-  margin-top: 14px;
-  letter-spacing: 0.08em;
+  margin-top: 18px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+  animation: textBlink 1.6s ease-in-out infinite;
 }
 
+@keyframes textBlink {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
+}
+
+/* Legacy spinner (still used as fallback) */
 .spinner {
   width: 48px; height: 48px;
   border: 3px solid rgba(139,92,246,0.12);

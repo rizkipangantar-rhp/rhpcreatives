@@ -1,8 +1,9 @@
-'use client'
+﻿'use client'
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import s from '@/components/admin/admin.module.css'
+import AdminLoading from '@/components/admin/AdminLoading'
 import type { Promo, PromoClaim } from '@/lib/promos'
 
 function fmtDate(iso: string | null) {
@@ -95,7 +96,7 @@ export default function PromoDetailPage() {
     load()
   }
 
-  if (loading || !promo) return <div className={s.loading}><div className={s.spinner} /></div>
+  if (loading || !promo) return <AdminLoading />
 
   const st = promoStatus(promo)
   const pct = promo.quota > 0 ? Math.min(100, Math.round((promo.claimed / promo.quota) * 100)) : 0

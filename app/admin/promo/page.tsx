@@ -1,7 +1,8 @@
-'use client'
+﻿'use client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import s from '@/components/admin/admin.module.css'
+import AdminLoading from '@/components/admin/AdminLoading'
 import type { Promo } from '@/lib/promos'
 
 type Stats = { totalActive: number; totalEnded: number; totalClaims: number; totalDiscount: number }
@@ -51,7 +52,7 @@ export default function AdminPromoPage() {
     load()
   }
 
-  if (loading) return <div className={s.loading}><div className={s.spinner} /></div>
+  if (loading) return <AdminLoading />
 
   return (
     <div>

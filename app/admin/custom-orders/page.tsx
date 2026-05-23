@@ -1,7 +1,8 @@
-'use client'
+﻿'use client'
 import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
 import s from '@/components/admin/admin.module.css'
+import AdminLoading from '@/components/admin/AdminLoading'
 import type { CustomOrderRequest, RequestStatus } from '@/lib/custom-orders'
 
 const STATUS_LABELS: Record<RequestStatus, string> = {
@@ -67,7 +68,7 @@ export default function AdminCustomOrdersPage() {
 
   const waitingCount = requests.filter(r => r.status === 'waiting_review').length
 
-  if (loading) return <div className={s.loading}><div className={s.spinner} /></div>
+  if (loading) return <AdminLoading />
 
   return (
     <div>

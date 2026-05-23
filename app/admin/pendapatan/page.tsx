@@ -1,10 +1,11 @@
-'use client'
+﻿'use client'
 import { useEffect, useState } from 'react'
 import {
   LineChart, Line, BarChart, Bar,
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from 'recharts'
 import s from '@/components/admin/admin.module.css'
+import AdminLoading from '@/components/admin/AdminLoading'
 
 type DayRevenue = { date: string; revenue: number }
 type Order = {
@@ -70,7 +71,7 @@ export default function PendapatanPage() {
     }).catch(() => setLoading(false))
   }, [])
 
-  if (loading || !stats) return <div className={s.loading}><div className={s.spinner} /></div>
+  if (loading || !stats) return <AdminLoading />
 
   const revenueData = stats.revenueByDay.map(d => ({ ...d, label: d.date.slice(5) }))
 

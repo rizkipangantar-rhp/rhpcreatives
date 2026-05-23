@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import s from '@/components/admin/admin.module.css'
+import AdminLoading from '@/components/admin/AdminLoading'
 
 type Settings = {
   waNumber: string
@@ -119,7 +120,7 @@ export default function PengaturanPage() {
     setSettings(prev => prev ? { ...prev, [key]: value } : prev)
   }
 
-  if (loading || !settings) return <div className={s.loading}><div className={s.spinner} /></div>
+  if (loading || !settings) return <AdminLoading />
 
   return (
     <div>
