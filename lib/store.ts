@@ -1,43 +1,48 @@
-import { Redis } from '@upstash/redis'
+import { MongoClient, type Collection } from 'mongodb'
 import fs from 'fs'
 import { getDataPath } from './data-path'
 import { safeWriteJson } from './safe-write'
 
-let _redis: Redis | null = null
+// ─── MongoDB connection (singleton) ──────────────────────────────────────────
 
-function getRedis(): Redis | null {
-  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) return null
-  if (!_redis) {
-    _redis = new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN,
-    })
-  }
-  return _redis
+declare global {
+  // Reuse connection across hot reloads in dev
+  // eslint-disable-next-line no-var
+  var _mongoClientPromise: Promise<MongoClient> | undefined
 }
 
+function getClientPromise(): Promise<MongoClient> | null {
+  if (!process.env.MONGODB_URI) return null
+  if (!global._mongoClientPromise) {
+    const client = new MongoClient(process.env.MONGODB_URI)
+    global._mongoClientPromise = client.connect()
+  }
+  return global._mongoClientPromise
+}
+
+async function getCollection(): Promise<Collection<{ _id: string; data: unknown }> | null> {
+  const promise = getClientPromise()
+  if (!promise) return null
+  const client = await promise
+  const db = client.db(process.env.MONGODB_DB ?? 'rhpcreatives')
+  return db.collection<{ _id: string; data: unknown }>('store')
+}
+
+// ─── Public API (same interface as before) ───────────────────────────────────
+
 export async function dbGet<T>(key: string, fallbackFile: string, defaultValue: T): Promise<T> {
-  const r = getRedis()
-  if (r) {
+  const col = await getCollection()
+
+  if (col) {
     try {
-      const val = await r.get<T>(key)
-      if (val !== null && val !== undefined) return val
-
-      // Redis key is empty — try to seed from the bundled JSON file (one-time auto-migration)
-      try {
-        const p = getDataPath(fallbackFile)
-        if (fs.existsSync(p)) {
-          const fileData = JSON.parse(fs.readFileSync(p, 'utf-8')) as T
-          r.set(key, JSON.stringify(fileData)).catch(() => {})
-          return fileData
-        }
-      } catch { /* ignore */ }
-
-      return defaultValue
+      const doc = await col.findOne({ _id: key })
+      return doc ? (doc.data as T) : defaultValue
     } catch {
       return defaultValue
     }
   }
+
+  // File system fallback (local dev without MongoDB)
   try {
     const p = getDataPath(fallbackFile)
     if (!fs.existsSync(p)) return defaultValue
@@ -48,10 +53,13 @@ export async function dbGet<T>(key: string, fallbackFile: string, defaultValue: 
 }
 
 export async function dbSet<T>(key: string, fallbackFile: string, data: T): Promise<void> {
-  const r = getRedis()
-  if (r) {
-    await r.set(key, JSON.stringify(data))
+  const col = await getCollection()
+
+  if (col) {
+    await col.updateOne({ _id: key }, { $set: { data } }, { upsert: true })
     return
   }
+
+  // File system fallback
   safeWriteJson(getDataPath(fallbackFile), data)
 }
