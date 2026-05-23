@@ -6,7 +6,6 @@ import { safeWriteJson } from './safe-write'
 // ─── MongoDB connection (singleton) ──────────────────────────────────────────
 
 declare global {
-  // Reuse connection across hot reloads in dev
   // eslint-disable-next-line no-var
   var _mongoClientPromise: Promise<MongoClient> | undefined
 }
@@ -15,7 +14,11 @@ function getClientPromise(): Promise<MongoClient> | null {
   if (!process.env.MONGODB_URI) return null
   if (!global._mongoClientPromise) {
     const client = new MongoClient(process.env.MONGODB_URI)
-    global._mongoClientPromise = client.connect()
+    global._mongoClientPromise = client.connect().catch(err => {
+      // Reset so next request retries instead of reusing the rejected promise
+      global._mongoClientPromise = undefined
+      throw err
+    })
   }
   return global._mongoClientPromise
 }
@@ -23,12 +26,16 @@ function getClientPromise(): Promise<MongoClient> | null {
 async function getCollection(): Promise<Collection<{ _id: string; data: unknown }> | null> {
   const promise = getClientPromise()
   if (!promise) return null
-  const client = await promise
-  const db = client.db(process.env.MONGODB_DB ?? 'rhpcreatives')
-  return db.collection<{ _id: string; data: unknown }>('store')
+  try {
+    const client = await promise
+    const db = client.db(process.env.MONGODB_DB ?? 'rhpcreatives')
+    return db.collection<{ _id: string; data: unknown }>('store')
+  } catch {
+    return null
+  }
 }
 
-// ─── Public API (same interface as before) ───────────────────────────────────
+// ─── Public API ───────────────────────────────────────────────────────────────
 
 export async function dbGet<T>(key: string, fallbackFile: string, defaultValue: T): Promise<T> {
   const col = await getCollection()
@@ -42,7 +49,7 @@ export async function dbGet<T>(key: string, fallbackFile: string, defaultValue: 
     }
   }
 
-  // File system fallback (local dev without MongoDB)
+  // File system fallback
   try {
     const p = getDataPath(fallbackFile)
     if (!fs.existsSync(p)) return defaultValue
@@ -56,8 +63,10 @@ export async function dbSet<T>(key: string, fallbackFile: string, data: T): Prom
   const col = await getCollection()
 
   if (col) {
-    await col.updateOne({ _id: key }, { $set: { data } }, { upsert: true })
-    return
+    try {
+      await col.updateOne({ _id: key }, { $set: { data } }, { upsert: true })
+      return
+    } catch { /* fall through to file */ }
   }
 
   // File system fallback
