@@ -248,16 +248,42 @@
 
 .loading {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 64px;
+  min-height: 70vh;
+  gap: 0;
 }
+
+.loading::before {
+  content: 'RHP Creatives';
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 22px;
+  line-height: 1;
+}
+
+.loading::after {
+  content: 'Memuat data...';
+  font-size: 0.72rem;
+  color: #475569;
+  margin-top: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .spinner {
-  width: 32px; height: 32px;
-  border: 2.5px solid rgba(59,130,246,0.2);
-  border-top-color: #3b82f6;
+  width: 48px; height: 48px;
+  border: 3px solid rgba(139,92,246,0.12);
+  border-top-color: #8b5cf6;
+  border-right-color: #a78bfa;
   border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+  animation: spin 0.75s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
