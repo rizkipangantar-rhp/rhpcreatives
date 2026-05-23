@@ -38,9 +38,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const barScript = `document.documentElement.style.setProperty('--bar-h','44px')`
 
   return (
-    <html lang="id">
+    <html lang="id" data-theme="dark">
       <head>
         <meta name="color-scheme" content="dark" />
+        <meta name="theme-color" content="#06060f" />
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
         <script dangerouslySetInnerHTML={{ __html: barScript }} />
       </head>
