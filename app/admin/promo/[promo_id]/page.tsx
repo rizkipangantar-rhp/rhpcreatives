@@ -41,6 +41,7 @@ export default function PromoDetailPage() {
   const [editQuota, setEditQuota] = useState('')
   const [editSaving, setEditSaving] = useState(false)
   const [editSaved, setEditSaved] = useState(false)
+  const [resetting, setResetting] = useState(false)
 
   function load() {
     setLoading(true)
@@ -66,6 +67,14 @@ export default function PromoDetailPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ is_active: !promo.is_active }),
     })
+    load()
+  }
+
+  async function handleResetClaims() {
+    if (!confirm(`Reset semua klaim "${promo?.name}"? Slot kembali ke 0 dan semua voucher tidak berlaku.`)) return
+    setResetting(true)
+    await fetch(`/api/admin/promos/${promo_id}/reset-claims`, { method: 'POST' })
+    setResetting(false)
     load()
   }
 
@@ -112,9 +121,22 @@ export default function PromoDetailPage() {
           </h1>
           <p className={s.pageSub}>{promo.description}</p>
         </div>
-        <button className={s.btnExport} onClick={handleToggle} style={{ color: promo.is_active ? '#fbbf24' : '#34d399' }}>
-          {promo.is_active ? 'Nonaktifkan' : 'Aktifkan'}
-        </button>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button className={s.btnExport} onClick={handleToggle} style={{ color: promo.is_active ? '#fbbf24' : '#34d399' }}>
+            {promo.is_active ? 'Nonaktifkan' : 'Aktifkan'}
+          </button>
+          <button
+            onClick={handleResetClaims}
+            disabled={resetting}
+            style={{
+              background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
+              color: '#f87171', borderRadius: 8, padding: '8px 16px', fontSize: '0.82rem',
+              fontWeight: 600, cursor: 'pointer', opacity: resetting ? 0.6 : 1,
+            }}
+          >
+            {resetting ? 'Mereset...' : 'Reset Klaim'}
+          </button>
+        </div>
       </div>
 
       {/* Info cards */}
