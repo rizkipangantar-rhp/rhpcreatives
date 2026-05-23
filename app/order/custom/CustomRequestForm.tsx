@@ -15,33 +15,12 @@ const CATEGORY_LABELS: Record<'id' | 'en', Record<typeof CATEGORIES[number], str
 
 type Step = 'form' | 'confirm'
 
-function buildWaMessage(data: {
-  requestId: string
-  name: string
-  email: string
-  wa: string
-  serviceName: string
-  packageName: string
-  description: string
-  deadline?: string
-}) {
-  return encodeURIComponent(
-    `CUSTOM ORDER REQUEST BARU\n` +
-    `Request ID: ${data.requestId}\n` +
-    `Dari: ${data.name} (${data.email})\n` +
-    `WA: ${data.wa}\n` +
-    `Layanan: ${data.serviceName} - ${data.packageName}\n` +
-    `Deskripsi: ${data.description.slice(0, 200)}${data.description.length > 200 ? '...' : ''}\n` +
-    (data.deadline ? `Deadline: ${data.deadline}\n` : '') +
-    `Cek dashboard admin untuk input harga.`
-  )
-}
-
 export default function CustomRequestForm({ session }: { session: Session | null }) {
   const { lang } = useLanguage()
 
   const [step, setStep] = useState<Step>('form')
   const [requestId, setRequestId] = useState('')
+  const [waSent, setWaSent] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [savedWa, setSavedWa] = useState<string | null>(null)
@@ -103,28 +82,14 @@ export default function CustomRequestForm({ session }: { session: Session | null
           deadline: form.deadline || undefined,
         }),
       })
-      const data = await res.json() as { request_id?: string; error?: string }
+      const data = await res.json() as { request_id?: string; wa_sent?: boolean; error?: string }
       if (!res.ok) {
         setError(data.error ?? (lang === 'id' ? 'Oops, gagal kirim nih. Coba lagi dong!' : 'Oops, submission failed. Try again!'))
         return
       }
       setRequestId(data.request_id!)
+      setWaSent(data.wa_sent ?? false)
       setStep('confirm')
-
-      // Open WA notification to admin
-      const waMsg = buildWaMessage({
-        requestId: data.request_id!,
-        name: form.name,
-        email: session?.user?.email ?? '',
-        wa: form.whatsapp,
-        serviceName: form.serviceName,
-        packageName: form.packageName,
-        description: form.description,
-        deadline: form.deadline,
-      })
-      setTimeout(() => {
-        window.open(`https://wa.me/${ADMIN_WA}?text=${waMsg}`, '_blank')
-      }, 800)
     } catch {
       setError(lang === 'id' ? 'Ada error nih. Coba lagi ya!' : 'Something went wrong. Give it another shot!')
     } finally {
@@ -176,11 +141,22 @@ export default function CustomRequestForm({ session }: { session: Session | null
               <span className={styles.requestId}>{requestId}</span>
             </div>
             <div className={styles.waNotifHint} style={{ textAlign: 'left', marginBottom: 28 }}>
-              <span>📱</span>
+              <span>{waSent ? '✅' : '📋'}</span>
               <span>
-                {lang === 'id'
-                  ? 'Notifikasi WA sudah dikirim ke admin kami. Kalau popup terblokir, silahkan buka chat WA admin secara manual.'
-                  : 'WA notification sent to our admin. If the popup was blocked, please open the admin WA chat manually.'}
+                {waSent
+                  ? (lang === 'id'
+                      ? 'Notifikasi WA sudah otomatis dikirim ke admin kami.'
+                      : 'WA notification automatically sent to our admin.')
+                  : (lang === 'id'
+                      ? <>Request sudah tersimpan. Admin akan dicek via dashboard. Atau{' '}
+                          <a href={`https://wa.me/${ADMIN_WA}`} target="_blank" rel="noreferrer" style={{ color: 'var(--purple-light)', textDecoration: 'underline' }}>
+                            hubungi admin langsung
+                          </a>.</>
+                      : <>Request saved. Admin will check via dashboard. Or{' '}
+                          <a href={`https://wa.me/${ADMIN_WA}`} target="_blank" rel="noreferrer" style={{ color: 'var(--purple-light)', textDecoration: 'underline' }}>
+                            contact admin directly
+                          </a>.</>)
+                }
               </span>
             </div>
             <div className={styles.confirmActions}>

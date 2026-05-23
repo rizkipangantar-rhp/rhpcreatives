@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { createRequest, type ServiceCategory } from '@/lib/custom-orders'
+import { notifyAdminWa, buildAdminWaMessage } from '@/lib/notify-wa'
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions)
@@ -56,5 +57,17 @@ export async function POST(req: Request) {
     offer_expires_at: null,
   })
 
-  return NextResponse.json({ request_id: request.request_id })
+  const waMsg = buildAdminWaMessage({
+    requestId: request.request_id,
+    name,
+    email: session.user.email,
+    wa: body.whatsapp,
+    serviceName,
+    packageName,
+    description,
+    deadline: body.deadline,
+  })
+  const waSent = await notifyAdminWa(waMsg)
+
+  return NextResponse.json({ request_id: request.request_id, wa_sent: waSent })
 }
