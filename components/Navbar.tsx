@@ -77,7 +77,7 @@ export default function Navbar() {
           <span className={lang === 'en' ? styles.langActive : ''}>EN</span>
         </button>
 
-        {status === 'loading' ? null : session ? (
+        {status === 'loading' ? <div className={styles.authSkeleton} /> : session ? (
           <div className={styles.userMenu}>
             <button
               className={styles.avatar}
