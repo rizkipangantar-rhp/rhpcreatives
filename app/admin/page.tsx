@@ -29,6 +29,7 @@ type AnalyticsSummary = {
   todayViews: number
   last7Days: { date: string; views: number }[]
   topPaths: { path: string; views: number }[]
+  deviceBreakdown: { desktop: number; mobile: number }
 }
 
 type StatsData = {
@@ -223,44 +224,80 @@ export default function AdminOverview() {
       </div>
 
       {/* Analytics */}
-      {data.analytics && (
-        <div className={s.card} style={{ padding: 24 }}>
-          <div className={s.cardHeader} style={{ marginBottom: 20 }}>
-            <span className={s.cardTitle}>Analitik Pageview</span>
-          </div>
-          <div className={s.statGrid} style={{ marginBottom: 20 }}>
-            {[
-              { icon: '👁️', label: 'Total Pageview', value: data.analytics.totalViews },
-              { icon: '📅', label: 'Hari Ini', value: data.analytics.todayViews },
-            ].map(st => (
-              <div key={st.label} className={s.statCard}>
-                <div className={s.statIcon}>{st.icon}</div>
-                <div className={s.statValue}>{st.value}</div>
-                <div className={s.statLabel}>{st.label}</div>
+      {data.analytics && (() => {
+        const db = data.analytics!.deviceBreakdown
+        const deviceTotal = db.desktop + db.mobile
+        const deviceData = [
+          { name: 'Desktop', value: db.desktop, color: '#3b82f6', pct: deviceTotal ? Math.round(db.desktop / deviceTotal * 100) : 0 },
+          { name: 'Mobile', value: db.mobile, color: '#a855f7', pct: deviceTotal ? Math.round(db.mobile / deviceTotal * 100) : 0 },
+        ]
+        return (
+          <div className={s.card} style={{ padding: 24 }}>
+            <div className={s.cardHeader} style={{ marginBottom: 20 }}>
+              <span className={s.cardTitle}>Analitik Pageview</span>
+            </div>
+            <div className={s.statGrid} style={{ marginBottom: 20 }}>
+              {[
+                { icon: '👁️', label: 'Total Pageview', value: data.analytics!.totalViews },
+                { icon: '📅', label: 'Hari Ini', value: data.analytics!.todayViews },
+              ].map(st => (
+                <div key={st.label} className={s.statCard}>
+                  <div className={s.statIcon}>{st.icon}</div>
+                  <div className={s.statValue}>{st.value}</div>
+                  <div className={s.statLabel}>{st.label}</div>
+                </div>
+              ))}
+            </div>
+            <div className={s.chartArea} style={{ height: 120, marginBottom: 20 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={data.analytics!.last7Days.map(d => ({ ...d, label: d.date.slice(5) }))} barSize={20}>
+                  <XAxis dataKey="label" tick={{ fontSize: 10, fill: '#475569' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 10, fill: '#475569' }} axisLine={false} tickLine={false} width={24} />
+                  <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 12 }} labelStyle={{ color: '#94a3b8' }} />
+                  <Bar dataKey="views" name="Views" fill="#a855f7" radius={[4,4,0,0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Device breakdown */}
+            <div className={s.cardTitle} style={{ fontSize: '0.78rem', marginBottom: 12, color: '#64748b' }}>Device (All-Time)</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
+              <div style={{ width: 100, height: 100, flexShrink: 0 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={deviceData} dataKey="value" cx="50%" cy="50%" innerRadius={28} outerRadius={46}>
+                      {deviceData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                    </Pie>
+                    <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 12 }} labelStyle={{ color: '#94a3b8' }} />
+                  </PieChart>
+                </ResponsiveContainer>
               </div>
-            ))}
-          </div>
-          <div className={s.chartArea} style={{ height: 120, marginBottom: 20 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data.analytics.last7Days.map(d => ({ ...d, label: d.date.slice(5) }))} barSize={20}>
-                <XAxis dataKey="label" tick={{ fontSize: 10, fill: '#475569' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: '#475569' }} axisLine={false} tickLine={false} width={24} />
-                <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 12 }} labelStyle={{ color: '#94a3b8' }} />
-                <Bar dataKey="views" name="Views" fill="#a855f7" radius={[4,4,0,0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <div className={s.cardTitle} style={{ fontSize: '0.78rem', marginBottom: 8, color: '#64748b' }}>Top Halaman (All-Time)</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            {data.analytics.topPaths.map((p, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                <span style={{ color: '#94a3b8', fontFamily: 'monospace' }}>{p.path}</span>
-                <span style={{ color: '#f1f5f9', fontWeight: 600 }}>{p.views}</span>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {deviceData.map(d => (
+                  <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#94a3b8' }}>
+                    <div style={{ width: 10, height: 10, borderRadius: 2, background: d.color, flexShrink: 0 }} />
+                    <span>{d.name}</span>
+                    <span style={{ marginLeft: 'auto', color: '#f1f5f9', fontWeight: 600 }}>{d.value} ({d.pct}%)</span>
+                  </div>
+                ))}
+                {deviceTotal === 0 && (
+                  <span style={{ fontSize: 11, color: '#475569' }}>Belum ada data device</span>
+                )}
               </div>
-            ))}
+            </div>
+
+            <div className={s.cardTitle} style={{ fontSize: '0.78rem', marginBottom: 8, color: '#64748b' }}>Top Halaman (All-Time)</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {data.analytics!.topPaths.map((p, i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                  <span style={{ color: '#94a3b8', fontFamily: 'monospace' }}>{p.path}</span>
+                  <span style={{ color: '#f1f5f9', fontWeight: 600 }}>{p.views}</span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )
+      })()}
     </div>
   )
 }

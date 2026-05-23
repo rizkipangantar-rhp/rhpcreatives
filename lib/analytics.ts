@@ -1,6 +1,6 @@
 import { dbGet, dbSet } from '@/lib/store'
 
-type DailyRecord = { views: number; paths: Record<string, number> }
+type DailyRecord = { views: number; paths: Record<string, number>; devices?: Record<string, number> }
 type AnalyticsData = { daily: Record<string, DailyRecord> }
 
 async function read(): Promise<AnalyticsData> {
@@ -11,12 +11,21 @@ async function write(data: AnalyticsData): Promise<void> {
   return dbSet('rhp:analytics', 'analytics.json', data)
 }
 
-export async function recordPageview(path: string): Promise<void> {
+function detectDevice(ua: string): 'mobile' | 'desktop' {
+  return /Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(ua) ? 'mobile' : 'desktop'
+}
+
+export async function recordPageview(path: string, userAgent?: string): Promise<void> {
   const day = new Date().toISOString().slice(0, 10)
   const data = await read()
-  if (!data.daily[day]) data.daily[day] = { views: 0, paths: {} }
+  if (!data.daily[day]) data.daily[day] = { views: 0, paths: {}, devices: {} }
   data.daily[day].views++
   data.daily[day].paths[path] = (data.daily[day].paths[path] ?? 0) + 1
+  if (userAgent) {
+    const device = detectDevice(userAgent)
+    if (!data.daily[day].devices) data.daily[day].devices = {}
+    data.daily[day].devices![device] = (data.daily[day].devices![device] ?? 0) + 1
+  }
   await write(data)
 }
 
@@ -25,6 +34,7 @@ export type AnalyticsSummary = {
   todayViews: number
   last7Days: { date: string; views: number }[]
   topPaths: { path: string; views: number }[]
+  deviceBreakdown: { desktop: number; mobile: number }
 }
 
 export async function getAnalyticsSummary(): Promise<AnalyticsSummary> {
@@ -53,5 +63,12 @@ export async function getAnalyticsSummary(): Promise<AnalyticsSummary> {
     .slice(0, 10)
     .map(([path, views]) => ({ path, views }))
 
-  return { totalViews, todayViews, last7Days, topPaths }
+  // Device breakdown (all-time)
+  const deviceBreakdown = { desktop: 0, mobile: 0 }
+  for (const day of Object.values(data.daily)) {
+    deviceBreakdown.desktop += day.devices?.desktop ?? 0
+    deviceBreakdown.mobile += day.devices?.mobile ?? 0
+  }
+
+  return { totalViews, todayViews, last7Days, topPaths, deviceBreakdown }
 }
