@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useLanguage } from '@/context/LanguageContext'
 import { normalizeWa } from '@/lib/wa'
+import { EARLY_BIRD_ELIGIBLE, GUEST_ADDONS } from '@/lib/packages'
 import styles from './order.module.css'
 
 type ServiceOption = { id: string; nameId: string; nameEn: string; icon: string }
@@ -19,25 +20,25 @@ const SERVICES: ServiceOption[] = [
 
 const PACKAGES: Record<string, PackageOption[]> = {
   undangan: [
-    { id: 'undangan-simpel', nameId: 'Undangan Simpel', nameEn: 'Simple Invite', price: 79000, periodId: 'per undangan', periodEn: 'per invitation' },
-    { id: 'undangan-aesthetic', nameId: 'Undangan Aesthetic', nameEn: 'Aesthetic Invite', price: 139000, periodId: 'per undangan', periodEn: 'per invitation' },
-    { id: 'undangan-sultan', nameId: 'Undangan Sultan', nameEn: 'Sultan Invite', price: 219000, periodId: 'per undangan', periodEn: 'per invitation' },
+    { id: 'undangan-simpel', nameId: 'Undangan Simpel', nameEn: 'Simple Invite', price: 89000, periodId: 'per undangan', periodEn: 'per invitation' },
+    { id: 'undangan-aesthetic', nameId: 'Undangan Aesthetic', nameEn: 'Aesthetic Invite', price: 149000, periodId: 'per undangan', periodEn: 'per invitation' },
+    { id: 'undangan-sultan', nameId: 'Undangan Sultan', nameEn: 'Sultan Invite', price: 229000, periodId: 'per undangan', periodEn: 'per invitation' },
   ],
   'landing-page': [
-    { id: 'landing-santuy', nameId: 'Landing Page Santuy', nameEn: 'Chill Page', price: 299000, periodId: 'per halaman', periodEn: 'per page' },
-    { id: 'landing-kece', nameId: 'Landing Page Kece', nameEn: 'Kece Page', price: 649000, periodId: 'per halaman', periodEn: 'per page' },
-    { id: 'landing-sultan', nameId: 'Landing Page Sultan', nameEn: 'Sultan Page', price: 1099000, periodId: 'per halaman', periodEn: 'per page' },
+    { id: 'landing-santuy', nameId: 'Landing Page Santuy', nameEn: 'Chill Page', price: 309000, periodId: 'per halaman', periodEn: 'per page' },
+    { id: 'landing-kece', nameId: 'Landing Page Kece', nameEn: 'Kece Page', price: 659000, periodId: 'per halaman', periodEn: 'per page' },
+    { id: 'landing-sultan', nameId: 'Landing Page Sultan', nameEn: 'Sultan Page', price: 1109000, periodId: 'per halaman', periodEn: 'per page' },
   ],
   'desain-ig': [
-    { id: 'ig-satu-post', nameId: 'Satu Post Dulu', nameEn: 'One Post First', price: 40000, periodId: 'per post', periodEn: 'per post' },
-    { id: 'ig-feed-pemula', nameId: 'Feed Pemula', nameEn: 'Starter Feed', price: 175000, periodId: 'per 5 post', periodEn: 'per 5 posts' },
-    { id: 'ig-feed-aesthetic', nameId: 'Feed Aesthetic', nameEn: 'Aesthetic Feed', price: 299000, periodId: 'per 10 post', periodEn: 'per 10 posts' },
-    { id: 'ig-feed-sultan', nameId: 'Feed Sultan', nameEn: 'Sultan Feed', price: 699000, periodId: 'per bulan', periodEn: 'per month' },
+    { id: 'ig-satu-post', nameId: 'Satu Post Dulu', nameEn: 'One Post First', price: 50000, periodId: 'per post', periodEn: 'per post' },
+    { id: 'ig-feed-pemula', nameId: 'Feed Pemula', nameEn: 'Starter Feed', price: 185000, periodId: 'per 5 post', periodEn: 'per 5 posts' },
+    { id: 'ig-feed-aesthetic', nameId: 'Feed Aesthetic', nameEn: 'Aesthetic Feed', price: 309000, periodId: 'per 10 post', periodEn: 'per 10 posts' },
+    { id: 'ig-feed-sultan', nameId: 'Feed Sultan', nameEn: 'Sultan Feed', price: 709000, periodId: 'per bulan', periodEn: 'per month' },
   ],
   'edit-foto': [
-    { id: 'foto-poles-dikit', nameId: 'Poles Dikit', nameEn: 'Quick Polish', price: 20000, periodId: 'per foto', periodEn: 'per photo' },
-    { id: 'foto-poles-banyak', nameId: 'Poles Banyak', nameEn: 'Full Polish', price: 75000, periodId: 'per 5 foto', periodEn: 'per 5 photos' },
-    { id: 'foto-poles-abis', nameId: 'Poles Abis', nameEn: 'Max Polish', price: 130000, periodId: 'per 10 foto', periodEn: 'per 10 photos' },
+    { id: 'foto-poles-dikit', nameId: 'Poles Dikit', nameEn: 'Quick Polish', price: 30000, periodId: 'per foto', periodEn: 'per photo' },
+    { id: 'foto-poles-banyak', nameId: 'Poles Banyak', nameEn: 'Full Polish', price: 85000, periodId: 'per 5 foto', periodEn: 'per 5 photos' },
+    { id: 'foto-poles-abis', nameId: 'Poles Abis', nameEn: 'Max Polish', price: 140000, periodId: 'per 10 foto', periodEn: 'per 10 photos' },
   ],
 }
 
@@ -78,6 +79,8 @@ export default function OrderPage() {
   const [discountOption, setDiscountOption] = useState<DiscountOption>('none')
 
   const [savedWa, setSavedWa] = useState<string | null>(null)
+
+  const [guestAddon, setGuestAddon] = useState('')
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -137,6 +140,8 @@ export default function OrderPage() {
   const selectedSvc = SERVICES.find(s => s.id === selectedService)
   const selectedPkg = selectedPackage ? (PACKAGES[selectedService] ?? []).find(p => p.id === selectedPackage) : null
   const originalPrice = selectedPkg?.price ?? 0
+  const addonPrice = GUEST_ADDONS.find(a => a.id === guestAddon)?.price ?? 0
+  const selectedAddon = GUEST_ADDONS.find(a => a.id === guestAddon)
 
   // Compute discount based on selected option
   let discountPercent = 0
@@ -154,7 +159,8 @@ export default function OrderPage() {
     discountLabel = p.discount
   }
   discountAmount = Math.round(originalPrice * discountPercent)
-  const totalPrice = originalPrice - discountAmount
+  const totalPrice = originalPrice + addonPrice - discountAmount
+  const earlyBirdIneligible = discountOption === 'early_bird' && !!selectedPackage && !EARLY_BIRD_ELIGIBLE.has(selectedPackage)
 
   function handleDiscountOptionChange(opt: DiscountOption) {
     setDiscountOption(opt)
@@ -198,6 +204,7 @@ export default function OrderPage() {
           wa: wa.trim(),
           notes: notes.trim() || undefined,
           discountMode,
+          addonId: guestAddon || undefined,
         }),
       })
 
@@ -254,6 +261,12 @@ export default function OrderPage() {
                 <span className={styles.modalRowLabel}>{tr.orderSuccess.packageLabel}</span>
                 <span className={styles.modalRowValue}>{lang === 'id' ? selectedPkg.nameId : selectedPkg.nameEn}</span>
               </div>
+              {selectedAddon && (
+                <div className={styles.modalRow}>
+                  <span className={styles.modalRowLabel}>{lang === 'id' ? selectedAddon.nameId : selectedAddon.nameEn}</span>
+                  <span className={styles.modalRowValue}>+{fmt(addonPrice)}</span>
+                </div>
+              )}
               {discountAmount > 0 && (
                 <div className={styles.modalRow}>
                   <span className={styles.modalRowLabel}>{discountLabel}</span>
@@ -311,7 +324,7 @@ export default function OrderPage() {
                   <button
                     key={svc.id}
                     className={`${styles.serviceCard} ${selectedService === svc.id ? styles.selected : ''}`}
-                    onClick={() => { setSelectedService(svc.id); setSelectedPackage('') }}
+                    onClick={() => { setSelectedService(svc.id); setSelectedPackage(''); setGuestAddon('') }}
                   >
                     <span className={styles.serviceIcon}>{svc.icon}</span>
                     <span className={styles.serviceName}>{lang === 'id' ? svc.nameId : svc.nameEn}</span>
@@ -340,6 +353,39 @@ export default function OrderPage() {
                     </button>
                   ))}
                 </div>
+              </section>
+            )}
+
+            {/* Add-on: Guest Names (undangan only) */}
+            {selectedService === 'undangan' && selectedPackage && (
+              <section className={styles.section}>
+                <h2 className={styles.sectionTitle}>
+                  <span className={styles.sectionNum}>+</span>
+                  {p.addonTitle}
+                </h2>
+                <p style={{ margin: '0 0 0.875rem', fontSize: '0.8rem', color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>{p.addonSub}</p>
+                <div className={styles.packageGrid}>
+                  <button
+                    className={`${styles.packageCard} ${guestAddon === '' ? styles.selected : ''}`}
+                    onClick={() => setGuestAddon('')}
+                  >
+                    <span className={styles.packageName}>{p.addonNone}</span>
+                  </button>
+                  {GUEST_ADDONS.map(addon => (
+                    <button
+                      key={addon.id}
+                      className={`${styles.packageCard} ${guestAddon === addon.id ? styles.selected : ''}`}
+                      onClick={() => setGuestAddon(addon.id)}
+                    >
+                      <span className={styles.packageName}>{lang === 'id' ? addon.nameId : addon.nameEn}</span>
+                      <span className={styles.packagePrice}>{fmt(addon.price)}</span>
+                      <span className={styles.packagePeriod}>{lang === 'id' ? addon.descId : addon.descEn}</span>
+                    </button>
+                  ))}
+                </div>
+                <p style={{ margin: '0.625rem 0 0', fontSize: '0.75rem', color: 'var(--muted)', fontFamily: 'var(--font-body)' }}>
+                  💡 {p.addonCustomOrder}
+                </p>
               </section>
             )}
 
@@ -448,6 +494,12 @@ export default function OrderPage() {
                   )}
                 </div>
 
+                {earlyBirdIneligible && (
+                  <div className={styles.noDiscountBanner} style={{ marginTop: '0.75rem' }}>
+                    <p className={styles.noDiscountMsg}>{p.earlyBirdIneligible}</p>
+                  </div>
+                )}
+
                 {!hasAutoDiscount && discountStatus !== null && (
                   <div className={styles.noDiscountBanner}>
                     <p className={styles.noDiscountMsg}>{p.noDiscountMsg}</p>
@@ -476,6 +528,12 @@ export default function OrderPage() {
                     <span>{p.originalPrice}</span>
                     <span className={discountAmount > 0 ? styles.priceStrike : ''}>{fmt(originalPrice)}</span>
                   </div>
+                  {selectedAddon && (
+                    <div className={styles.summaryRow}>
+                      <span>{lang === 'id' ? selectedAddon.nameId : selectedAddon.nameEn}</span>
+                      <span>+{fmt(addonPrice)}</span>
+                    </div>
+                  )}
                   {discountAmount > 0 && (
                     <div className={`${styles.summaryRow} ${styles.summaryDiscount}`}>
                       <span>{discountLabel}</span>

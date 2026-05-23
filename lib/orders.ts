@@ -42,6 +42,8 @@ export type Order = {
   packageNameId: string
   packageNameEn: string
   originalPrice: number
+  addonId?: string
+  addonPrice?: number
   discountAmount: number
   totalPrice: number
   voucherCode?: string

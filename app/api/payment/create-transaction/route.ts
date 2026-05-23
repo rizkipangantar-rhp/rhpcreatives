@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { findPackageById, findServiceById } from '@/lib/packages'
+import { findPackageById, findServiceById, GUEST_ADDONS, EARLY_BIRD_ELIGIBLE } from '@/lib/packages'
 import { createOrder } from '@/lib/orders'
 import { findClaim, findClaimByCode, isCodeUsed, markCodeUsed } from '@/lib/early-bird'
 import { findClaimByVoucherCode, markClaimUsed, getPromoById } from '@/lib/promos'
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json()
-    const { packageId, name, email, wa, notes, voucherCode, discountMode } = body as {
+    const { packageId, name, email, wa, notes, voucherCode, discountMode, addonId } = body as {
       packageId: string
       name: string
       email: string
@@ -24,6 +24,7 @@ export async function POST(req: Request) {
       notes?: string
       voucherCode?: string
       discountMode?: 'referrer_reward' | 'invitee' | 'ebird' | 'promo' | 'none'
+      addonId?: string
     }
 
     if (!packageId || !name || !email || !wa) {
@@ -75,6 +76,9 @@ export async function POST(req: Request) {
 
     // ── 3. Auto Early Bird (legacy mode — looks up early bird claim for user)
     else if (discountMode === 'ebird') {
+      if (!EARLY_BIRD_ELIGIBLE.has(packageId)) {
+        return NextResponse.json({ error: 'Diskon Early Bird gak berlaku untuk paket ini ya. Pilih paket Aesthetic atau Sultan biar bisa dapat diskon!' }, { status: 400 })
+      }
       const claim = await findClaim(session.user.id)
       if (claim && !claim.usedAt) {
         discountAmount = Math.round(pkg.price * 0.25)
@@ -129,7 +133,9 @@ export async function POST(req: Request) {
       }
     }
 
-    const totalPrice = pkg.price - discountAmount
+    const addon = addonId ? GUEST_ADDONS.find(a => a.id === addonId) : undefined
+    const addonPrice = addon?.price ?? 0
+    const totalPrice = pkg.price + addonPrice - discountAmount
 
     const order = await createOrder({
       userId: session.user.id,
@@ -143,6 +149,8 @@ export async function POST(req: Request) {
       packageNameId: pkg.nameId,
       packageNameEn: pkg.nameEn,
       originalPrice: pkg.price,
+      addonId: addon?.id,
+      addonPrice: addonPrice || undefined,
       discountAmount,
       totalPrice,
       voucherCode: appliedVoucher,
