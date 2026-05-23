@@ -11,12 +11,18 @@ async function write(data: AnalyticsData): Promise<void> {
   return dbSet('rhp:analytics', 'analytics.json', data)
 }
 
+// WIB = UTC+7; offset all date calculations so "today" matches Indonesian time
+function wibDate(daysAgo = 0): string {
+  const ms = Date.now() + 7 * 60 * 60 * 1000 - daysAgo * 24 * 60 * 60 * 1000
+  return new Date(ms).toISOString().slice(0, 10)
+}
+
 function detectDevice(ua: string): 'mobile' | 'desktop' {
   return /Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(ua) ? 'mobile' : 'desktop'
 }
 
 export async function recordPageview(path: string, userAgent?: string): Promise<void> {
-  const day = new Date().toISOString().slice(0, 10)
+  const day = wibDate()
   const data = await read()
   if (!data.daily[day]) data.daily[day] = { views: 0, paths: {}, devices: {} }
   data.daily[day].views++
@@ -39,15 +45,13 @@ export type AnalyticsSummary = {
 
 export async function getAnalyticsSummary(): Promise<AnalyticsSummary> {
   const data = await read()
-  const today = new Date().toISOString().slice(0, 10)
+  const today = wibDate()
   const todayViews = data.daily[today]?.views ?? 0
   const totalViews = Object.values(data.daily).reduce((s, d) => s + d.views, 0)
 
-  // Last 7 days
+  // Last 7 days (WIB dates)
   const last7Days = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date()
-    d.setDate(d.getDate() - i)
-    const date = d.toISOString().slice(0, 10)
+    const date = wibDate(i)
     return { date, views: data.daily[date]?.views ?? 0 }
   }).reverse()
 
