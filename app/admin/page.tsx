@@ -227,10 +227,8 @@ export default function AdminOverview() {
       {data.analytics && (() => {
         const db = data.analytics!.deviceBreakdown
         const deviceTotal = db.desktop + db.mobile
-        const deviceData = [
-          { name: 'Desktop', value: db.desktop, color: '#3b82f6', pct: deviceTotal ? Math.round(db.desktop / deviceTotal * 100) : 0 },
-          { name: 'Mobile', value: db.mobile, color: '#a855f7', pct: deviceTotal ? Math.round(db.mobile / deviceTotal * 100) : 0 },
-        ]
+        const deskPct = deviceTotal ? Math.round(db.desktop / deviceTotal * 100) : 0
+        const mobPct  = deviceTotal ? Math.round(db.mobile  / deviceTotal * 100) : 0
         return (
           <div className={s.card} style={{ padding: 24 }}>
             <div className={s.cardHeader} style={{ marginBottom: 20 }}>
@@ -238,12 +236,14 @@ export default function AdminOverview() {
             </div>
             <div className={s.statGrid} style={{ marginBottom: 20 }}>
               {[
-                { icon: '👁️', label: 'Total Pageview', value: data.analytics!.totalViews },
-                { icon: '📅', label: 'Hari Ini', value: data.analytics!.todayViews },
+                { icon: '👁️', label: 'Total Pageview', value: data.analytics!.totalViews, cls: '' },
+                { icon: '📅', label: 'Hari Ini',        value: data.analytics!.todayViews,  cls: '' },
+                { icon: '💻', label: `Desktop${deviceTotal ? ` · ${deskPct}%` : ''}`, value: db.desktop, cls: s.statValueBlue },
+                { icon: '📱', label: `Mobile${deviceTotal ? ` · ${mobPct}%` : ''}`,   value: db.mobile,  cls: s.statValueYellow },
               ].map(st => (
                 <div key={st.label} className={s.statCard}>
                   <div className={s.statIcon}>{st.icon}</div>
-                  <div className={s.statValue}>{st.value}</div>
+                  <div className={`${s.statValue} ${st.cls}`}>{st.value}</div>
                   <div className={s.statLabel}>{st.label}</div>
                 </div>
               ))}
@@ -258,34 +258,6 @@ export default function AdminOverview() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-
-            {/* Device breakdown */}
-            <div className={s.cardTitle} style={{ fontSize: '0.78rem', marginBottom: 12, color: '#64748b' }}>Device (All-Time)</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
-              <div style={{ width: 100, height: 100, flexShrink: 0 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie data={deviceData} dataKey="value" cx="50%" cy="50%" innerRadius={28} outerRadius={46}>
-                      {deviceData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                    </Pie>
-                    <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 12 }} labelStyle={{ color: '#94a3b8' }} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {deviceData.map(d => (
-                  <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#94a3b8' }}>
-                    <div style={{ width: 10, height: 10, borderRadius: 2, background: d.color, flexShrink: 0 }} />
-                    <span>{d.name}</span>
-                    <span style={{ marginLeft: 'auto', color: '#f1f5f9', fontWeight: 600 }}>{d.value} ({d.pct}%)</span>
-                  </div>
-                ))}
-                {deviceTotal === 0 && (
-                  <span style={{ fontSize: 11, color: '#475569' }}>Belum ada data device</span>
-                )}
-              </div>
-            </div>
-
             <div className={s.cardTitle} style={{ fontSize: '0.78rem', marginBottom: 8, color: '#64748b' }}>Top Halaman (All-Time)</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {data.analytics!.topPaths.map((p, i) => (
