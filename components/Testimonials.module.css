@@ -1,5 +1,5 @@
 .section {
-  padding: 7rem 4rem;
+  padding: 7rem clamp(1.5rem, 5vw, 6rem);
   background: var(--surface);
   position: relative;
   overflow: hidden;

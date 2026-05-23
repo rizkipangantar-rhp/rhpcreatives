@@ -1,5 +1,5 @@
 .hero {
-  padding: calc(var(--bar-h) + 5.75rem) 4rem 5rem;
+  padding: calc(var(--bar-h) + 5.75rem) clamp(1.5rem, 5vw, 6rem) 5rem;
   background: var(--bg);
   text-align: center;
   position: relative;

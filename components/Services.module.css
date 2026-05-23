@@ -1,5 +1,5 @@
 .services {
-  padding: 7rem 4rem;
+  padding: 7rem clamp(1.5rem, 5vw, 6rem);
   background: var(--surface);
   position: relative;
   overflow: hidden;
@@ -22,7 +22,7 @@
   margin-bottom: 3rem;
   flex-wrap: wrap;
   gap: 1.5rem;
-  max-width: 1200px;
+  max-width: 1400px;
   margin-inline: auto;
 }
 
@@ -87,7 +87,7 @@
   text-transform: uppercase;
   color: var(--dim);
   margin-bottom: 1rem;
-  max-width: 1200px;
+  max-width: 1400px;
   margin-inline: auto;
 }
 
@@ -96,7 +96,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
-  max-width: 1200px;
+  max-width: 1400px;
   margin-inline: auto;
   margin-bottom: 10px;
 }
@@ -106,7 +106,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
-  max-width: 1200px;
+  max-width: 1400px;
   margin-inline: auto;
 }
 
@@ -224,6 +224,7 @@
 /* ── Responsive ── */
 @media (max-width: 900px) {
   .services { padding: 5rem 1.5rem; }
+  .header { margin-bottom: 2rem; }
   .gridDigital { grid-template-columns: 1fr; }
   .gridDesign { grid-template-columns: 1fr; }
   .header { flex-direction: column; align-items: flex-start; }

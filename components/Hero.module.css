@@ -18,11 +18,14 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
-  padding: calc(var(--bar-h) + 5.25rem) 4rem 5rem;
+  padding: calc(var(--bar-h) + 5.25rem) clamp(1.5rem, 5vw, 7rem) 5rem;
   background: var(--bg);
   position: relative;
   overflow: hidden;
   gap: 3rem;
+  max-width: 1600px;
+  margin-inline: auto;
+  width: 100%;
 }
 
 /* purple orb top-right */

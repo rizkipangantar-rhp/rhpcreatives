@@ -35,7 +35,7 @@
 
 /* ── Early Bird ── */
 .earlyBirdSection {
-  padding: 5rem 4rem;
+  padding: 5rem clamp(1.5rem, 5vw, 6rem);
   background: var(--surface);
   position: relative;
   overflow: hidden;
@@ -180,7 +180,7 @@
 
 /* ── Bundling ── */
 .bundlingSection {
-  padding: 6rem 4rem;
+  padding: 6rem clamp(1.5rem, 5vw, 6rem);
   background: var(--bg);
   position: relative;
   overflow: hidden;
@@ -316,7 +316,7 @@
 
 /* ── Referral ── */
 .referralSection {
-  padding: 6rem 4rem;
+  padding: 6rem clamp(1.5rem, 5vw, 6rem);
   background: var(--surface);
   position: relative;
   overflow: hidden;
@@ -470,7 +470,7 @@
 
 /* ── Affiliate ── */
 .affiliateSection {
-  padding: 6rem 4rem 7rem;
+  padding: 6rem clamp(1.5rem, 5vw, 6rem) 7rem;
   background: var(--bg);
   position: relative;
   overflow: hidden;

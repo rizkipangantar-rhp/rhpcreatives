@@ -614,6 +614,12 @@
 .mobileLogoutBtn:active { opacity: 0.75; transform: scale(0.97); }
 
 /* ── Responsive ── */
+@media (min-width: 1600px) {
+  .nav {
+    padding-inline: max(2rem, calc((100vw - 1600px) / 2 + 2rem));
+  }
+}
+
 @media (max-width: 400px) {
   .mobileMenu {
     width: 100vw;

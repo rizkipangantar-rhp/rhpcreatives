@@ -1,5 +1,5 @@
 .pricing {
-  padding: 7rem 4rem;
+  padding: 7rem clamp(1.5rem, 5vw, 6rem);
   background: var(--bg);
   position: relative;
   overflow: hidden;
@@ -57,7 +57,7 @@
 
 /* ── Category wrapper ── */
 .category {
-  max-width: 1200px;
+  max-width: 1400px;
   margin-inline: auto;
   margin-bottom: 4rem;
   position: relative;
@@ -349,7 +349,7 @@
   font-size: 0.74rem;
   color: var(--dim);
   font-style: italic;
-  max-width: 1200px;
+  max-width: 1400px;
   margin-inline: auto;
   position: relative;
   z-index: 1;
@@ -358,6 +358,7 @@
 /* ── Responsive ── */
 @media (max-width: 900px) {
   .pricing { padding: 5rem 1.5rem; }
+
   .tiersGrid { grid-template-columns: 1fr 1fr; }
 }
 
