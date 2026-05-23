@@ -156,7 +156,7 @@ export default function PrivacyPage() {
               <>
                 <p>Kami menggunakan langkah-langkah keamanan teknis yang sesuai untuk melindungi data Anda:</p>
                 <ul className={styles.defList}>
-                  <li><strong>Upstash Redis</strong><span className={styles.defDesc}>Data pengguna disimpan di Upstash Redis, layanan database cloud dengan enkripsi data in-transit (TLS) dan at-rest.</span></li>
+                  <li><strong>MongoDB Atlas</strong><span className={styles.defDesc}>Data pengguna disimpan di MongoDB Atlas, layanan database cloud dengan enkripsi data in-transit (TLS) dan at-rest.</span></li>
                   <li><strong>Password hashing</strong><span className={styles.defDesc}>Password akun dienkripsi menggunakan bcrypt dengan salt factor 12 sebelum disimpan. Kami tidak pernah menyimpan password dalam bentuk plaintext.</span></li>
                   <li><strong>HTTPS</strong><span className={styles.defDesc}>Semua komunikasi antara browser Anda dan server kami dienkripsi menggunakan HTTPS/TLS.</span></li>
                   <li><strong>NextAuth.js</strong><span className={styles.defDesc}>Autentikasi dikelola menggunakan NextAuth.js dengan strategi JWT yang aman.</span></li>
@@ -168,7 +168,7 @@ export default function PrivacyPage() {
               <>
                 <p>We use appropriate technical security measures to protect your data:</p>
                 <ul className={styles.defList}>
-                  <li><strong>Upstash Redis</strong><span className={styles.defDesc}>User data is stored in Upstash Redis, a cloud database service with in-transit (TLS) and at-rest encryption.</span></li>
+                  <li><strong>MongoDB Atlas</strong><span className={styles.defDesc}>User data is stored in MongoDB Atlas, a cloud database service with in-transit (TLS) and at-rest encryption.</span></li>
                   <li><strong>Password hashing</strong><span className={styles.defDesc}>Account passwords are encrypted using bcrypt with a salt factor of 12 before storage. We never store passwords in plaintext.</span></li>
                   <li><strong>HTTPS</strong><span className={styles.defDesc}>All communication between your browser and our servers is encrypted via HTTPS/TLS.</span></li>
                   <li><strong>NextAuth.js</strong><span className={styles.defDesc}>Authentication is managed using NextAuth.js with a secure JWT strategy.</span></li>
@@ -220,7 +220,7 @@ export default function PrivacyPage() {
                 <ul className={styles.defList}>
                   <li><strong>Midtrans</strong><span className={styles.defDesc}>Penyedia payment gateway untuk memproses transaksi pembayaran Anda secara aman.</span></li>
                   <li><strong>Google</strong><span className={styles.defDesc}>Jika Anda memilih login via Google, Google mengautentikasi identitas Anda sesuai kebijakan privasi Google.</span></li>
-                  <li><strong>Upstash</strong><span className={styles.defDesc}>Penyedia infrastruktur database yang menyimpan data akun dan transaksi Anda.</span></li>
+                  <li><strong>MongoDB Atlas</strong><span className={styles.defDesc}>Penyedia infrastruktur database yang menyimpan data akun dan transaksi Anda.</span></li>
                   <li><strong>Kewajiban hukum</strong><span className={styles.defDesc}>Jika diwajibkan oleh hukum atau perintah pengadilan yang berlaku di Indonesia.</span></li>
                 </ul>
               </>
@@ -230,7 +230,7 @@ export default function PrivacyPage() {
                 <ul className={styles.defList}>
                   <li><strong>Midtrans</strong><span className={styles.defDesc}>Payment gateway provider for securely processing your payment transactions.</span></li>
                   <li><strong>Google</strong><span className={styles.defDesc}>If you choose to log in via Google, Google authenticates your identity per Google&apos;s privacy policy.</span></li>
-                  <li><strong>Upstash</strong><span className={styles.defDesc}>Database infrastructure provider that stores your account and transaction data.</span></li>
+                  <li><strong>MongoDB Atlas</strong><span className={styles.defDesc}>Database infrastructure provider that stores your account and transaction data.</span></li>
                   <li><strong>Legal obligation</strong><span className={styles.defDesc}>If required by law or court order applicable in Indonesia.</span></li>
                 </ul>
               </>
