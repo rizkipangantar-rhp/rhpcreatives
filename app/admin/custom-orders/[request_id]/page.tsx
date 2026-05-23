@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import s from '@/components/admin/admin.module.css'
-import type { CustomOrderRequest, RequestStatus, DiscountType } from '@/lib/custom-orders'
+import type { CustomOrderRequest, RequestStatus } from '@/lib/custom-orders'
 
 const STATUS_LABELS: Record<RequestStatus, string> = {
   waiting_review: 'Menunggu Review',
@@ -72,11 +72,10 @@ export default function AdminCustomOrderDetailPage() {
 
   // Price form state
   const [basePrice, setBasePrice] = useState('')
-  const [discountType, setDiscountType] = useState<DiscountType>(null)
-  const [discountValue, setDiscountValue] = useState('')
   const [estimatedDays, setEstimatedDays] = useState('')
   const [noteForCustomer, setNoteForCustomer] = useState('')
   const [internalNote, setInternalNote] = useState('')
+  const [showNewPriceForm, setShowNewPriceForm] = useState(false)
 
   // Reject state
   const [showRejectModal, setShowRejectModal] = useState(false)
@@ -97,8 +96,6 @@ export default function AdminCustomOrderDetailPage() {
         if (d.notes?.for_customer) setNoteForCustomer(d.notes.for_customer)
         if (d.notes?.internal) setInternalNote(d.notes.internal)
         if (d.pricing?.base_price) setBasePrice(String(d.pricing.base_price))
-        if (d.pricing?.discount_type) setDiscountType(d.pricing.discount_type)
-        if (d.pricing?.discount_value) setDiscountValue(String(d.pricing.discount_value))
         if (d.pricing?.estimated_days) setEstimatedDays(String(d.pricing.estimated_days))
         setLoading(false)
       })
@@ -106,24 +103,18 @@ export default function AdminCustomOrderDetailPage() {
   }, [request_id])
 
   const basePriceNum = parseFloat(basePrice.replace(/\D/g, '')) || 0
-  const discountValueNum = parseFloat(discountValue.replace(/\D/g, '')) || 0
-  const discountAmount = discountType === 'percent'
-    ? Math.round(basePriceNum * discountValueNum / 100)
-    : discountType === 'nominal'
-    ? Math.min(discountValueNum, basePriceNum)
-    : 0
-  const finalPrice = basePriceNum - discountAmount
 
-  async function sendPrice() {
-    if (!basePriceNum) { setError('Masukkan harga dasar terlebih dahulu'); return }
+  async function sendPrice(overridePrice?: number) {
+    const price = overridePrice ?? basePriceNum
+    if (!price) { setError('Masukkan harga terlebih dahulu'); return }
     setSaving(true); setError('')
     const res = await fetch(`/api/admin/custom-order/${request_id}/price`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        base_price: basePriceNum,
-        discount_type: discountType,
-        discount_value: discountValueNum,
+        base_price: price,
+        discount_type: null,
+        discount_value: 0,
         estimated_days: parseInt(estimatedDays) || 0,
         for_customer: noteForCustomer || undefined,
         internal: internalNote || undefined,
@@ -133,7 +124,6 @@ export default function AdminCustomOrderDetailPage() {
     if (!res.ok) { setError('Gagal menyimpan. Coba lagi.'); return }
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
-    // Refresh data
     fetch(`/api/custom-order/${request_id}`).then(r => r.json()).then(setRequest)
   }
 
@@ -234,173 +224,128 @@ export default function AdminCustomOrderDetailPage() {
       </div>
 
       {/* Pricing section */}
-      {canSendPrice && (
-        <div className={s.card} style={{ padding: 20, marginBottom: 20 }}>
-          <div className={s.cardTitle} style={{ marginBottom: isNegotiating ? 8 : 20, color: isNegotiating ? '#fbbf24' : undefined }}>
-            {isNegotiating ? 'Tanggapi Negosiasi — Kirim Ulang Penawaran' : request.status === 'price_sent' ? 'Edit Penawaran Harga' : 'Input Penawaran Harga'}
-          </div>
-          {isNegotiating && (() => {
-            const latestEntry = request.negotiation_history?.filter(e => e.by === 'customer').at(-1)
-            const counterPrice = latestEntry?.counter_price
-            return (
+      {canSendPrice && (() => {
+        const latestCounter = request.negotiation_history?.filter(e => e.by === 'customer').at(-1)
+        const counterPrice = latestCounter?.counter_price
+
+        return (
+          <div className={s.card} style={{ padding: 20, marginBottom: 20 }}>
+            <div className={s.cardTitle} style={{ marginBottom: 16, color: isNegotiating ? '#fbbf24' : undefined }}>
+              {isNegotiating ? 'Negosiasi Harga' : request.status === 'price_sent' ? 'Edit Penawaran Harga' : 'Input Penawaran Harga'}
+            </div>
+
+            {/* Negotiation: show customer counter + accept/counter buttons */}
+            {isNegotiating && counterPrice && (
               <div style={{ marginBottom: 20 }}>
-                <p style={{ fontSize: '0.82rem', color: '#94a3b8', marginBottom: 14, lineHeight: 1.6 }}>
-                  Customer mengajukan negosiasi. Pilih aksi di bawah, atau isi form untuk kirim harga baru.
-                </p>
+                <div style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)', borderRadius: 10, padding: '14px 16px', marginBottom: 14 }}>
+                  <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: 4 }}>Customer minta harga</div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fbbf24' }}>{fmt(counterPrice)}</div>
+                </div>
                 <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                  {counterPrice && (
-                    <button
-                      onClick={() => {
-                        setBasePrice(String(counterPrice))
-                        setDiscountType(null)
-                        setDiscountValue('')
-                      }}
-                      style={{
-                        background: 'rgba(52,211,153,0.12)', border: '1px solid rgba(52,211,153,0.35)',
-                        color: '#34d399', borderRadius: 8, padding: '8px 16px', fontSize: '0.82rem',
-                        fontWeight: 700, cursor: 'pointer',
-                      }}
-                    >
-                      Gunakan Harga Customer — {fmt(counterPrice)}
-                    </button>
-                  )}
+                  <button
+                    onClick={() => sendPrice(counterPrice)}
+                    disabled={saving}
+                    style={{
+                      background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.4)',
+                      color: '#34d399', borderRadius: 8, padding: '10px 20px', fontSize: '0.85rem',
+                      fontWeight: 700, cursor: 'pointer',
+                    }}
+                  >
+                    {saving ? 'Menyimpan...' : saved ? 'Tersimpan ✓' : `Setujui ${fmt(counterPrice)}`}
+                  </button>
+                  <button
+                    onClick={() => setShowNewPriceForm(v => !v)}
+                    style={{
+                      background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.3)',
+                      color: '#60a5fa', borderRadius: 8, padding: '10px 20px', fontSize: '0.85rem',
+                      fontWeight: 700, cursor: 'pointer',
+                    }}
+                  >
+                    {showNewPriceForm ? 'Tutup' : 'Kasih Harga Lain'}
+                  </button>
                   <button
                     onClick={() => setShowRejectModal(true)}
                     style={{
                       background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
-                      color: '#f87171', borderRadius: 8, padding: '8px 16px', fontSize: '0.82rem',
+                      color: '#f87171', borderRadius: 8, padding: '10px 20px', fontSize: '0.85rem',
                       fontWeight: 700, cursor: 'pointer',
                     }}
                   >
                     Batalkan Request
                   </button>
                 </div>
-                <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '16px 0' }} />
-                <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: 10 }}>
-                  Atau isi form di bawah untuk kirim harga berbeda
-                </div>
               </div>
-            )
-          })()}
+            )}
 
-          <div className={s.twoCol} style={{ marginBottom: 16 }}>
-            <div>
-              <label style={labelStyle}>Harga Dasar <span style={{ color: '#f87171' }}>*</span></label>
-              <input
-                style={inputStyle}
-                type="text"
-                inputMode="numeric"
-                placeholder="Contoh: 150000"
-                value={basePrice}
-                onChange={e => setBasePrice(e.target.value.replace(/\D/g, ''))}
-              />
-              {basePriceNum > 0 && (
-                <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: 4 }}>{fmt(basePriceNum)}</div>
-              )}
-            </div>
-            <div>
-              <label style={labelStyle}>Estimasi Pengerjaan (hari)</label>
-              <input
-                style={inputStyle}
-                type="number"
-                min={1}
-                placeholder="Contoh: 3"
-                value={estimatedDays}
-                onChange={e => setEstimatedDays(e.target.value)}
-              />
-            </div>
-          </div>
+            {/* Price form — always visible when not negotiating, toggled when negotiating */}
+            {(!isNegotiating || showNewPriceForm) && (
+              <>
+                <div className={s.twoCol} style={{ marginBottom: 16 }}>
+                  <div>
+                    <label style={labelStyle}>Harga <span style={{ color: '#f87171' }}>*</span></label>
+                    <input
+                      style={inputStyle}
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="Contoh: 150000"
+                      value={basePrice}
+                      onChange={e => setBasePrice(e.target.value.replace(/\D/g, ''))}
+                    />
+                    {basePriceNum > 0 && (
+                      <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: 4 }}>{fmt(basePriceNum)}</div>
+                    )}
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Estimasi Pengerjaan (hari)</label>
+                    <input
+                      style={inputStyle}
+                      type="number"
+                      min={1}
+                      placeholder="Contoh: 3"
+                      value={estimatedDays}
+                      onChange={e => setEstimatedDays(e.target.value)}
+                    />
+                  </div>
+                </div>
 
-          {/* Discount */}
-          <div style={{ marginBottom: 16 }}>
-            <label style={labelStyle}>Diskon (Opsional)</label>
-            <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-              {(['percent', 'nominal', null] as (DiscountType)[]).map(t => (
-                <button
-                  key={String(t)}
-                  onClick={() => { setDiscountType(t); if (t === null) setDiscountValue('') }}
-                  style={{
-                    padding: '6px 14px', borderRadius: 8, fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer',
-                    background: discountType === t ? '#3b82f6' : 'rgba(255,255,255,0.06)',
-                    border: discountType === t ? '1px solid #3b82f6' : '1px solid rgba(255,255,255,0.1)',
-                    color: discountType === t ? '#fff' : '#94a3b8',
-                  }}
-                >
-                  {t === null ? 'Tidak Ada' : t === 'percent' ? 'Persen (%)' : 'Nominal (Rp)'}
-                </button>
-              ))}
-            </div>
-            {discountType && (
-              <input
-                style={inputStyle}
-                type="text"
-                inputMode="numeric"
-                placeholder={discountType === 'percent' ? 'Contoh: 10 (untuk 10%)' : 'Nominal diskon (Rp)'}
-                value={discountValue}
-                onChange={e => setDiscountValue(e.target.value.replace(/\D/g, ''))}
-              />
+                <div className={s.twoCol} style={{ marginBottom: 16 }}>
+                  <div>
+                    <label style={labelStyle}>Catatan untuk Customer</label>
+                    <textarea
+                      style={textareaStyle}
+                      rows={3}
+                      placeholder="Catatan yang akan terlihat oleh customer..."
+                      value={noteForCustomer}
+                      onChange={e => setNoteForCustomer(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Catatan Internal Admin</label>
+                    <textarea
+                      style={textareaStyle}
+                      rows={3}
+                      placeholder="Catatan hanya untuk admin..."
+                      value={internalNote}
+                      onChange={e => setInternalNote(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <button className={s.btnPrimary} onClick={() => sendPrice()} disabled={saving || !basePriceNum}>
+                    {saving ? 'Menyimpan...' : saved ? 'Tersimpan ✓' : 'Kirim Penawaran'}
+                  </button>
+                  {!isTerminal && (
+                    <button className={s.btnDanger} onClick={() => setShowRejectModal(true)} disabled={saving}>
+                      Tolak Request
+                    </button>
+                  )}
+                </div>
+              </>
             )}
           </div>
-
-          {/* Final price preview */}
-          {basePriceNum > 0 && (
-            <div style={{ background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 10, padding: '12px 16px', marginBottom: 16 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: 4 }}>
-                <span style={{ color: '#64748b' }}>Harga Dasar</span>
-                <span style={{ color: '#cbd5e1' }}>{fmt(basePriceNum)}</span>
-              </div>
-              {discountAmount > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: 4 }}>
-                  <span style={{ color: '#64748b' }}>
-                    Diskon {discountType === 'percent' ? `${discountValueNum}%` : ''}
-                  </span>
-                  <span style={{ color: '#f87171' }}>-{fmt(discountAmount)}</span>
-                </div>
-              )}
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', fontWeight: 700, borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 8, marginTop: 4 }}>
-                <span style={{ color: '#94a3b8' }}>Total Final</span>
-                <span style={{ color: '#34d399' }}>{fmt(finalPrice)}</span>
-              </div>
-            </div>
-          )}
-
-          {/* Notes */}
-          <div className={s.twoCol} style={{ marginBottom: 16 }}>
-            <div>
-              <label style={labelStyle}>Catatan untuk Customer</label>
-              <textarea
-                style={textareaStyle}
-                rows={4}
-                placeholder="Catatan yang akan terlihat oleh customer..."
-                value={noteForCustomer}
-                onChange={e => setNoteForCustomer(e.target.value)}
-              />
-            </div>
-            <div>
-              <label style={labelStyle}>Catatan Internal Admin</label>
-              <textarea
-                style={textareaStyle}
-                rows={4}
-                placeholder="Catatan hanya untuk admin (tidak terlihat customer)..."
-                value={internalNote}
-                onChange={e => setInternalNote(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div style={{ display: 'flex', gap: 10 }}>
-            <button className={s.btnPrimary} onClick={sendPrice} disabled={saving || !basePriceNum}>
-              {saving ? 'Menyimpan...' : saved ? 'Tersimpan ✓' : 'Kirim Penawaran Harga'}
-            </button>
-            {!isTerminal && (
-              <button className={s.btnDanger} onClick={() => setShowRejectModal(true)} disabled={saving}>
-                Tolak Request
-              </button>
-            )}
-          </div>
-        </div>
-      )}
+        )
+      })()}
 
       {/* Pricing summary (when price already sent) */}
       {request.pricing.final_price != null && !canSendPrice && (
