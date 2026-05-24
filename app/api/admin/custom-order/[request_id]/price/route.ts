@@ -66,8 +66,9 @@ export async function PUT(
   if (wasNegotiating) {
     await pushNegotiationEntry(request_id, {
       by: 'admin',
-      note: body.for_customer || 'Admin mengirim penawaran baru.',
+      note: body.for_customer || (body.approve ? 'Admin menyetujui harga negosiasi.' : 'Admin mengirim penawaran baru.'),
       counter_price: final_price,
+      is_approval: body.approve ?? false,
       created_at: new Date().toISOString(),
     })
   }

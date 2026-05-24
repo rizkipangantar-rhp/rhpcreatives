@@ -611,7 +611,8 @@ export default function ProfilCard({ session }: { session: Session }) {
                   const hoursLeft = Math.floor(msLeft / 3600000)
                   const minutesLeft = Math.floor((msLeft % 3600000) / 60000)
                   const negoHistory = req.negotiation_history ?? []
-                  const lastNegoByAdmin = negoHistory.length > 0 && negoHistory[negoHistory.length - 1].by === 'admin'
+                  const lastAdminEntry = negoHistory.length > 0 && negoHistory[negoHistory.length - 1].by === 'admin' ? negoHistory[negoHistory.length - 1] : null
+                  const lastNegoByAdmin = !!lastAdminEntry?.is_approval
 
                   return (
                     <div key={req.request_id} className={styles.orderCard} style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.75rem' }}>
