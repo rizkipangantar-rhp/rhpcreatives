@@ -133,7 +133,7 @@ export default function AdminPromoPage() {
                     </td>
                     <td style={{ color: '#94a3b8' }}>{p.discount_type === 'percent' ? 'Persentase' : 'Nominal'}</td>
                     <td style={{ fontWeight: 600, color: '#a78bfa' }}>
-                      {p.discount_type === 'percent' ? `${p.discount_value}%` : `Rp${p.discount_value.toLocaleString('id-ID')}`}
+                      {p.discount_type === 'percent' ? `${p.discount_value ?? 0}%` : `Rp${(p.discount_value ?? 0).toLocaleString('id-ID')}`}
                     </td>
                     <td style={{ color: '#94a3b8' }}>{p.quota === 0 ? '∞' : p.quota}</td>
                     <td style={{ color: '#60a5fa' }}>{p.claimed}</td>

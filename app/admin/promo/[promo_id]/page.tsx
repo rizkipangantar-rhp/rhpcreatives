@@ -127,7 +127,7 @@ export default function PromoDetailPage() {
   const remaining = promo.quota === 0 ? '∞' : String(Math.max(0, promo.quota - promo.claimed))
   const usedClaims = claims.filter(c => c.status === 'used')
   const activeClaims = claims.filter(c => c.status === 'active')
-  const discountDisplay = promo.discount_type === 'percent' ? `${promo.discount_value}%` : `Rp${promo.discount_value.toLocaleString('id-ID')}`
+  const discountDisplay = promo.discount_type === 'percent' ? `${promo.discount_value ?? 0}%` : `Rp${(promo.discount_value ?? 0).toLocaleString('id-ID')}`
 
   const inputStyle: React.CSSProperties = {
     width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
