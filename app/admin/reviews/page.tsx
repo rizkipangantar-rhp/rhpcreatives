@@ -12,6 +12,7 @@ export default function AdminReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([])
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState<string | null>(null)
+  const [confirmId, setConfirmId] = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/review')
@@ -20,11 +21,12 @@ export default function AdminReviewsPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  async function handleDelete(id: string) {
-    if (!confirm('Hapus ulasan ini?')) return
-    setDeleting(id)
-    await fetch('/api/review', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
-    setReviews(prev => prev.filter(r => r.id !== id))
+  async function handleDelete() {
+    if (!confirmId) return
+    setDeleting(confirmId)
+    setConfirmId(null)
+    await fetch('/api/review', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: confirmId }) })
+    setReviews(prev => prev.filter(r => r.id !== confirmId))
     setDeleting(null)
   }
 
@@ -32,6 +34,23 @@ export default function AdminReviewsPage() {
 
   return (
     <div className={s.page}>
+      {confirmId && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div style={{ background: '#1a1f2e', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 16, padding: '2rem 1.75rem', maxWidth: 360, width: '100%', textAlign: 'center' }}>
+            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🗑️</div>
+            <div style={{ fontWeight: 700, fontSize: '1rem', marginBottom: '0.4rem', color: '#f1f5f9' }}>Hapus ulasan ini?</div>
+            <div style={{ fontSize: '0.82rem', color: '#64748b', marginBottom: '1.5rem' }}>Ulasan akan dihapus permanen dan tidak bisa dikembalikan.</div>
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
+              <button onClick={() => setConfirmId(null)} style={{ flex: 1, padding: '0.6rem', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#94a3b8', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer' }}>
+                Batal
+              </button>
+              <button onClick={handleDelete} style={{ flex: 1, padding: '0.6rem', borderRadius: 10, border: 'none', background: 'rgba(239,68,68,0.85)', color: '#fff', fontWeight: 700, fontSize: '0.875rem', cursor: 'pointer' }}>
+                Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className={s.pageHeader}>
         <h1 className={s.pageTitle}>Ulasan Customer</h1>
         <span className={s.badge}>{reviews.length} ulasan</span>
@@ -69,7 +88,7 @@ export default function AdminReviewsPage() {
                   <td style={{ fontSize: '0.78rem', color: '#64748b', whiteSpace: 'nowrap' }}>{fmtDate(r.created_at)}</td>
                   <td>
                     <button
-                      onClick={() => handleDelete(r.id)}
+                      onClick={() => setConfirmId(r.id)}
                       disabled={deleting === r.id}
                       className={s.btnDanger}
                       style={{ fontSize: '0.78rem', padding: '0.3rem 0.7rem' }}
