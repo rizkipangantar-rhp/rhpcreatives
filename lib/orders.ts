@@ -184,6 +184,29 @@ export async function updateOrderNotes(orderId: string, notes: string): Promise<
   return true
 }
 
+export async function resetOrderForRetry(orderId: string): Promise<boolean> {
+  const db = await read()
+  const idx = db.orders.findIndex(o => o.orderId === orderId)
+  if (idx === -1) return false
+  if (['paid', 'completed'].includes(db.orders[idx].status)) return false
+  db.orders[idx] = {
+    ...db.orders[idx],
+    status: 'pending',
+    paymentMethod: undefined,
+    paymentBank: undefined,
+    paymentVa: undefined,
+    paymentBillerCode: undefined,
+    paymentBillKey: undefined,
+    paymentQrUrl: undefined,
+    paymentDeepLink: undefined,
+    paymentExpiry: undefined,
+    midtransOrderId: undefined,
+    updatedAt: new Date().toISOString(),
+  }
+  await write(db)
+  return true
+}
+
 export async function updateOrderPaymentInfo(
   orderId: string,
   info: Partial<Pick<Order,

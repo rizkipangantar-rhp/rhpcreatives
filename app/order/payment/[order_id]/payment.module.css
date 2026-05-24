@@ -540,19 +540,38 @@
 }
 
 .retryBtn {
-  padding: 0.6rem 1.5rem;
-  background: transparent;
-  border: 1px solid var(--accent);
+  padding: 0.75rem 2rem;
+  background: linear-gradient(135deg, var(--accent), var(--pink));
+  border: none;
   border-radius: 0.5rem;
-  color: var(--accent);
-  font-size: 0.875rem;
-  font-weight: 600;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: opacity 0.2s;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .retryBtn:hover {
-  background: rgba(139, 92, 246, 0.1);
+  opacity: 0.85;
+}
+
+.retryBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.newOrderLink {
+  font-size: 0.825rem;
+  color: var(--muted);
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.newOrderLink:hover {
+  color: var(--fg);
 }
 
 /* ── Expired state ── */

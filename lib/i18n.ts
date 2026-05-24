@@ -266,6 +266,10 @@ export type Tr = {
     statusChecking: string
     expiredTitle: string
     expiredSub: string
+    retryTitle: string
+    retrySub: string
+    retryBtn: string
+    retrying: string
     backToOrder: string
     countdownLabel: string
     notesLabel: string
@@ -801,8 +805,12 @@ export const t: Record<Lang, Tr> = {
       loadingPayment: 'Memuat detail pembayaran...',
       errorCharge: 'Gagal memuat pembayaran. Coba lagi.',
       statusChecking: 'Mengecek status pembayaran...',
-      expiredTitle: 'Waktu Bayar Habis',
-      expiredSub: 'Waktu bayarnya udah habis nih. Bikin order baru yuk!',
+      expiredTitle: 'Yah, Waktu Bayar Abis nih',
+      expiredSub: 'Waktu pembayarannya kedaluwarsa. Coba lagi atau buat order baru.',
+      retryTitle: 'Mau coba bayar lagi?',
+      retrySub: 'Tenang, orderanmu masih aman kok! Pilih metode bayar baru dan langsung gas ya!',
+      retryBtn: 'Coba Bayar Lagi',
+      retrying: 'Bentar ya...',
       backToOrder: 'Buat Order Baru',
       countdownLabel: 'Sisa waktu bayar',
       notesLabel: 'Catatan / Request Kamu',
@@ -1637,8 +1645,12 @@ export const t: Record<Lang, Tr> = {
       loadingPayment: 'Loading payment details...',
       errorCharge: 'Failed to load payment. Try again.',
       statusChecking: 'Checking payment status...',
-      expiredTitle: 'Payment Time Expired',
-      expiredSub: "The payment window has closed. Time to place a new order!",
+      expiredTitle: "Oof, time's up!",
+      expiredSub: "Payment window closed. Retry or start a new order.",
+      retryTitle: 'Wanna retry?',
+      retrySub: "No worries bestie, your order's still here! Pick a new payment method and let's gooo!",
+      retryBtn: 'Retry Payment',
+      retrying: 'Hold on...',
       backToOrder: 'New Order',
       countdownLabel: 'Time remaining',
       notesLabel: 'Your Notes / Request',

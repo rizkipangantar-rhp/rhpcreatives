@@ -124,6 +124,8 @@ export default function PaymentPage() {
   const [chargeResult, setChargeResult] = useState<ChargeResult | null>(null)
   const [charging, setCharging] = useState(false)
   const [chargeError, setChargeError] = useState('')
+  const [retrying, setRetrying] = useState(false)
+  const [retryAt, setRetryAt] = useState<string | null>(null)
   const [copiedKey, setCopiedKey] = useState('')
   const [ccLoading, setCcLoading] = useState(false)
   const [notes, setNotes] = useState('')
@@ -131,8 +133,10 @@ export default function PaymentPage() {
   const notesSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  // 15-min expiry from order creation (if no Midtrans expiry yet)
-  const expiryIso = order?.paymentExpiry ?? (order ? new Date(new Date(order.createdAt).getTime() + 15 * 60 * 1000).toISOString() : undefined)
+  // 15-min expiry: use retryAt when customer retries, else Midtrans expiry, else createdAt+15min
+  const expiryIso = retryAt
+    ? new Date(new Date(retryAt).getTime() + 15 * 60 * 1000).toISOString()
+    : order?.paymentExpiry ?? (order ? new Date(new Date(order.createdAt).getTime() + 15 * 60 * 1000).toISOString() : undefined)
   const { display: countdownDisplay, expired } = useCountdown(expiryIso)
 
   // Load Snap.js for credit card tab
@@ -328,6 +332,26 @@ export default function PaymentPage() {
     }, 600)
   }
 
+  async function handleRetry() {
+    setRetrying(true)
+    setChargeError('')
+    try {
+      const res = await fetch(`/api/payment/retry/${order_id}`, { method: 'POST' })
+      if (!res.ok) throw new Error()
+      setChargeResult(null)
+      setSelectedBank(null)
+      setSelectedEWallet(null)
+      setActiveTab('bank_transfer')
+      if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null }
+      setRetryAt(new Date().toISOString())
+      setOrder(prev => prev ? { ...prev, status: 'pending', paymentExpiry: undefined, paymentMethod: undefined } : prev)
+    } catch {
+      setChargeError(lang === 'id' ? 'Gagal reset order, coba lagi ya!' : 'Failed to reset order, please try again!')
+    } finally {
+      setRetrying(false)
+    }
+  }
+
   function copyText(text: string, key: string) {
     navigator.clipboard.writeText(text).then(() => {
       setCopiedKey(key)
@@ -447,12 +471,15 @@ export default function PaymentPage() {
 
           {/* ── Payment panel ── */}
           <div className={styles.paymentCard}>
-            {expired ? (
+            {(expired || order.status === 'cancelled') ? (
               <div className={styles.expiredWrap}>
                 <span className={styles.expiredIcon}>⏰</span>
-                <p className={styles.expiredTitle}>{p.expiredTitle}</p>
-                <p className={styles.expiredSub}>{p.expiredSub}</p>
-                <Link href="/order" className={styles.retryBtn}>{p.backToOrder}</Link>
+                <p className={styles.expiredTitle}>{p.retryTitle}</p>
+                <p className={styles.expiredSub}>{p.retrySub}</p>
+                <button className={styles.retryBtn} onClick={handleRetry} disabled={retrying}>
+                  {retrying ? p.retrying : p.retryBtn}
+                </button>
+                <Link href="/order" className={styles.newOrderLink}>{p.backToOrder}</Link>
               </div>
             ) : (
               <>

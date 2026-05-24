@@ -538,24 +538,31 @@ export default function ProfilCard({ session }: { session: Session }) {
             ) : (
               <div className={styles.ordersList}>
                 {orders.map(order => (
-                  <Link key={order.orderId} href={`/dashboard/profil/orders/${order.orderId}`} className={styles.orderCard} style={{ textDecoration: 'none', display: 'flex' }}>
-                    <div className={styles.orderLeft}>
-                      <div className={styles.orderService}>
-                        {lang === 'id' ? order.serviceNameId : order.serviceNameEn}
+                  <div key={order.orderId}>
+                    <Link href={`/dashboard/profil/orders/${order.orderId}`} className={styles.orderCard} style={{ textDecoration: 'none', display: 'flex' }}>
+                      <div className={styles.orderLeft}>
+                        <div className={styles.orderService}>
+                          {lang === 'id' ? order.serviceNameId : order.serviceNameEn}
+                        </div>
+                        <div className={styles.orderPackage}>
+                          {lang === 'id' ? order.packageNameId : order.packageNameEn}
+                        </div>
+                        <div className={styles.orderDate}>
+                          {p.orderDate}: {new Date(order.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        </div>
                       </div>
-                      <div className={styles.orderPackage}>
-                        {lang === 'id' ? order.packageNameId : order.packageNameEn}
+                      <div className={styles.orderRight}>
+                        <div className={styles.orderAmount}>Rp{order.totalPrice.toLocaleString('id-ID')}</div>
+                        <StatusBadge status={order.status} labels={statusLabels} />
+                        <span className={styles.orderViewBtn}>{p.viewOrder}</span>
                       </div>
-                      <div className={styles.orderDate}>
-                        {p.orderDate}: {new Date(order.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
-                      </div>
-                    </div>
-                    <div className={styles.orderRight}>
-                      <div className={styles.orderAmount}>Rp{order.totalPrice.toLocaleString('id-ID')}</div>
-                      <StatusBadge status={order.status} labels={statusLabels} />
-                      <span className={styles.orderViewBtn}>{p.viewOrder}</span>
-                    </div>
-                  </Link>
+                    </Link>
+                    {order.status === 'pending' && (
+                      <Link href={`/order/payment/${order.orderId}`} style={{ display: 'block', margin: '0.4rem 0 0.75rem', padding: '0.55rem 1rem', background: 'linear-gradient(135deg,#7c3aed,#be185d)', color: '#fff', borderRadius: '0.5rem', fontWeight: 700, fontSize: '0.85rem', textAlign: 'center', textDecoration: 'none' }}>
+                        {lang === 'id' ? 'Lanjut Bayar' : 'Continue Payment'}
+                      </Link>
+                    )}
+                  </div>
                 ))}
               </div>
             )}
@@ -735,7 +742,7 @@ export default function ProfilCard({ session }: { session: Session }) {
                             borderRadius: 8, padding: '10px 0', fontSize: '0.9rem', fontWeight: 700,
                             textDecoration: 'none',
                           }}>
-                            {lang === 'id' ? '💳 Bayar Sekarang' : '💳 Pay Now'}
+                            {lang === 'id' ? 'Bayar Sekarang' : 'Pay Now'}
                           </Link>
                         </div>
                       )}
