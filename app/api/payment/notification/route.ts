@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { updateOrderStatus, getOrderById, type OrderStatus } from '@/lib/orders'
+import { getRequestByOrderId, updateRequest, pushStatusHistory } from '@/lib/custom-orders'
 
 export async function POST(req: Request) {
   try {
@@ -49,6 +50,17 @@ export async function POST(req: Request) {
     }
 
     await updateOrderStatus(actualOrderId, newStatus)
+
+    const customReq = await getRequestByOrderId(actualOrderId)
+    if (customReq) {
+      if (newStatus === 'paid') {
+        await updateRequest(customReq.request_id, { status: 'paid' })
+        await pushStatusHistory(customReq.request_id, 'paid', 'Pembayaran diterima')
+      } else if (newStatus === 'cancelled') {
+        await updateRequest(customReq.request_id, { status: 'payment_pending' })
+        await pushStatusHistory(customReq.request_id, 'payment_pending', 'Pembayaran gagal/dibatalkan')
+      }
+    }
 
     return NextResponse.json({ message: 'OK' })
   } catch (err) {

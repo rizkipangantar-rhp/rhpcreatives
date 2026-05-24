@@ -91,6 +91,11 @@ export async function getRequestById(requestId: string): Promise<CustomOrderRequ
   return db.requests.find(r => r.request_id === requestId)
 }
 
+export async function getRequestByOrderId(orderId: string): Promise<CustomOrderRequest | undefined> {
+  const db = await read()
+  return db.requests.find(r => r.order_id === orderId)
+}
+
 export async function getRequestsByUser(userId: string): Promise<CustomOrderRequest[]> {
   const db = await read()
   return db.requests
