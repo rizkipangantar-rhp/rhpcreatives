@@ -121,6 +121,10 @@ textarea {
   min-height: 80px;
 }
 
+input[type="date"] {
+  color-scheme: dark;
+}
+
 input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1) brightness(2);
   cursor: pointer;
