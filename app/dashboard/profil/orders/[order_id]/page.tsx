@@ -80,7 +80,7 @@ export default function OrderDetailPage() {
   useEffect(() => {
     if (window.location.hash === '#review') {
       const el = document.getElementById('review')
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
   }, [loading])
 
