@@ -624,12 +624,17 @@ export default function ProfilCard({ session }: { session: Session }) {
                               {hoursLeft}j {minutesLeft}m {lang === 'id' ? 'tersisa' : 'left'}
                             </span>
                           </div>
-                          <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#f1f5f9', marginBottom: 4 }}>
+                          <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#f1f5f9', marginBottom: 8 }}>
                             Rp{req.pricing.final_price.toLocaleString('id-ID')}
                           </div>
                           {req.pricing.estimated_days && (
-                            <div style={{ fontSize: '0.78rem', color: '#64748b', marginBottom: req.notes.for_customer ? 8 : 12 }}>
-                              {lang === 'id' ? `Estimasi ${req.pricing.estimated_days} hari` : `Est. ${req.pricing.estimated_days} days`}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                              <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                {lang === 'id' ? 'Deadline' : 'Deadline'}
+                              </span>
+                              <span style={{ fontSize: '0.82rem', color: '#e2e8f0', fontWeight: 600 }}>
+                                {lang === 'id' ? `${req.pricing.estimated_days} hari` : `${req.pricing.estimated_days} days`}
+                              </span>
                             </div>
                           )}
                           {req.notes.for_customer && (
@@ -729,12 +734,17 @@ export default function ProfilCard({ session }: { session: Session }) {
                               {lang === 'id' ? 'Harga Disetujui' : 'Price Approved'}
                             </span>
                           </div>
-                          <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#f1f5f9', marginBottom: req.pricing.estimated_days ? 4 : 12 }}>
+                          <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#f1f5f9', marginBottom: 8 }}>
                             Rp{req.pricing.final_price.toLocaleString('id-ID')}
                           </div>
                           {req.pricing.estimated_days && (
-                            <div style={{ fontSize: '0.78rem', color: '#64748b', marginBottom: req.notes.for_customer ? 8 : 12 }}>
-                              {lang === 'id' ? `Estimasi ${req.pricing.estimated_days} hari` : `Est. ${req.pricing.estimated_days} days`}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                              <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                {lang === 'id' ? 'Deadline' : 'Deadline'}
+                              </span>
+                              <span style={{ fontSize: '0.82rem', color: '#e2e8f0', fontWeight: 600 }}>
+                                {lang === 'id' ? `${req.pricing.estimated_days} hari` : `${req.pricing.estimated_days} days`}
+                              </span>
                             </div>
                           )}
                           {req.notes.for_customer && (
