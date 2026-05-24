@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { getRequestById, pushStatusHistory, pushNegotiationEntry } from '@/lib/custom-orders'
-
-const ADMIN_WA = '6285179992598'
+import { notifyAdminWa } from '@/lib/notify-wa'
 
 export async function POST(
   req: NextRequest,
@@ -37,7 +36,8 @@ export async function POST(
 
   await pushStatusHistory(request_id, 'negotiating', `Customer nego: ${note.trim()}`)
 
-  const waText = `Customer mau nego harga untuk ${request_id}.${counterPriceNum ? ` Harga harapan: Rp${counterPriceNum.toLocaleString('id-ID')}.` : ''} Alasan: ${note.trim()}. Cek dashboard admin.`
+  const waMsg = `Nego harga dari customer!\nRequest ID: ${request_id}\nNama: ${request.customer.name}${counterPriceNum ? `\nHarga harapan: Rp${counterPriceNum.toLocaleString('id-ID')}` : ''}\nCatatan: ${note.trim()}\n\nCek dashboard admin untuk merespons.`
+  await notifyAdminWa(waMsg)
 
-  return NextResponse.json({ ok: true, adminWaUrl: `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(waText)}` })
+  return NextResponse.json({ ok: true })
 }

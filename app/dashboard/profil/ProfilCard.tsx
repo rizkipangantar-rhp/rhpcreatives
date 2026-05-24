@@ -290,7 +290,7 @@ export default function ProfilCard({ session }: { session: Session }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ note: negoNote.trim(), counter_price: negoPrice || undefined }),
       })
-      const data = await res.json() as { ok?: boolean; adminWaUrl?: string; error?: string }
+      const data = await res.json() as { ok?: boolean; error?: string }
       if (!res.ok) { setNegoError(data.error ?? 'Gagal nego. Coba lagi.'); return }
       const newEntry: NegotiationEntry = {
         by: 'customer',
@@ -308,7 +308,6 @@ export default function ProfilCard({ session }: { session: Session }) {
       setNegoOpen(null); setNegoNote(''); setNegoPrice('')
       setNegoSuccessId(requestId)
       setTimeout(() => setNegoSuccessId(null), 4000)
-      if (data.adminWaUrl) setTimeout(() => window.open(data.adminWaUrl, '_blank'), 500)
     } finally {
       setActionLoading(null)
     }
