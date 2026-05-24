@@ -601,7 +601,7 @@ export default function ProfilCard({ session }: { session: Session }) {
                         {lang === 'id' ? 'Lanjut Bayar' : 'Continue Payment'}
                       </Link>
                     )}
-                    {order.status === 'completed' && (() => {
+                    {(order.status === 'completed' || (order.progressSteps?.length === 5 && order.progressSteps.every(s => s.status === 'done'))) && (() => {
                       const review = myReviews.get(order.orderId)
                       return (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.5rem 0 0.75rem', flexWrap: 'wrap' }}>
