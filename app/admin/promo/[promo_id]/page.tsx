@@ -47,6 +47,7 @@ export default function PromoDetailPage() {
   const [editRequiresClaim, setEditRequiresClaim] = useState(true)
   const [editSaving, setEditSaving] = useState(false)
   const [editSaved, setEditSaved] = useState(false)
+  const [editError, setEditError] = useState(false)
   const [resetting, setResetting] = useState(false)
   const [showResetConfirm, setShowResetConfirm] = useState(false)
 
@@ -99,8 +100,9 @@ export default function PromoDetailPage() {
 
   async function handleSaveSettings() {
     setEditSaving(true)
+    setEditError(false)
     try {
-      await fetch(`/api/admin/promos/${promo_id}`, {
+      const res = await fetch(`/api/admin/promos/${promo_id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -113,11 +115,17 @@ export default function PromoDetailPage() {
           requires_claim: editRequiresClaim,
         }),
       })
-      setEditSaved(true)
-      setTimeout(() => setEditSaved(false), 2000)
-      load()
+      if (res.ok) {
+        setEditSaved(true)
+        setTimeout(() => setEditSaved(false), 2000)
+        load()
+      } else {
+        setEditError(true)
+        setTimeout(() => setEditError(false), 3000)
+      }
     } catch {
-      // silently ignore network errors
+      setEditError(true)
+      setTimeout(() => setEditError(false), 3000)
     }
     setEditSaving(false)
   }
@@ -234,7 +242,7 @@ export default function PromoDetailPage() {
           </label>
         </div>
         <button className={s.btnPrimary} onClick={handleSaveSettings} disabled={editSaving} style={{ padding: '8px 24px' }}>
-          {editSaving ? 'Menyimpan...' : editSaved ? 'Tersimpan ✓' : 'Simpan'}
+          {editSaving ? 'Menyimpan...' : editSaved ? 'Tersimpan ✓' : editError ? 'Gagal ✗' : 'Simpan'}
         </button>
       </div>
 

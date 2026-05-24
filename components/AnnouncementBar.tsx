@@ -98,7 +98,7 @@ export default function AnnouncementBar({ initialPromo }: { initialPromo: PromoB
   // Only hide for expiry after countdown is computed (avoids flicker on hydration)
   if (promo.end_date && countdownReady && time === null) return null
 
-  const href = promo.requires_claim ? `/promo/klaim/${promo.id}` : '/promo'
+  const href = promo.requires_claim !== false ? `/promo/klaim/${promo.id}` : '/promo'
   const discountDisplay = promo.discount_type === 'percent' ? `${promo.discount_value ?? 0}%` : `Rp${(promo.discount_value ?? 0).toLocaleString('id-ID')}`
   const quotaText = promo.quota > 0 ? String(promo.quota) : null
   // First 2 words of promo name for compact layouts

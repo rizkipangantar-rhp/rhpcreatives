@@ -66,7 +66,7 @@ export default function EarlyBirdPopup() {
   function handleCta() {
     close()
     if (!promo) return
-    const href = promo.requires_claim ? `/promo/klaim/${promo.id}` : '/order'
+    const href = promo.requires_claim !== false ? `/promo/klaim/${promo.id}` : '/order'
     if (status === 'authenticated') {
       router.push(href)
     } else {

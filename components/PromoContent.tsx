@@ -32,7 +32,7 @@ function PromoCard({ promo, lang }: { promo: PromoInfo; lang: string }) {
     ? `${promo.discount_value ?? 0}%`
     : `Rp${(promo.discount_value ?? 0).toLocaleString('id-ID')}`
 
-  const href = promo.requires_claim ? `/promo/klaim/${promo.id}` : '/order'
+  const href = promo.requires_claim !== false ? `/promo/klaim/${promo.id}` : '/order'
   const isFull = promo.is_full
 
   return (
@@ -74,7 +74,7 @@ function PromoCard({ promo, lang }: { promo: PromoInfo; lang: string }) {
 
       {!isFull && (
         <Link href={href} className={styles.earlyBirdCta}>
-          {promo.requires_claim
+          {promo.requires_claim !== false
             ? (lang === 'id' ? 'Klaim Sekarang' : 'Claim Now')
             : (lang === 'id' ? 'Order Sekarang' : 'Order Now')}
         </Link>

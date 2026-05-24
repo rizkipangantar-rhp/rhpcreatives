@@ -30,7 +30,7 @@ export default function FloatingBadge({ initialPromo }: { initialPromo: PromoBar
   const subText = slotsLeft !== null
     ? (lang === 'id' ? `Sisa ${slotsLeft} slot` : `${slotsLeft} slots left`)
     : (lang === 'id' ? 'Terbatas' : 'Limited')
-  const href = promo.requires_claim ? `/promo/klaim/${promo.id}` : '/promo'
+  const href = promo.requires_claim !== false ? `/promo/klaim/${promo.id}` : '/promo'
 
   return (
     <Link href={href} className={styles.badge} aria-label={badgeText}>
