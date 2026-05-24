@@ -88,11 +88,11 @@ function PromoCard({ promo, lang }: { promo: PromoInfo; lang: string }) {
   )
 }
 
-export default function PromoContent() {
+export default function PromoContent({ initialPromos }: { initialPromos?: PromoInfo[] }) {
   const { tr, lang } = useLanguage()
   const promo = tr.promo
-  const [promos, setPromos] = useState<PromoInfo[]>([])
-  const [loading, setLoading] = useState(true)
+  const [promos, setPromos] = useState<PromoInfo[]>(initialPromos ?? [])
+  const [loading, setLoading] = useState(!initialPromos)
 
   useEffect(() => {
     fetch('/api/promos')

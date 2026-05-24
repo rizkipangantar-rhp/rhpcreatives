@@ -39,6 +39,7 @@ export default function PromoDetailPage() {
   const [loading, setLoading] = useState(true)
 
   const [editName, setEditName] = useState('')
+  const [editDescription, setEditDescription] = useState('')
   const [editEndDate, setEditEndDate] = useState('')
   const [editQuota, setEditQuota] = useState('')
   const [editDiscountType, setEditDiscountType] = useState<'percent' | 'nominal'>('percent')
@@ -60,6 +61,7 @@ export default function PromoDetailPage() {
         setPromo(d.promo)
         setClaims(d.claims ?? [])
         setEditName(d.promo.name ?? '')
+        setEditDescription(d.promo.description ?? '')
         setEditEndDate(d.promo.end_date ? d.promo.end_date.slice(0, 10) : '')
         setEditQuota(String(d.promo.quota ?? 0))
         setEditDiscountType(d.promo.discount_type ?? 'percent')
@@ -107,6 +109,7 @@ export default function PromoDetailPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: editName,
+          description: editDescription,
           end_date: editEndDate || null,
           quota: parseInt(editQuota) || 0,
           discount_type: editDiscountType,
@@ -204,6 +207,10 @@ export default function PromoDetailPage() {
       {/* Simple settings */}
       <div className={s.card} style={{ padding: 20, marginBottom: 20 }}>
         <div className={s.cardTitle} style={{ marginBottom: 16 }}>Pengaturan</div>
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ display: 'block', fontSize: '0.78rem', color: '#64748b', marginBottom: 6 }}>Deskripsi</label>
+          <textarea style={{ ...inputStyle, resize: 'vertical', minHeight: 64 }} value={editDescription} onChange={e => setEditDescription(e.target.value)} rows={2} />
+        </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 16 }}>
           <div>
             <label style={{ display: 'block', fontSize: '0.78rem', color: '#64748b', marginBottom: 6 }}>Nama Promo</label>
