@@ -41,7 +41,8 @@ export async function PUT(
 
   await updateRequest(request_id, {
     pricing: {
-      base_price,
+      // Preserve original base_price when responding to nego so history stays accurate
+      base_price: wasNegotiating ? (request.pricing?.base_price ?? base_price) : base_price,
       discount_type: discount_type || null,
       discount_value: discount_value || 0,
       discount_amount,

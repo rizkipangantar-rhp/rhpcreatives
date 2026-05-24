@@ -592,6 +592,8 @@ export default function ProfilCard({ session }: { session: Session }) {
                   const msLeft = req.offer_expires_at ? Math.max(0, new Date(req.offer_expires_at).getTime() - Date.now()) : 0
                   const hoursLeft = Math.floor(msLeft / 3600000)
                   const minutesLeft = Math.floor((msLeft % 3600000) / 60000)
+                  const negoHistory = req.negotiation_history ?? []
+                  const lastNegoByAdmin = negoHistory.length > 0 && negoHistory[negoHistory.length - 1].by === 'admin'
 
                   return (
                     <div key={req.request_id} className={styles.orderCard} style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.75rem' }}>
@@ -613,8 +615,10 @@ export default function ProfilCard({ session }: { session: Session }) {
                       {offerActive && req.pricing.final_price != null && (
                         <div style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 12, padding: '14px 16px' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, flexWrap: 'wrap', gap: 6 }}>
-                            <span style={{ fontSize: '0.75rem', color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                              {lang === 'id' ? 'Penawaran Harga' : 'Price Offer'}
+                            <span style={{ fontSize: '0.75rem', color: lastNegoByAdmin ? '#34d399' : '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                              {lastNegoByAdmin
+                                ? (lang === 'id' ? 'Harga Disetujui Admin' : 'Price Approved by Admin')
+                                : (lang === 'id' ? 'Penawaran Harga' : 'Price Offer')}
                             </span>
                             <span style={{ fontSize: '0.72rem', color: '#fbbf24' }}>
                               {hoursLeft}j {minutesLeft}m {lang === 'id' ? 'tersisa' : 'left'}
@@ -647,18 +651,20 @@ export default function ProfilCard({ session }: { session: Session }) {
                                 ? (lang === 'id' ? 'Memproses...' : 'Processing...')
                                 : (lang === 'id' ? 'Terima & Bayar' : 'Accept & Pay')}
                             </button>
-                            <button
-                              onClick={() => { setNegoOpen(req.request_id); setNegoNote(''); setNegoPrice(''); setNegoError('') }}
-                              disabled={!!actionLoading}
-                              style={{
-                                background: 'rgba(251,191,36,0.1)', color: '#fbbf24',
-                                border: '1px solid rgba(251,191,36,0.3)', borderRadius: 8,
-                                padding: '9px 14px', fontSize: '0.84rem', fontWeight: 600,
-                                cursor: 'pointer', opacity: !!actionLoading ? 0.6 : 1,
-                              }}
-                            >
-                              {lang === 'id' ? 'Nego Harga' : 'Negotiate'}
-                            </button>
+                            {!lastNegoByAdmin && (
+                              <button
+                                onClick={() => { setNegoOpen(req.request_id); setNegoNote(''); setNegoPrice(''); setNegoError('') }}
+                                disabled={!!actionLoading}
+                                style={{
+                                  background: 'rgba(251,191,36,0.1)', color: '#fbbf24',
+                                  border: '1px solid rgba(251,191,36,0.3)', borderRadius: 8,
+                                  padding: '9px 14px', fontSize: '0.84rem', fontWeight: 600,
+                                  cursor: 'pointer', opacity: !!actionLoading ? 0.6 : 1,
+                                }}
+                              >
+                                {lang === 'id' ? 'Nego Harga' : 'Negotiate'}
+                              </button>
+                            )}
                             <button
                               onClick={() => rejectOffer(req.request_id)}
                               disabled={!!actionLoading}
