@@ -576,8 +576,7 @@ export default function ProfilCard({ session }: { session: Session }) {
               </div>
             ) : (
               <div className={styles.ordersList}>
-                {orders.map(order => (
-                  {(() => {
+                {orders.map(order => {
                     const isCompleted = order.status === 'completed' || (order.progressSteps?.length === 5 && order.progressSteps.every(s => s.status === 'done'))
                     const review = isCompleted ? myReviews.get(order.orderId) : undefined
                     return (
@@ -621,8 +620,8 @@ export default function ProfilCard({ session }: { session: Session }) {
                         )}
                       </div>
                     )
-                  })()}
-                ))}
+                  })}
+
               </div>
             )}
           </div>
