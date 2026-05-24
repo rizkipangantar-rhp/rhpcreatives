@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import s from '@/components/admin/admin.module.css'
 import AdminLoading from '@/components/admin/AdminLoading'
+import ConfirmModal from '@/components/admin/ConfirmModal'
 
 type UserDetail = {
   id: string
@@ -55,6 +56,7 @@ export default function UserDetailPage() {
   const [user, setUser] = useState<UserDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [suspending, setSuspending] = useState(false)
+  const [showSuspendConfirm, setShowSuspendConfirm] = useState(false)
 
   useEffect(() => {
     fetch(`/api/admin/users/${encodeURIComponent(user_id)}`)
@@ -65,10 +67,6 @@ export default function UserDetailPage() {
 
   async function toggleSuspend() {
     if (!user) return
-    const confirmed = confirm(user.suspended
-      ? `Aktifkan kembali akun ${user.name}?`
-      : `Suspend akun ${user.name}? User tidak bisa login sampai diaktifkan kembali.`)
-    if (!confirmed) return
     setSuspending(true)
     const res = await fetch(`/api/admin/users/${encodeURIComponent(user_id)}`, {
       method: 'PATCH',
@@ -84,6 +82,18 @@ export default function UserDetailPage() {
 
   return (
     <div>
+      {showSuspendConfirm && (
+        <ConfirmModal
+          title={user.suspended ? 'Aktifkan akun ini?' : 'Suspend akun ini?'}
+          message={user.suspended
+            ? `Akun ${user.name} akan diaktifkan kembali dan bisa login seperti biasa.`
+            : `Akun ${user.name} akan disuspend. User tidak bisa login sampai diaktifkan kembali.`}
+          confirmLabel={user.suspended ? 'Ya, Aktifkan' : 'Ya, Suspend'}
+          danger={!user.suspended}
+          onConfirm={() => { setShowSuspendConfirm(false); toggleSuspend() }}
+          onCancel={() => setShowSuspendConfirm(false)}
+        />
+      )}
       <div className={s.pageHeader} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         <div>
           <button onClick={() => router.back()} className={s.btnGhost} style={{ marginBottom: 8 }}>Kembali</button>
@@ -100,7 +110,7 @@ export default function UserDetailPage() {
         {!user.isAdmin && (
           <button
             className={user.suspended ? s.btnPrimary : s.btnDanger}
-            onClick={toggleSuspend}
+            onClick={() => setShowSuspendConfirm(true)}
             disabled={suspending}
           >
             {suspending ? '...' : user.suspended ? 'Aktifkan Akun' : 'Suspend Akun'}

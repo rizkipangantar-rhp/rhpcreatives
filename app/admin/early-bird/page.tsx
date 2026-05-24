@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import s from '@/components/admin/admin.module.css'
 import AdminLoading from '@/components/admin/AdminLoading'
+import ConfirmModal from '@/components/admin/ConfirmModal'
 
 type ClaimEntry = {
   userId: string
@@ -43,6 +44,7 @@ export default function EarlyBirdPage() {
   const [loading, setLoading] = useState(true)
   const [resetting, setResetting] = useState(false)
   const [tab, setTab] = useState<'claims' | 'waitlist'>('claims')
+  const [showConfirm, setShowConfirm] = useState(false)
 
   function load() {
     setLoading(true)
@@ -55,8 +57,6 @@ export default function EarlyBirdPage() {
   useEffect(() => { load() }, [])
 
   async function handleReset() {
-    const confirmed = confirm('Reset semua klaim early bird? Aksi ini tidak dapat dibatalkan.')
-    if (!confirmed) return
     setResetting(true)
     await fetch('/api/admin/early-bird/reset', { method: 'POST' })
     setResetting(false)
@@ -73,12 +73,21 @@ export default function EarlyBirdPage() {
 
   return (
     <div>
+      {showConfirm && (
+        <ConfirmModal
+          title="Reset Semua Klaim?"
+          message="Semua klaim early bird akan direset. Slot kembali ke 0 dan semua voucher tidak berlaku. Aksi ini tidak dapat dibatalkan."
+          confirmLabel="Ya, Reset"
+          onConfirm={() => { setShowConfirm(false); handleReset() }}
+          onCancel={() => setShowConfirm(false)}
+        />
+      )}
       <div className={s.pageHeader} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         <div>
           <h1 className={s.pageTitle}>Early Bird</h1>
           <p className={s.pageSub}>Kelola kuota dan klaim voucher early bird</p>
         </div>
-        <button className={s.btnDanger} onClick={handleReset} disabled={resetting}>
+        <button className={s.btnDanger} onClick={() => setShowConfirm(true)} disabled={resetting}>
           {resetting ? 'Mereset...' : 'Reset Semua Klaim'}
         </button>
       </div>

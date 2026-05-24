@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import s from '@/components/admin/admin.module.css'
 import AdminLoading from '@/components/admin/AdminLoading'
+import ConfirmModal from '@/components/admin/ConfirmModal'
 import type { Promo, PromoClaim } from '@/lib/promos'
 
 function fmtDate(iso: string | null) {
@@ -43,6 +44,7 @@ export default function PromoDetailPage() {
   const [editSaving, setEditSaving] = useState(false)
   const [editSaved, setEditSaved] = useState(false)
   const [resetting, setResetting] = useState(false)
+  const [showResetConfirm, setShowResetConfirm] = useState(false)
 
   function load() {
     setLoading(true)
@@ -72,7 +74,6 @@ export default function PromoDetailPage() {
   }
 
   async function handleResetClaims() {
-    if (!confirm(`Reset semua klaim "${promo?.name}"? Slot kembali ke 0 dan semua voucher tidak berlaku.`)) return
     setResetting(true)
     await fetch(`/api/admin/promos/${promo_id}/reset-claims`, { method: 'POST' })
     setResetting(false)
@@ -98,6 +99,16 @@ export default function PromoDetailPage() {
 
   if (loading || !promo) return <AdminLoading />
 
+  const resetModal = showResetConfirm && (
+    <ConfirmModal
+      title="Reset Semua Klaim?"
+      message={`Semua klaim promo "${promo.name}" akan direset. Slot kembali ke 0 dan semua voucher tidak berlaku.`}
+      confirmLabel="Ya, Reset"
+      onConfirm={() => { setShowResetConfirm(false); handleResetClaims() }}
+      onCancel={() => setShowResetConfirm(false)}
+    />
+  )
+
   const st = promoStatus(promo)
   const pct = promo.quota > 0 ? Math.min(100, Math.round((promo.claimed / promo.quota) * 100)) : 0
   const remaining = promo.quota === 0 ? '∞' : String(Math.max(0, promo.quota - promo.claimed))
@@ -113,6 +124,7 @@ export default function PromoDetailPage() {
 
   return (
     <div>
+      {resetModal}
       <div className={s.pageHeader} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         <div>
           <Link href="/admin/promo" style={{ fontSize: '0.82rem', color: '#60a5fa', textDecoration: 'none', display: 'inline-block', marginBottom: 8 }}>Semua Promo</Link>
@@ -127,7 +139,7 @@ export default function PromoDetailPage() {
             {promo.is_active ? 'Nonaktifkan' : 'Aktifkan'}
           </button>
           <button
-            onClick={handleResetClaims}
+            onClick={() => setShowResetConfirm(true)}
             disabled={resetting}
             style={{
               background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',

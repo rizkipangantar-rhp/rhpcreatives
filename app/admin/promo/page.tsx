@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import s from '@/components/admin/admin.module.css'
 import AdminLoading from '@/components/admin/AdminLoading'
+import ConfirmModal from '@/components/admin/ConfirmModal'
 import type { Promo } from '@/lib/promos'
 
 type Stats = { totalActive: number; totalEnded: number; totalClaims: number; totalDiscount: number }
@@ -24,6 +25,7 @@ export default function AdminPromoPage() {
   const [stats, setStats] = useState<Stats>({ totalActive: 0, totalEnded: 0, totalClaims: 0, totalDiscount: 0 })
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState<string | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState<{ id: string; name: string } | null>(null)
 
   function load() {
     setLoading(true)
@@ -44,8 +46,7 @@ export default function AdminPromoPage() {
     load()
   }
 
-  async function handleDelete(id: string, name: string) {
-    if (!confirm(`Hapus promo "${name}"? Aksi ini tidak dapat dibatalkan.`)) return
+  async function handleDelete(id: string) {
     setDeleting(id)
     await fetch(`/api/admin/promos/${id}`, { method: 'DELETE' })
     setDeleting(null)
@@ -56,6 +57,15 @@ export default function AdminPromoPage() {
 
   return (
     <div>
+      {confirmDelete && (
+        <ConfirmModal
+          title={`Hapus promo?`}
+          message={`Promo "${confirmDelete.name}" akan dihapus permanen. Aksi ini tidak dapat dibatalkan.`}
+          confirmLabel="Ya, Hapus"
+          onConfirm={() => { handleDelete(confirmDelete.id); setConfirmDelete(null) }}
+          onCancel={() => setConfirmDelete(null)}
+        />
+      )}
       <div className={s.pageHeader} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         <div>
           <h1 className={s.pageTitle}>Promo</h1>
@@ -140,7 +150,7 @@ export default function AdminPromoPage() {
                         <button
                           className={s.btnDanger ?? s.btnExport}
                           style={{ fontSize: '0.75rem', padding: '5px 10px', color: '#f87171', opacity: deleting === p.id ? 0.5 : 1 }}
-                          onClick={() => handleDelete(p.id, p.name)}
+                          onClick={() => setConfirmDelete({ id: p.id, name: p.name })}
                           disabled={deleting === p.id}
                         >
                           Hapus

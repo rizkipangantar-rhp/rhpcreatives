@@ -3,6 +3,7 @@ import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
 import s from '@/components/admin/admin.module.css'
 import AdminLoading from '@/components/admin/AdminLoading'
+import ConfirmModal from '@/components/admin/ConfirmModal'
 
 type User = {
   id: string
@@ -32,6 +33,7 @@ export default function AdminUsersPage() {
   const [providerFilter, setProviderFilter] = useState<'all' | 'google' | 'credentials'>('all')
   const [suspendedFilter, setSuspendedFilter] = useState<'all' | 'active' | 'suspended'>('all')
   const [deleting, setDeleting] = useState<string | null>(null)
+  const [confirmUser, setConfirmUser] = useState<User | null>(null)
 
   useEffect(() => {
     fetch('/api/admin/users')
@@ -57,7 +59,6 @@ export default function AdminUsersPage() {
   }, [users, search, providerFilter, suspendedFilter])
 
   async function handleDelete(u: User) {
-    if (!confirm(`Hapus akun "${u.name}" (${u.email})?\n\nAksi ini permanen dan tidak bisa dibatalkan.`)) return
     setDeleting(u.id)
     const res = await fetch(`/api/admin/users/${encodeURIComponent(u.id)}`, { method: 'DELETE' })
     if (res.ok) {
@@ -73,6 +74,15 @@ export default function AdminUsersPage() {
 
   return (
     <div>
+      {confirmUser && (
+        <ConfirmModal
+          title="Hapus akun ini?"
+          message={`Akun "${confirmUser.name}" (${confirmUser.email}) akan dihapus permanen dan tidak bisa dikembalikan.`}
+          confirmLabel="Ya, Hapus"
+          onConfirm={() => { handleDelete(confirmUser); setConfirmUser(null) }}
+          onCancel={() => setConfirmUser(null)}
+        />
+      )}
       <div className={s.pageHeader}>
         <h1 className={s.pageTitle}>Manajemen User</h1>
         <p className={s.pageSub}>{users.length} user terdaftar</p>
@@ -140,7 +150,7 @@ export default function AdminUsersPage() {
                         <button
                           className={s.btnDanger}
                           style={{ padding: '5px 10px', fontSize: '0.75rem' }}
-                          onClick={() => handleDelete(u)}
+                          onClick={() => setConfirmUser(u)}
                           disabled={deleting === u.id}
                         >
                           {deleting === u.id ? '...' : 'Hapus'}

@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import s from '@/components/admin/admin.module.css'
 import AdminLoading from '@/components/admin/AdminLoading'
+import ConfirmModal from '@/components/admin/ConfirmModal'
 import type { Review } from '@/lib/reviews'
 
 function fmtDate(iso: string) {
@@ -35,21 +36,13 @@ export default function AdminReviewsPage() {
   return (
     <div className={s.page}>
       {confirmId && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-          <div style={{ background: '#1a1f2e', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 16, padding: '2rem 1.75rem', maxWidth: 360, width: '100%', textAlign: 'center' }}>
-            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🗑️</div>
-            <div style={{ fontWeight: 700, fontSize: '1rem', marginBottom: '0.4rem', color: '#f1f5f9' }}>Hapus ulasan ini?</div>
-            <div style={{ fontSize: '0.82rem', color: '#64748b', marginBottom: '1.5rem' }}>Ulasan akan dihapus permanen dan tidak bisa dikembalikan.</div>
-            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
-              <button onClick={() => setConfirmId(null)} style={{ flex: 1, padding: '0.6rem', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#94a3b8', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer' }}>
-                Batal
-              </button>
-              <button onClick={handleDelete} style={{ flex: 1, padding: '0.6rem', borderRadius: 10, border: 'none', background: 'rgba(239,68,68,0.85)', color: '#fff', fontWeight: 700, fontSize: '0.875rem', cursor: 'pointer' }}>
-                Hapus
-              </button>
-            </div>
-          </div>
-        </div>
+        <ConfirmModal
+          title="Hapus ulasan ini?"
+          message="Ulasan akan dihapus permanen dan tidak bisa dikembalikan."
+          confirmLabel="Ya, Hapus"
+          onConfirm={handleDelete}
+          onCancel={() => setConfirmId(null)}
+        />
       )}
       <div className={s.pageHeader}>
         <h1 className={s.pageTitle}>Ulasan Customer</h1>
