@@ -496,7 +496,20 @@ export default function OrderPage() {
 
                 {earlyBirdIneligible && (
                   <div className={styles.noDiscountBanner} style={{ marginTop: '0.75rem' }}>
-                    <p className={styles.noDiscountMsg}>{p.earlyBirdIneligible}</p>
+                    <p className={styles.noDiscountMsg}>
+                      {(() => {
+                        const eligiblePkgs = (PACKAGES[selectedService] ?? []).filter(pkg => EARLY_BIRD_ELIGIBLE.has(pkg.id))
+                        if (eligiblePkgs.length === 0) {
+                          return lang === 'id'
+                            ? 'Diskon Early Bird gak berlaku untuk layanan ini ya.'
+                            : 'Early Bird discount does not apply to this service.'
+                        }
+                        const names = eligiblePkgs.map(pkg => lang === 'id' ? pkg.nameId : pkg.nameEn).join(', ')
+                        return lang === 'id'
+                          ? `Diskon Early Bird gak berlaku untuk paket ini ya. Pilih ${names} biar bisa dapat diskon!`
+                          : `Early Bird discount does not apply to this package. Pick ${names} to get the discount!`
+                      })()}
+                    </p>
                   </div>
                 )}
 
