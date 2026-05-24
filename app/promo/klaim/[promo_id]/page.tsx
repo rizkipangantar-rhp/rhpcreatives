@@ -157,7 +157,7 @@ export default function KlaimPromoPage() {
   }
 
   const discountDisplay = promo
-    ? promo.discount_type === 'percent' ? `${promo.discount_value}%` : `Rp${promo.discount_value.toLocaleString('id-ID')}`
+    ? promo.discount_type === 'percent' ? `${promo.discount_value ?? 0}%` : `Rp${(promo.discount_value ?? 0).toLocaleString('id-ID')}`
     : ''
 
   if (view === 'loading' || authStatus === 'loading') {

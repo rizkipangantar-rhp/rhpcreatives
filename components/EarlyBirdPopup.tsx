@@ -76,7 +76,7 @@ export default function EarlyBirdPopup() {
 
   if (!visible || !promo) return null
 
-  const discountDisplay = promo.discount_type === 'percent' ? `${promo.discount_value}%` : `Rp${promo.discount_value.toLocaleString('id-ID')}`
+  const discountDisplay = promo.discount_type === 'percent' ? `${promo.discount_value ?? 0}%` : `Rp${(promo.discount_value ?? 0).toLocaleString('id-ID')}`
   const slots = promo.quota > 0 ? promo.quota : null
   const slotsLeft = promo.remaining ?? (slots ? Math.max(0, slots - promo.claimed) : null)
   const taken = slots && slotsLeft !== null ? slots - slotsLeft : 0

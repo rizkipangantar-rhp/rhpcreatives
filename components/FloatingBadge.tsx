@@ -23,7 +23,7 @@ export default function FloatingBadge({ initialPromo }: { initialPromo: PromoBar
 
   if (!promo) return null
 
-  const discountDisplay = promo.discount_type === 'percent' ? `${promo.discount_value}%` : `Rp${promo.discount_value.toLocaleString('id-ID')}`
+  const discountDisplay = promo.discount_type === 'percent' ? `${promo.discount_value ?? 0}%` : `Rp${(promo.discount_value ?? 0).toLocaleString('id-ID')}`
   const slotsLeft = promo.remaining ?? (promo.quota > 0 ? Math.max(0, promo.quota - promo.claimed) : null)
   const shortName = promo.name.split(' ').slice(0, 2).join(' ')
   const badgeText = `🔥 ${shortName} ${discountDisplay} OFF`

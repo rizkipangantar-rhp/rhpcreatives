@@ -29,8 +29,8 @@ type PromoInfo = {
 
 function PromoCard({ promo, lang }: { promo: PromoInfo; lang: string }) {
   const discountDisplay = promo.discount_type === 'percent'
-    ? `${promo.discount_value}%`
-    : `Rp${promo.discount_value.toLocaleString('id-ID')}`
+    ? `${promo.discount_value ?? 0}%`
+    : `Rp${(promo.discount_value ?? 0).toLocaleString('id-ID')}`
 
   const href = promo.requires_claim ? `/promo/klaim/${promo.id}` : '/order'
   const isFull = promo.is_full
