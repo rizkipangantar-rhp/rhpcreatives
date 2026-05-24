@@ -50,12 +50,30 @@ export default function OrderDetailPage() {
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
   const [copiedStep, setCopiedStep] = useState<number | null>(null)
+  const [reviewRating, setReviewRating] = useState(5)
+  const [reviewText, setReviewText] = useState('')
+  const [reviewState, setReviewState] = useState<'idle' | 'submitting' | 'done' | 'already'>('idle')
+  const [reviewError, setReviewError] = useState('')
 
   function copyNote(text: string, stepIdx: number) {
     navigator.clipboard.writeText(text).then(() => {
       setCopiedStep(stepIdx)
       setTimeout(() => setCopiedStep(null), 2000)
     })
+  }
+
+  async function submitReview() {
+    if (!reviewText.trim()) { setReviewError(lang === 'id' ? 'Tulis ulasanmu dulu' : 'Please write your review'); return }
+    setReviewState('submitting')
+    setReviewError('')
+    const res = await fetch('/api/review', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId: order_id, rating: reviewRating, text: reviewText }),
+    })
+    if (res.status === 409) { setReviewState('already'); return }
+    if (!res.ok) { setReviewState('idle'); setReviewError(lang === 'id' ? 'Gagal mengirim ulasan' : 'Failed to submit'); return }
+    setReviewState('done')
   }
 
   useEffect(() => {
@@ -67,6 +85,10 @@ export default function OrderDetailPage() {
         if (found) setOrder(found)
         else setNotFound(true)
       })
+    fetch(`/api/review?orderId=${order_id}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data?.exists) setReviewState('already') })
+      .catch(() => {})
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false))
   }, [authStatus, order_id])
@@ -228,6 +250,55 @@ export default function OrderDetailPage() {
             <p className={styles.notes}>{order.notes}</p>
           </div>
         )}
+
+        {/* Review form — shown when all steps done */}
+        {(() => {
+          const steps = order.progressSteps ?? []
+          const allDone = steps.length === 5 && steps.every(s => s.status === 'done')
+          const eligible = allDone || order.status === 'completed'
+          if (!eligible) return null
+          if (reviewState === 'already') return (
+            <div className={styles.card} style={{ textAlign: 'center', color: '#34d399', padding: '1.5rem' }}>
+              {lang === 'id' ? 'Terima kasih! Ulasanmu sudah terkirim.' : 'Thank you! Your review has been submitted.'}
+            </div>
+          )
+          if (reviewState === 'done') return (
+            <div className={styles.card} style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🎉</div>
+              <div style={{ color: '#34d399', fontWeight: 700, marginBottom: 4 }}>{lang === 'id' ? 'Ulasan terkirim!' : 'Review submitted!'}</div>
+              <div style={{ color: '#94a3b8', fontSize: '0.82rem' }}>{lang === 'id' ? 'Ulasanmu akan tampil di halaman testimoni.' : 'Your review will appear on the testimonials page.'}</div>
+            </div>
+          )
+          return (
+            <div className={styles.card}>
+              <div className={styles.cardLabel}>{lang === 'id' ? 'Beri Ulasan' : 'Leave a Review'}</div>
+              <div style={{ marginBottom: '0.75rem' }}>
+                <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginBottom: '0.4rem' }}>{lang === 'id' ? 'Rating' : 'Rating'}</div>
+                <div style={{ display: 'flex', gap: '0.35rem' }}>
+                  {[1,2,3,4,5].map(n => (
+                    <button key={n} onClick={() => setReviewRating(n)} style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      fontSize: '1.6rem', color: n <= reviewRating ? '#fbbf24' : '#334155',
+                      transition: 'color 0.15s', padding: 0,
+                    }}>★</button>
+                  ))}
+                </div>
+              </div>
+              <textarea
+                value={reviewText}
+                onChange={e => setReviewText(e.target.value)}
+                placeholder={lang === 'id' ? 'Ceritakan pengalamanmu dengan layanan ini...' : 'Share your experience with this service...'}
+                className={styles.reviewTextarea}
+                maxLength={500}
+              />
+              <div style={{ fontSize: '0.72rem', color: '#475569', textAlign: 'right', marginTop: '0.2rem', marginBottom: '0.6rem' }}>{reviewText.length}/500</div>
+              {reviewError && <div style={{ color: '#f87171', fontSize: '0.8rem', marginBottom: '0.5rem' }}>{reviewError}</div>}
+              <button onClick={submitReview} disabled={reviewState === 'submitting'} className={styles.submitReviewBtn}>
+                {reviewState === 'submitting' ? (lang === 'id' ? 'Mengirim...' : 'Submitting...') : (lang === 'id' ? 'Kirim Ulasan' : 'Submit Review')}
+              </button>
+            </div>
+          )
+        })()}
 
         <div className={styles.footer}>
           <Link href="/dashboard/profil?tab=orders" className={styles.backBtn}>
