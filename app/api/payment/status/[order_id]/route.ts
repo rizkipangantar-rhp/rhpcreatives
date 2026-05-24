@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { getOrderById, updateOrderStatus } from '@/lib/orders'
 import { checkTransactionStatus } from '@/lib/payment'
+import { getRequestByOrderId, updateRequest, pushStatusHistory } from '@/lib/custom-orders'
 
 export async function GET(
   _req: Request,
@@ -32,10 +33,19 @@ export async function GET(
 
       if (s === 'settlement' || (s === 'capture' && fraud === 'accept')) {
         await updateOrderStatus(order_id, 'paid')
+        const customReq = await getRequestByOrderId(order_id)
+        if (customReq && customReq.status !== 'paid') {
+          await updateRequest(customReq.request_id, { status: 'paid' })
+          await pushStatusHistory(customReq.request_id, 'paid', 'Pembayaran diterima')
+        }
         const updated = await getOrderById(order_id)
         return NextResponse.json(updated)
       } else if (s === 'expire' || s === 'cancel' || s === 'deny') {
         await updateOrderStatus(order_id, 'cancelled')
+        const customReq = await getRequestByOrderId(order_id)
+        if (customReq && customReq.status === 'payment_pending') {
+          await pushStatusHistory(customReq.request_id, 'payment_pending', 'Pembayaran gagal/dibatalkan')
+        }
         const updated = await getOrderById(order_id)
         return NextResponse.json(updated)
       }
