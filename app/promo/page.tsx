@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import PageHero from '@/components/PageHero'
 import PromoContent from '@/components/PromoContent'
 import { getActivePublicPromos, isPromoFull } from '@/lib/promos'
