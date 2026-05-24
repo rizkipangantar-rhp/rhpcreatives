@@ -5,13 +5,19 @@ import { getOrderById } from '@/lib/orders'
 import { createReview, getReviewByOrderId, getAllReviews, deleteReview } from '@/lib/reviews'
 
 export async function GET(req: Request) {
+  const session = await getServerSession(authOptions)
   const { searchParams } = new URL(req.url)
   const orderId = searchParams.get('orderId')
+  const mine = searchParams.get('mine')
+
   if (orderId) {
     const review = await getReviewByOrderId(orderId)
     return NextResponse.json({ exists: !!review, review: review ?? null })
   }
   const reviews = await getAllReviews()
+  if (mine && session?.user?.id) {
+    return NextResponse.json({ reviews: reviews.filter(r => r.userId === session.user.id) })
+  }
   return NextResponse.json({ reviews })
 }
 

@@ -21,7 +21,10 @@ type Order = {
   totalPrice: number
   status: OrderStatus
   createdAt: string
+  progressSteps?: { step: number; status: string }[]
 }
+
+type OrderReview = { orderId: string; rating: number }
 
 type RequestStatus =
   | 'waiting_review' | 'price_sent' | 'negotiating' | 'accepted' | 'payment_pending'
@@ -136,6 +139,7 @@ export default function ProfilCard({ session }: { session: Session }) {
   const [orders, setOrders] = useState<Order[]>([])
   const [ordersLoading, setOrdersLoading] = useState(initialTab === 'orders')
   const [ordersLoaded, setOrdersLoaded] = useState(false)
+  const [myReviews, setMyReviews] = useState<Map<string, OrderReview>>(new Map())
   const [customRequests, setCustomRequests] = useState<CustomRequest[]>([])
   const [customLoading, setCustomLoading] = useState(initialTab === 'custom')
   const [customLoaded, setCustomLoaded] = useState(false)
@@ -189,6 +193,14 @@ export default function ProfilCard({ session }: { session: Session }) {
         .then(data => { setOrders(Array.isArray(data) ? data : []); setOrdersLoaded(true) })
         .catch(() => setOrdersLoaded(true))
         .finally(() => setOrdersLoading(false))
+      fetch('/api/review?mine=true')
+        .then(r => r.json())
+        .then(data => {
+          const m = new Map<string, OrderReview>()
+          for (const r of data.reviews ?? []) m.set(r.orderId, { orderId: r.orderId, rating: r.rating })
+          setMyReviews(m)
+        })
+        .catch(() => {})
     }
     if (initialTab === 'custom' && !customLoaded) {
       fetch('/api/custom-order/my-requests')
@@ -243,6 +255,14 @@ export default function ProfilCard({ session }: { session: Session }) {
         .then(data => { setOrders(Array.isArray(data) ? data : []); setOrdersLoaded(true) })
         .catch(() => setOrdersLoaded(true))
         .finally(() => setOrdersLoading(false))
+      fetch('/api/review?mine=true')
+        .then(r => r.json())
+        .then(data => {
+          const m = new Map<string, OrderReview>()
+          for (const r of data.reviews ?? []) m.set(r.orderId, { orderId: r.orderId, rating: r.rating })
+          setMyReviews(m)
+        })
+        .catch(() => {})
     }
   }
 
@@ -581,6 +601,23 @@ export default function ProfilCard({ session }: { session: Session }) {
                         {lang === 'id' ? 'Lanjut Bayar' : 'Continue Payment'}
                       </Link>
                     )}
+                    {order.status === 'completed' && (() => {
+                      const review = myReviews.get(order.orderId)
+                      return (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.5rem 0 0.75rem', flexWrap: 'wrap' }}>
+                          <div style={{ display: 'flex', gap: 2 }}>
+                            {[1,2,3,4,5].map(n => (
+                              <span key={n} style={{ fontSize: '1rem', color: review && n <= review.rating ? '#fbbf24' : '#1e293b' }}>★</span>
+                            ))}
+                          </div>
+                          {!review && (
+                            <Link href={`/dashboard/profil/orders/${order.orderId}#review`} style={{ fontSize: '0.78rem', fontWeight: 700, color: '#a78bfa', textDecoration: 'none', background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 6, padding: '0.25rem 0.6rem' }}>
+                              {lang === 'id' ? 'Spill dong!' : 'Drop a Review!'}
+                            </Link>
+                          )}
+                        </div>
+                      )
+                    })()}
                   </div>
                 ))}
               </div>
