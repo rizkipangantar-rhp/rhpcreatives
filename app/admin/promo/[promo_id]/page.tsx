@@ -61,7 +61,10 @@ export default function PromoDetailPage() {
         setPromo(d.promo)
         setClaims(d.claims ?? [])
         setEditName(d.promo.name ?? '')
-        setEditDescription(d.promo.description ?? '')
+        const DEFAULT_DESCRIPTIONS: Record<string, string> = {
+          promo_early_bird: 'Diskon 25% buat semua layanan, tapi cuma 20 slot doang bestie. Yang duluan gerak, yang duluan cuan — no cap!',
+        }
+        setEditDescription(d.promo.description || DEFAULT_DESCRIPTIONS[d.promo.id] || '')
         setEditEndDate(d.promo.end_date ? d.promo.end_date.slice(0, 10) : '')
         setEditQuota(String(d.promo.quota ?? 0))
         setEditDiscountType(d.promo.discount_type ?? 'percent')
