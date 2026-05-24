@@ -90,6 +90,7 @@ export default function CustomRequestForm({ session }: { session: Session | null
       setRequestId(data.request_id!)
       setWaSent(data.wa_sent ?? false)
       setStep('confirm')
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch {
       setError(lang === 'id' ? 'Ada error nih. Coba lagi ya!' : 'Something went wrong. Give it another shot!')
     } finally {
