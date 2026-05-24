@@ -43,6 +43,7 @@ export default function PromoDetailPage() {
   const [editQuota, setEditQuota] = useState('')
   const [editDiscountType, setEditDiscountType] = useState<'percent' | 'nominal'>('percent')
   const [editDiscountValue, setEditDiscountValue] = useState('')
+  const [editShowOnWebsite, setEditShowOnWebsite] = useState(true)
   const [editSaving, setEditSaving] = useState(false)
   const [editSaved, setEditSaved] = useState(false)
   const [resetting, setResetting] = useState(false)
@@ -61,6 +62,7 @@ export default function PromoDetailPage() {
         setEditQuota(String(d.promo.quota ?? 0))
         setEditDiscountType(d.promo.discount_type ?? 'percent')
         setEditDiscountValue(String(d.promo.discount_value ?? ''))
+        setEditShowOnWebsite(d.promo.show_on_website ?? true)
         setLoading(false)
       })
       .catch(() => setLoading(false))
@@ -105,6 +107,7 @@ export default function PromoDetailPage() {
           quota: parseInt(editQuota) || 0,
           discount_type: editDiscountType,
           discount_value: parseFloat(editDiscountValue) || 0,
+          show_on_website: editShowOnWebsite,
         }),
       })
       setEditSaved(true)
@@ -216,6 +219,12 @@ export default function PromoDetailPage() {
             <label style={{ display: 'block', fontSize: '0.78rem', color: '#64748b', marginBottom: 6 }}>Kuota (0 = tidak terbatas)</label>
             <input style={inputStyle} type="number" min={0} value={editQuota} onChange={e => setEditQuota(e.target.value)} />
           </div>
+        </div>
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.84rem', color: '#94a3b8' }}>
+            <input type="checkbox" checked={editShowOnWebsite} onChange={e => setEditShowOnWebsite(e.target.checked)} style={{ accentColor: '#3b82f6', width: 15, height: 15 }} />
+            Tampilkan di website (announcement bar &amp; popup)
+          </label>
         </div>
         <button className={s.btnPrimary} onClick={handleSaveSettings} disabled={editSaving} style={{ padding: '8px 24px' }}>
           {editSaving ? 'Menyimpan...' : editSaved ? 'Tersimpan ✓' : 'Simpan'}
