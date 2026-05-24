@@ -36,8 +36,9 @@ type NegotiationEntry = {
 
 type CustomRequest = {
   request_id: string
+  order_id?: string | null
   service: { name: string; package: string }
-  pricing: { final_price: number | null; estimated_days: number | null }
+  pricing: { base_price: number | null; final_price: number | null; estimated_days: number | null; discount_amount: number }
   notes: { for_customer?: string; rejection_reason?: string }
   status: RequestStatus
   offer_expires_at: string | null
@@ -707,6 +708,38 @@ export default function ProfilCard({ session }: { session: Session }) {
                         </div>
                       )}
 
+                      {/* Payment pending — customer accepted, waiting payment */}
+                      {req.status === 'payment_pending' && req.order_id && req.pricing.final_price != null && (
+                        <div style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 12, padding: '14px 16px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, flexWrap: 'wrap', gap: 6 }}>
+                            <span style={{ fontSize: '0.75rem', color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                              {lang === 'id' ? 'Harga Disetujui' : 'Price Approved'}
+                            </span>
+                          </div>
+                          <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#f1f5f9', marginBottom: req.pricing.estimated_days ? 4 : 12 }}>
+                            Rp{req.pricing.final_price.toLocaleString('id-ID')}
+                          </div>
+                          {req.pricing.estimated_days && (
+                            <div style={{ fontSize: '0.78rem', color: '#64748b', marginBottom: req.notes.for_customer ? 8 : 12 }}>
+                              {lang === 'id' ? `Estimasi ${req.pricing.estimated_days} hari` : `Est. ${req.pricing.estimated_days} days`}
+                            </div>
+                          )}
+                          {req.notes.for_customer && (
+                            <div style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: 1.6, marginBottom: 12 }}>
+                              {req.notes.for_customer}
+                            </div>
+                          )}
+                          <Link href={`/order/payment/${req.order_id}`} style={{
+                            display: 'block', textAlign: 'center',
+                            background: 'linear-gradient(135deg, #7c3aed, #be185d)', color: '#fff',
+                            borderRadius: 8, padding: '10px 0', fontSize: '0.9rem', fontWeight: 700,
+                            textDecoration: 'none',
+                          }}>
+                            {lang === 'id' ? '💳 Bayar Sekarang' : '💳 Pay Now'}
+                          </Link>
+                        </div>
+                      )}
+
                       {/* Nego success toast */}
                       {negoSuccessId === req.request_id && (
                         <div style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.25)', borderRadius: 10, padding: '10px 14px', fontSize: '0.82rem', color: '#34d399', fontWeight: 600, marginBottom: 8 }}>
@@ -714,32 +747,53 @@ export default function ProfilCard({ session }: { session: Session }) {
                         </div>
                       )}
 
-                      {/* Negotiating status */}
+                      {/* Negotiating status — waiting message */}
                       {req.status === 'negotiating' && (
-                        <div style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.25)', borderRadius: 12, padding: '14px 16px' }}>
-                          <div style={{ fontSize: '0.82rem', color: '#fbbf24', fontWeight: 600, marginBottom: 6 }}>
+                        <div style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.25)', borderRadius: 12, padding: '12px 16px' }}>
+                          <div style={{ fontSize: '0.82rem', color: '#fbbf24', fontWeight: 600 }}>
                             {lang === 'id' ? 'Negosiasi sedang diproses admin, tunggu ya!' : 'Negotiation is being reviewed by admin, please wait!'}
                           </div>
-                          {req.negotiation_history && req.negotiation_history.length > 0 && (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
-                              {req.negotiation_history.map((entry, ni) => (
-                                <div key={ni} style={{
-                                  fontSize: '0.78rem', padding: '8px 10px', borderRadius: 8,
-                                  background: entry.by === 'customer' ? 'rgba(251,191,36,0.08)' : 'rgba(139,92,246,0.08)',
-                                  border: `1px solid ${entry.by === 'customer' ? 'rgba(251,191,36,0.2)' : 'rgba(139,92,246,0.2)'}`,
-                                }}>
-                                  <span style={{ fontWeight: 700, color: entry.by === 'customer' ? '#fbbf24' : '#a78bfa' }}>
-                                    {entry.by === 'customer' ? (lang === 'id' ? '[Kamu]' : '[You]') : '[Admin]'}
-                                    {entry.counter_price ? ` (Rp${entry.counter_price.toLocaleString('id-ID')})` : ''}
-                                  </span>
-                                  <span style={{ color: '#94a3b8', marginLeft: 6 }}>{entry.note}</span>
-                                  <span style={{ color: '#475569', marginLeft: 6 }}>
-                                    · {new Date(entry.created_at).toLocaleDateString(lang === 'id' ? 'id-ID' : 'en-US', { day: 'numeric', month: 'short' })}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
+                        </div>
+                      )}
+
+                      {/* Price history — shown for all statuses that have pricing data */}
+                      {req.status !== 'waiting_review' && (req.pricing.base_price != null || (req.negotiation_history?.length ?? 0) > 0) && (
+                        <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '12px 14px' }}>
+                          <div style={{ fontSize: '0.68rem', color: '#475569', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>
+                            {lang === 'id' ? 'Riwayat Harga' : 'Price History'}
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                            {/* Admin initial offer */}
+                            {req.pricing.base_price != null && (
+                              <div style={{ fontSize: '0.78rem', padding: '8px 10px', borderRadius: 8, background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)' }}>
+                                <span style={{ fontWeight: 700, color: '#a78bfa' }}>[Admin]</span>
+                                <span style={{ color: '#94a3b8', marginLeft: 6 }}>
+                                  {lang === 'id' ? 'Penawaran awal' : 'Initial offer'}:
+                                  {req.pricing.discount_amount > 0
+                                    ? <> <s style={{ opacity: 0.5 }}>Rp{req.pricing.base_price.toLocaleString('id-ID')}</s> → Rp{req.pricing.final_price?.toLocaleString('id-ID')}</>
+                                    : <> Rp{req.pricing.base_price.toLocaleString('id-ID')}</>
+                                  }
+                                </span>
+                              </div>
+                            )}
+                            {/* Negotiation entries */}
+                            {req.negotiation_history?.map((entry, ni) => (
+                              <div key={ni} style={{
+                                fontSize: '0.78rem', padding: '8px 10px', borderRadius: 8,
+                                background: entry.by === 'customer' ? 'rgba(251,191,36,0.08)' : 'rgba(139,92,246,0.08)',
+                                border: `1px solid ${entry.by === 'customer' ? 'rgba(251,191,36,0.2)' : 'rgba(139,92,246,0.2)'}`,
+                              }}>
+                                <span style={{ fontWeight: 700, color: entry.by === 'customer' ? '#fbbf24' : '#a78bfa' }}>
+                                  {entry.by === 'customer' ? (lang === 'id' ? '[Kamu]' : '[You]') : '[Admin]'}
+                                  {entry.counter_price ? ` · Rp${entry.counter_price.toLocaleString('id-ID')}` : ''}
+                                </span>
+                                <span style={{ color: '#94a3b8', marginLeft: 6 }}>{entry.note}</span>
+                                <span style={{ color: '#475569', marginLeft: 6 }}>
+                                  · {new Date(entry.created_at).toLocaleDateString(lang === 'id' ? 'id-ID' : 'en-US', { day: 'numeric', month: 'short' })}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       )}
 
