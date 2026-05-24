@@ -133,6 +133,7 @@ export default function KlaimPromoPage() {
     setClaim(data.claim!)
     setJustClaimed(true)
     setView('success')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   async function handleWaitlist(e: React.FormEvent) {
