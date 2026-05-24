@@ -114,3 +114,10 @@ button:focus:not(:focus-visible), a:focus:not(:focus-visible) { outline: none; }
     print-color-adjust: exact;
   }
 }
+
+textarea {
+  resize: none;
+  overflow: hidden;
+  min-height: 80px;
+}
+

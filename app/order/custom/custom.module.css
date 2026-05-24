@@ -198,7 +198,7 @@
 }
 
 .textarea {
-  resize: vertical;
+  overflow: hidden;
   min-height: 100px;
   line-height: 1.6;
 }

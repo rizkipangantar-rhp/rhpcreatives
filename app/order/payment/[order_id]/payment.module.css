@@ -658,7 +658,7 @@
   color: var(--text);
   font-size: 0.825rem;
   line-height: 1.5;
-  resize: vertical;
+  overflow: hidden;
   min-height: 72px;
   transition: border-color 0.2s;
   box-sizing: border-box;

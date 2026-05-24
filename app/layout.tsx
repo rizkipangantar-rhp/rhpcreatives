@@ -3,6 +3,7 @@ import './globals.css'
 import AuthProvider from '@/components/AuthProvider'
 import { LanguageProvider } from '@/context/LanguageContext'
 import MainSiteLayout from '@/components/MainSiteLayout'
+import TextareaAutoResize from '@/components/TextareaAutoResize'
 import { getActivePublicPromos } from '@/lib/promos'
 import type { PromoBarInfo } from '@/components/AnnouncementBar'
 
@@ -48,6 +49,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <AuthProvider>
           <LanguageProvider>
+            <TextareaAutoResize />
             <MainSiteLayout initialPromo={initialPromo}>{children}</MainSiteLayout>
           </LanguageProvider>
         </AuthProvider>
