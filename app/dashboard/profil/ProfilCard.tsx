@@ -158,6 +158,7 @@ export default function ProfilCard({ session }: { session: Session }) {
   const [negoError, setNegoError] = useState('')
   const [negoSuccessId, setNegoSuccessId] = useState<string | null>(null)
   const [voucherModalId, setVoucherModalId] = useState<string | null>(null)
+  const [voucherModalPrice, setVoucherModalPrice] = useState<number>(0)
   const [selectedDiscount, setSelectedDiscount] = useState<'none' | 'early_bird' | 'referrer_reward' | 'invitee'>('none')
   const [voucherError, setVoucherError] = useState('')
 
@@ -661,7 +662,7 @@ export default function ProfilCard({ session }: { session: Session }) {
                           )}
                           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                             <button
-                              onClick={() => { setVoucherModalId(req.request_id); setSelectedDiscount('none'); setVoucherError('') }}
+                              onClick={() => { setVoucherModalId(req.request_id); setVoucherModalPrice(req.pricing.final_price ?? 0); setSelectedDiscount('none'); setVoucherError('') }}
                               disabled={!!actionLoading}
                               style={{
                                 flex: 1, minWidth: 120, background: 'linear-gradient(135deg, #7c3aed, #be185d)', color: '#fff',
@@ -876,29 +877,64 @@ export default function ProfilCard({ session }: { session: Session }) {
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
-              {/* No discount */}
               {(['none', 'early_bird', 'referrer_reward', 'invitee'] as const).map(opt => {
                 if (opt === 'early_bird' && !fullDiscountStatus?.earlyBird?.available) return null
                 if (opt === 'referrer_reward' && !fullDiscountStatus?.referrerReward?.available) return null
                 if (opt === 'invitee' && !fullDiscountStatus?.inviteeDiscount?.available) return null
+
+                const pct = opt === 'early_bird' ? 25 : opt === 'referrer_reward' ? (fullDiscountStatus?.referrerReward?.percent ?? 15) : opt === 'invitee' ? (fullDiscountStatus?.inviteeDiscount?.percent ?? 10) : 0
+                const cut = opt === 'none' ? 0 : Math.round(voucherModalPrice * pct / 100)
+                const total = voucherModalPrice - cut
+
                 const labels: Record<string, { id: string; en: string; badge?: string }> = {
                   none: { id: 'Tanpa Diskon', en: 'No Discount' },
-                  early_bird: { id: 'Early Bird 25% OFF', en: 'Early Bird 25% OFF', badge: '🔥' },
-                  referrer_reward: { id: `Referral Reward ${fullDiscountStatus?.referrerReward?.percent ?? 15}% OFF`, en: `Referral Reward ${fullDiscountStatus?.referrerReward?.percent ?? 15}% OFF`, badge: '🎁' },
-                  invitee: { id: `Diskon Referral ${fullDiscountStatus?.inviteeDiscount?.percent ?? 10}% OFF`, en: `Referral Discount ${fullDiscountStatus?.inviteeDiscount?.percent ?? 10}% OFF`, badge: '🤝' },
+                  early_bird: { id: `Early Bird ${pct}% OFF`, en: `Early Bird ${pct}% OFF`, badge: '🔥' },
+                  referrer_reward: { id: `Referral Reward ${pct}% OFF`, en: `Referral Reward ${pct}% OFF`, badge: '🎁' },
+                  invitee: { id: `Diskon Referral ${pct}% OFF`, en: `Referral Discount ${pct}% OFF`, badge: '🤝' },
                 }
                 const item = labels[opt]
                 const active = selectedDiscount === opt
                 return (
                   <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 10, border: `1px solid ${active ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.08)'}`, background: active ? 'rgba(139,92,246,0.1)' : 'rgba(255,255,255,0.02)', cursor: 'pointer' }}>
                     <input type="radio" name="discount" checked={active} onChange={() => setSelectedDiscount(opt)} style={{ accentColor: '#7c3aed' }} />
-                    <span style={{ fontSize: '0.85rem', color: active ? '#e2e8f0' : '#94a3b8', fontWeight: active ? 600 : 400 }}>
-                      {item.badge && <span style={{ marginRight: 4 }}>{item.badge}</span>}
-                      {lang === 'id' ? item.id : item.en}
-                    </span>
+                    <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 4 }}>
+                      <span style={{ fontSize: '0.85rem', color: active ? '#e2e8f0' : '#94a3b8', fontWeight: active ? 600 : 400 }}>
+                        {item.badge && <span style={{ marginRight: 4 }}>{item.badge}</span>}
+                        {lang === 'id' ? item.id : item.en}
+                      </span>
+                      {opt !== 'none' && (
+                        <span style={{ fontSize: '0.78rem', color: '#34d399', fontWeight: 600 }}>
+                          -{cut.toLocaleString('id-ID')} → Rp{total.toLocaleString('id-ID')}
+                        </span>
+                      )}
+                    </div>
                   </label>
                 )
               })}
+            </div>
+
+            {/* Price summary */}
+            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '10px 14px', marginBottom: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#64748b', marginBottom: 4 }}>
+                <span>{lang === 'id' ? 'Harga yang disepakati' : 'Agreed price'}</span>
+                <span>Rp{voucherModalPrice.toLocaleString('id-ID')}</span>
+              </div>
+              {selectedDiscount !== 'none' && (() => {
+                const pct = selectedDiscount === 'early_bird' ? 25 : selectedDiscount === 'referrer_reward' ? (fullDiscountStatus?.referrerReward?.percent ?? 15) : (fullDiscountStatus?.inviteeDiscount?.percent ?? 10)
+                const cut = Math.round(voucherModalPrice * pct / 100)
+                return (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#f87171', marginBottom: 4 }}>
+                    <span>{lang === 'id' ? 'Potongan diskon' : 'Discount'}</span>
+                    <span>-Rp{cut.toLocaleString('id-ID')}</span>
+                  </div>
+                )
+              })()}
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: '#f1f5f9', fontWeight: 700, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 8, marginTop: 4 }}>
+                <span>{lang === 'id' ? 'Total Bayar' : 'Total'}</span>
+                <span style={{ color: '#a78bfa' }}>
+                  Rp{(selectedDiscount === 'none' ? voucherModalPrice : voucherModalPrice - Math.round(voucherModalPrice * (selectedDiscount === 'early_bird' ? 25 : selectedDiscount === 'referrer_reward' ? (fullDiscountStatus?.referrerReward?.percent ?? 15) : (fullDiscountStatus?.inviteeDiscount?.percent ?? 10)) / 100)).toLocaleString('id-ID')}
+                </span>
+              </div>
             </div>
 
             {voucherError && (
