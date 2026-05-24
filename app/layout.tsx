@@ -34,8 +34,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     }
   } catch { /* Redis unavailable — bar loads client-side */ }
 
-  // Always reserve 44px so the navbar is never covered when the bar appears.
-  // useLayoutEffect in AnnouncementBar corrects this to 0px before first paint if no promo.
+  // Always reserve 44px so navbar stays below the bar from the first paint.
+  // AnnouncementBar's useLayoutEffect corrects this once the client fetch confirms promo state.
   const barScript = `document.documentElement.style.setProperty('--bar-h','44px')`
 
   return (

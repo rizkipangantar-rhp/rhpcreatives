@@ -40,17 +40,22 @@ export default function AnnouncementBar({ initialPromo }: { initialPromo: PromoB
   const [time, setTime] = useState<{ d: number; h: number; m: number; s: number } | null>(null)
   // Guard: only hide for expired after client has computed the countdown
   const [countdownReady, setCountdownReady] = useState(false)
+  // fetchDone: true if we already know the promo state from client fetch (or from SSR)
+  // Prevents premature --bar-h: 0px before the first fetch confirms there's no promo
+  const [fetchDone, setFetchDone] = useState(initialPromo !== null)
 
   useLayoutEffect(() => {
     function sync() {
       const h = barRef.current?.offsetHeight ?? 0
+      // Don't collapse space until we know whether a promo exists
+      if (h === 0 && !fetchDone) return
       document.documentElement.style.setProperty('--bar-h', `${h}px`)
     }
     sync()
     const ro = new ResizeObserver(sync)
     if (barRef.current) ro.observe(barRef.current)
     return () => ro.disconnect()
-  }, [dismissed, promo])
+  }, [dismissed, promo, fetchDone])
 
   // Background refresh — keeps slot count fresh
   useEffect(() => {
@@ -60,8 +65,9 @@ export default function AnnouncementBar({ initialPromo }: { initialPromo: PromoB
         .then(data => {
           const first: PromoBarInfo | null = data.promos?.[0] ?? null
           setPromo(first)
+          setFetchDone(true)
         })
-        .catch(() => {})
+        .catch(() => setFetchDone(true))
     }
     fetchPromo()
     const id = setInterval(fetchPromo, 60_000)
