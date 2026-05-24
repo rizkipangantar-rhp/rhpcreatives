@@ -577,48 +577,51 @@ export default function ProfilCard({ session }: { session: Session }) {
             ) : (
               <div className={styles.ordersList}>
                 {orders.map(order => (
-                  <div key={order.orderId}>
-                    <Link href={`/dashboard/profil/orders/${order.orderId}`} className={styles.orderCard} style={{ textDecoration: 'none', display: 'flex' }}>
-                      <div className={styles.orderLeft}>
-                        <div className={styles.orderService}>
-                          {lang === 'id' ? order.serviceNameId : order.serviceNameEn}
-                        </div>
-                        <div className={styles.orderPackage}>
-                          {lang === 'id' ? order.packageNameId : order.packageNameEn}
-                        </div>
-                        <div className={styles.orderDate}>
-                          {p.orderDate}: {new Date(order.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
-                        </div>
-                      </div>
-                      <div className={styles.orderRight}>
-                        <div className={styles.orderAmount}>Rp{order.totalPrice.toLocaleString('id-ID')}</div>
-                        <StatusBadge status={order.status} labels={statusLabels} />
-                        <span className={styles.orderViewBtn}>{p.viewOrder}</span>
-                      </div>
-                    </Link>
-                    {order.status === 'pending' && (
-                      <Link href={`/order/payment/${order.orderId}`} style={{ display: 'block', margin: '0.4rem 0 0.75rem', padding: '0.55rem 1rem', background: 'linear-gradient(135deg,#7c3aed,#be185d)', color: '#fff', borderRadius: '0.5rem', fontWeight: 700, fontSize: '0.85rem', textAlign: 'center', textDecoration: 'none' }}>
-                        {lang === 'id' ? 'Lanjut Bayar' : 'Continue Payment'}
-                      </Link>
-                    )}
-                    {(order.status === 'completed' || (order.progressSteps?.length === 5 && order.progressSteps.every(s => s.status === 'done'))) && (() => {
-                      const review = myReviews.get(order.orderId)
-                      return (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.5rem 0 0.75rem', flexWrap: 'wrap' }}>
-                          <div style={{ display: 'flex', gap: 2 }}>
-                            {[1,2,3,4,5].map(n => (
-                              <span key={n} style={{ fontSize: '1rem', color: review && n <= review.rating ? '#fbbf24' : '#1e293b' }}>★</span>
-                            ))}
+                  {(() => {
+                    const isCompleted = order.status === 'completed' || (order.progressSteps?.length === 5 && order.progressSteps.every(s => s.status === 'done'))
+                    const review = isCompleted ? myReviews.get(order.orderId) : undefined
+                    return (
+                      <div key={order.orderId} className={styles.orderCard} style={{ flexDirection: 'column', alignItems: 'stretch', gap: 0 }}>
+                        <Link href={`/dashboard/profil/orders/${order.orderId}`} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
+                          <div className={styles.orderLeft}>
+                            <div className={styles.orderService}>
+                              {lang === 'id' ? order.serviceNameId : order.serviceNameEn}
+                            </div>
+                            <div className={styles.orderPackage}>
+                              {lang === 'id' ? order.packageNameId : order.packageNameEn}
+                            </div>
+                            <div className={styles.orderDate}>
+                              {p.orderDate}: {new Date(order.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+                            </div>
                           </div>
-                          {!review && (
-                            <Link href={`/dashboard/profil/orders/${order.orderId}#review`} style={{ fontSize: '0.78rem', fontWeight: 700, color: '#a78bfa', textDecoration: 'none', background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 6, padding: '0.25rem 0.6rem' }}>
-                              {lang === 'id' ? 'Spill dong!' : 'Drop a Review!'}
-                            </Link>
-                          )}
-                        </div>
-                      )
-                    })()}
-                  </div>
+                          <div className={styles.orderRight}>
+                            <div className={styles.orderAmount}>Rp{order.totalPrice.toLocaleString('id-ID')}</div>
+                            <StatusBadge status={order.status} labels={statusLabels} />
+                            <span className={styles.orderViewBtn}>{p.viewOrder}</span>
+                          </div>
+                        </Link>
+                        {order.status === 'pending' && (
+                          <Link href={`/order/payment/${order.orderId}`} style={{ display: 'block', marginTop: '0.75rem', padding: '0.55rem 1rem', background: 'linear-gradient(135deg,#7c3aed,#be185d)', color: '#fff', borderRadius: '0.5rem', fontWeight: 700, fontSize: '0.85rem', textAlign: 'center', textDecoration: 'none' }}>
+                            {lang === 'id' ? 'Lanjut Bayar' : 'Continue Payment'}
+                          </Link>
+                        )}
+                        {isCompleted && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginTop: '0.75rem', paddingTop: '0.65rem', borderTop: '1px solid rgba(255,255,255,0.05)', flexWrap: 'wrap' }}>
+                            <div style={{ display: 'flex', gap: 2 }}>
+                              {[1,2,3,4,5].map(n => (
+                                <span key={n} style={{ fontSize: '1.05rem', color: review && n <= review.rating ? '#fbbf24' : '#1e293b' }}>★</span>
+                              ))}
+                            </div>
+                            {!review && (
+                              <Link href={`/dashboard/profil/orders/${order.orderId}#review`} style={{ fontSize: '0.78rem', fontWeight: 700, color: '#a78bfa', textDecoration: 'none', background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 6, padding: '0.25rem 0.6rem' }}>
+                                {lang === 'id' ? 'Spill dong!' : 'Drop a Review!'}
+                              </Link>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })()}
                 ))}
               </div>
             )}
