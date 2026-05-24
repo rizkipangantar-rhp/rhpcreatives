@@ -152,6 +152,9 @@ export default function ProfilCard({ session }: { session: Session }) {
   const [negoPrice, setNegoPrice] = useState('')
   const [negoError, setNegoError] = useState('')
   const [negoSuccessId, setNegoSuccessId] = useState<string | null>(null)
+  const [voucherModalId, setVoucherModalId] = useState<string | null>(null)
+  const [voucherInput, setVoucherInput] = useState('')
+  const [voucherError, setVoucherError] = useState('')
 
   useEffect(() => {
     fetch('/api/referral/stats')
@@ -244,18 +247,26 @@ export default function ProfilCard({ session }: { session: Session }) {
     }
   }
 
-  async function acceptOffer(requestId: string) {
+  async function acceptOffer(requestId: string, voucherCode?: string) {
     setActionLoading(requestId + '-accept')
+    setVoucherError('')
     try {
-      const res = await fetch(`/api/custom-order/${requestId}/accept`, { method: 'PUT' })
-      const data = await res.json() as { order_id?: string; error?: string }
+      const res = await fetch(`/api/custom-order/${requestId}/accept`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ voucher_code: voucherCode?.trim().toUpperCase() || undefined }),
+      })
+      const data = await res.json() as { order_id?: string; error?: string; voucher_error?: boolean }
       if (res.ok && data.order_id) {
+        setVoucherModalId(null)
         router.push(`/order/payment/${data.order_id}`)
+      } else if (data.voucher_error) {
+        setVoucherError(data.error ?? (lang === 'id' ? 'Voucher tidak valid.' : 'Invalid voucher.'))
       } else {
-        setNegoError(data.error ?? (lang === 'id' ? 'Gagal memproses. Coba lagi.' : 'Failed to process. Try again.'))
+        setVoucherError(data.error ?? (lang === 'id' ? 'Gagal memproses. Coba lagi.' : 'Failed to process. Try again.'))
       }
     } catch {
-      setNegoError(lang === 'id' ? 'Terjadi kesalahan. Coba lagi.' : 'An error occurred. Try again.')
+      setVoucherError(lang === 'id' ? 'Terjadi kesalahan. Coba lagi.' : 'An error occurred. Try again.')
     } finally {
       setActionLoading(null)
     }
@@ -643,7 +654,7 @@ export default function ProfilCard({ session }: { session: Session }) {
                           )}
                           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                             <button
-                              onClick={() => acceptOffer(req.request_id)}
+                              onClick={() => { setVoucherModalId(req.request_id); setVoucherInput(''); setVoucherError('') }}
                               disabled={!!actionLoading}
                               style={{
                                 flex: 1, minWidth: 120, background: 'linear-gradient(135deg, #7c3aed, #be185d)', color: '#fff',
@@ -845,6 +856,56 @@ export default function ProfilCard({ session }: { session: Session }) {
           </div>
         )}
       </div>
+
+      {/* Voucher modal */}
+      {voucherModalId && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 20 }}>
+          <div style={{ background: '#1e293b', border: '1px solid rgba(139,92,246,0.3)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 420 }}>
+            <div style={{ fontWeight: 700, color: '#f1f5f9', marginBottom: 6, fontSize: '1rem' }}>
+              {lang === 'id' ? 'Punya voucher?' : 'Got a voucher?'}
+            </div>
+            <p style={{ color: '#94a3b8', fontSize: '0.83rem', marginBottom: 16, lineHeight: 1.6 }}>
+              {lang === 'id'
+                ? 'Masukkan kode voucher kalau ada. Kalau nggak punya, langsung lanjut aja.'
+                : "Enter your voucher code if you have one. Otherwise just continue."}
+            </p>
+            <input
+              type="text"
+              value={voucherInput}
+              onChange={e => { setVoucherInput(e.target.value.toUpperCase()); setVoucherError('') }}
+              placeholder={lang === 'id' ? 'Kode voucher (opsional)' : 'Voucher code (optional)'}
+              style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: '#f1f5f9', fontSize: '0.88rem', padding: '10px 14px', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', marginBottom: 8, letterSpacing: '0.05em' }}
+            />
+            {voucherError && (
+              <div style={{ color: '#f87171', fontSize: '0.8rem', marginBottom: 10 }}>{voucherError}</div>
+            )}
+            <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+              <button
+                onClick={() => acceptOffer(voucherModalId)}
+                disabled={!!actionLoading}
+                style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', borderRadius: 8, padding: '10px 0', fontSize: '0.84rem', fontWeight: 600, cursor: 'pointer' }}
+              >
+                {lang === 'id' ? 'Bayar Tanpa Voucher' : 'Pay Without Voucher'}
+              </button>
+              <button
+                onClick={() => acceptOffer(voucherModalId, voucherInput)}
+                disabled={!!actionLoading || !voucherInput.trim()}
+                style={{ flex: 1, background: 'linear-gradient(135deg,#7c3aed,#be185d)', border: 'none', color: '#fff', borderRadius: 8, padding: '10px 0', fontSize: '0.84rem', fontWeight: 700, cursor: voucherInput.trim() ? 'pointer' : 'not-allowed', opacity: voucherInput.trim() ? 1 : 0.5 }}
+              >
+                {actionLoading === voucherModalId + '-accept'
+                  ? (lang === 'id' ? 'Memproses...' : 'Processing...')
+                  : (lang === 'id' ? 'Pakai Voucher' : 'Use Voucher')}
+              </button>
+            </div>
+            <button
+              onClick={() => { setVoucherModalId(null); setVoucherInput(''); setVoucherError('') }}
+              style={{ width: '100%', marginTop: 10, background: 'transparent', border: 'none', color: '#475569', fontSize: '0.8rem', cursor: 'pointer', padding: '6px 0' }}
+            >
+              {lang === 'id' ? 'Batal' : 'Cancel'}
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   )
 }

@@ -3,9 +3,10 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { getRequestById, updateRequest, pushStatusHistory } from '@/lib/custom-orders'
 import { createOrder } from '@/lib/orders'
+import { findClaimByVoucherCode, markClaimUsed, getPromoById } from '@/lib/promos'
 
 export async function PUT(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ request_id: string }> }
 ) {
   const session = await getServerSession(authOptions)
@@ -23,8 +24,33 @@ export async function PUT(
   }
 
   const { final_price, base_price, discount_amount } = request.pricing
-
   if (!final_price) return NextResponse.json({ error: 'Invalid pricing' }, { status: 400 })
+
+  // Voucher validation
+  let body: { voucher_code?: string } = {}
+  try { body = await req.json() } catch { /* no body */ }
+
+  let voucherDiscount = 0
+  let appliedVoucher: string | undefined = request.voucher_code ?? undefined
+
+  if (body.voucher_code) {
+    const code = body.voucher_code.trim().toUpperCase()
+    const claim = await findClaimByVoucherCode(code)
+    if (!claim || claim.status !== 'active') {
+      return NextResponse.json({ error: 'Voucher tidak valid atau sudah dipakai.', voucher_error: true }, { status: 400 })
+    }
+    const promo = await getPromoById(claim.promo_id)
+    if (promo) {
+      if (promo.discount_type === 'percent') {
+        voucherDiscount = Math.round(final_price * promo.discount_value / 100)
+      } else if (promo.discount_type === 'nominal') {
+        voucherDiscount = Math.min(promo.discount_value, final_price)
+      }
+    }
+    appliedVoucher = code
+  }
+
+  const totalAfterVoucher = final_price - voucherDiscount
 
   // Create a regular order for payment
   const order = await createOrder({
@@ -39,12 +65,17 @@ export async function PUT(
     packageNameId: request.service.package,
     packageNameEn: request.service.package,
     originalPrice: base_price ?? final_price,
-    discountAmount: discount_amount ?? 0,
-    totalPrice: final_price,
-    voucherCode: request.voucher_code ?? undefined,
+    discountAmount: (discount_amount ?? 0) + voucherDiscount,
+    totalPrice: totalAfterVoucher,
+    voucherCode: appliedVoucher,
     notes: request.service.description,
     status: 'pending',
   })
+
+  // Mark voucher as used
+  if (body.voucher_code) {
+    await markClaimUsed(body.voucher_code.trim().toUpperCase(), order.orderId)
+  }
 
   // Link the order to the request
   await updateRequest(request_id, {
