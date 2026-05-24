@@ -31,6 +31,7 @@ type NegotiationEntry = {
   by: 'customer' | 'admin'
   note: string
   counter_price?: number | null
+  is_approval?: boolean
   created_at: string
 }
 
