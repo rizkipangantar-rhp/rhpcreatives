@@ -49,6 +49,14 @@ export default function OrderDetailPage() {
   const [order, setOrder] = useState<Order | null>(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  const [copiedStep, setCopiedStep] = useState<number | null>(null)
+
+  function copyNote(text: string, stepIdx: number) {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedStep(stepIdx)
+      setTimeout(() => setCopiedStep(null), 2000)
+    })
+  }
 
   useEffect(() => {
     if (authStatus !== 'authenticated') return
@@ -169,7 +177,21 @@ export default function OrderDetailPage() {
                         <div className={styles.stepDate}>{fmtDate(step.timestamp, lang)}</div>
                       )}
                       {step.noteForCustomer && (
-                        <div className={styles.stepNote}>{step.noteForCustomer}</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.3rem' }}>
+                          <div className={styles.stepNote} style={{ flex: 1, marginTop: 0 }}>{step.noteForCustomer}</div>
+                          <button
+                            onClick={() => copyNote(step.noteForCustomer!, i)}
+                            title={lang === 'id' ? 'Salin' : 'Copy'}
+                            style={{
+                              flexShrink: 0, background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.3)',
+                              borderRadius: 6, padding: '0.3rem 0.55rem', cursor: 'pointer',
+                              color: copiedStep === i ? '#34d399' : '#a78bfa', fontSize: '0.72rem', fontWeight: 600,
+                              transition: 'color 0.2s',
+                            }}
+                          >
+                            {copiedStep === i ? (lang === 'id' ? 'Disalin!' : 'Copied!') : (lang === 'id' ? 'Salin' : 'Copy')}
+                          </button>
+                        </div>
                       )}
                       {isActive && step.estimatedNext && (
                         <div className={styles.stepEst}>
