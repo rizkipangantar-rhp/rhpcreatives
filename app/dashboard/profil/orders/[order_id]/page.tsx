@@ -52,6 +52,7 @@ export default function OrderDetailPage() {
   const [copiedStep, setCopiedStep] = useState<number | null>(null)
   const [reviewRating, setReviewRating] = useState(5)
   const [reviewText, setReviewText] = useState('')
+  const [reviewRole, setReviewRole] = useState('')
   const [reviewState, setReviewState] = useState<'idle' | 'submitting' | 'done' | 'already'>('idle')
   const [reviewError, setReviewError] = useState('')
 
@@ -69,7 +70,7 @@ export default function OrderDetailPage() {
     const res = await fetch('/api/review', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ orderId: order_id, rating: reviewRating, text: reviewText }),
+      body: JSON.stringify({ orderId: order_id, rating: reviewRating, text: reviewText, role: reviewRole }),
     })
     if (res.status === 409) { setReviewState('already'); return }
     if (!res.ok) { setReviewState('idle'); setReviewError(lang === 'id' ? 'Gagal mengirim ulasan' : 'Failed to submit'); return }
@@ -291,7 +292,24 @@ export default function OrderDetailPage() {
                 className={styles.reviewTextarea}
                 maxLength={500}
               />
-              <div style={{ fontSize: '0.72rem', color: '#475569', textAlign: 'right', marginTop: '0.2rem', marginBottom: '0.6rem' }}>{reviewText.length}/500</div>
+              <div style={{ fontSize: '0.72rem', color: '#475569', textAlign: 'right', marginTop: '0.2rem', marginBottom: '0.75rem' }}>{reviewText.length}/500</div>
+              <div style={{ marginBottom: '0.75rem' }}>
+                <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginBottom: '0.4rem' }}>
+                  {lang === 'id' ? 'Profesi / Peran (opsional)' : 'Role / Profession (optional)'}
+                </div>
+                <input
+                  type="text"
+                  value={reviewRole}
+                  onChange={e => setReviewRole(e.target.value)}
+                  placeholder={lang === 'id' ? 'Contoh: Business Owner, Content Creator...' : 'E.g. Business Owner, Content Creator...'}
+                  maxLength={60}
+                  style={{
+                    width: '100%', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: 10, color: 'var(--text)', fontSize: '0.85rem', padding: '0.55rem 0.9rem',
+                    fontFamily: 'inherit', outline: 'none',
+                  }}
+                />
+              </div>
               {reviewError && <div style={{ color: '#f87171', fontSize: '0.8rem', marginBottom: '0.5rem' }}>{reviewError}</div>}
               <button onClick={submitReview} disabled={reviewState === 'submitting'} className={styles.submitReviewBtn}>
                 {reviewState === 'submitting' ? (lang === 'id' ? 'Mengirim...' : 'Submitting...') : (lang === 'id' ? 'Kirim Ulasan' : 'Submit Review')}

@@ -6,6 +6,7 @@ export type Review = {
   userId: string
   name: string
   initials: string
+  role?: string
   service: string
   rating: number
   text: string

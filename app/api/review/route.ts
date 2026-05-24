@@ -19,8 +19,8 @@ export async function POST(req: Request) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const body = await req.json() as { orderId: string; rating: number; text: string }
-  const { orderId, rating, text } = body
+  const body = await req.json() as { orderId: string; rating: number; text: string; role?: string }
+  const { orderId, rating, text, role } = body
 
   if (!orderId || !rating || !text?.trim()) {
     return NextResponse.json({ error: 'Data tidak lengkap' }, { status: 400 })
@@ -44,6 +44,6 @@ export async function POST(req: Request) {
   const initials = name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
   const service = order.serviceNameId
 
-  const review = await createReview({ orderId, userId: session.user.id, name, initials, service, rating, text: text.trim() })
+  const review = await createReview({ orderId, userId: session.user.id, name, initials, role: role?.trim() || undefined, service, rating, text: text.trim() })
   return NextResponse.json({ review })
 }

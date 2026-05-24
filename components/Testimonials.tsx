@@ -56,7 +56,7 @@ export default function Testimonials({ showHeader = true }: TestimonialsProps) {
               <div className={styles.avatar}>{r.initials}</div>
               <div>
                 <div className={styles.name}>{r.name}</div>
-                <div className={styles.role}>{lang === 'id' ? `Pengguna layanan ${r.service}` : `${r.service} client`}</div>
+                <div className={styles.role}>{r.role || (lang === 'id' ? `Pengguna layanan ${r.service}` : `${r.service} client`)}</div>
                 <div className={styles.stars}>
                   {'★'.repeat(r.rating)}
                   {'☆'.repeat(5 - r.rating)}
