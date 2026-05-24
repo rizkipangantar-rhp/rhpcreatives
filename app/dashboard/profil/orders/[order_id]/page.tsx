@@ -271,10 +271,15 @@ export default function OrderDetailPage() {
             </div>
           )
           if (reviewState === 'done') return (
-            <div className={styles.card} style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🎉</div>
-              <div style={{ color: '#34d399', fontWeight: 700, marginBottom: 4 }}>{lang === 'id' ? 'Ulasan terkirim!' : 'Review submitted!'}</div>
-              <div style={{ color: '#94a3b8', fontSize: '0.82rem' }}>{lang === 'id' ? 'Ulasanmu akan tampil di halaman testimoni.' : 'Your review will appear on the testimonials page.'}</div>
+            <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+              <div style={{ background: 'var(--surface)', border: '1px solid rgba(52,211,153,0.3)', borderRadius: 18, padding: '2.5rem 2rem', textAlign: 'center', maxWidth: 340, width: '100%', boxShadow: '0 0 60px rgba(52,211,153,0.1)' }}>
+                <div style={{ fontSize: '3rem', marginBottom: '0.75rem' }}>🎉</div>
+                <div style={{ color: '#34d399', fontWeight: 800, fontSize: '1.15rem', marginBottom: '0.5rem' }}>{lang === 'id' ? 'Ulasan terkirim!' : 'Review submitted!'}</div>
+                <div style={{ color: '#94a3b8', fontSize: '0.85rem', lineHeight: 1.6 }}>{lang === 'id' ? 'Makasih udah spill! Ulasanmu akan tampil di halaman testimoni.' : 'Thanks for dropping a review! It will appear on the testimonials page.'}</div>
+                <button onClick={() => setReviewState('already')} style={{ marginTop: '1.25rem', background: 'rgba(52,211,153,0.12)', border: '1px solid rgba(52,211,153,0.3)', color: '#34d399', borderRadius: 10, padding: '0.55rem 1.5rem', fontSize: '0.875rem', fontWeight: 700, cursor: 'pointer' }}>
+                  {lang === 'id' ? 'Tutup' : 'Close'}
+                </button>
+              </div>
             </div>
           )
           return (
