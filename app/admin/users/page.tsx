@@ -60,12 +60,16 @@ export default function AdminUsersPage() {
 
   async function handleDelete(u: User) {
     setDeleting(u.id)
-    const res = await fetch(`/api/admin/users/${encodeURIComponent(u.id)}`, { method: 'DELETE' })
-    if (res.ok) {
-      setUsers(prev => prev.filter(x => x.id !== u.id))
-    } else {
-      const data = await res.json().catch(() => ({}))
-      alert(data.error ?? 'Gagal menghapus user.')
+    try {
+      const res = await fetch(`/api/admin/users/${encodeURIComponent(u.id)}`, { method: 'DELETE' })
+      if (res.ok) {
+        setUsers(prev => prev.filter(x => x.id !== u.id))
+      } else {
+        const data = await res.json().catch(() => ({}))
+        alert(data.error ?? 'Gagal menghapus user.')
+      }
+    } catch {
+      // silently ignore network errors
     }
     setDeleting(null)
   }

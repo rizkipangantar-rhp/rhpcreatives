@@ -24,10 +24,15 @@ export default function AdminReviewsPage() {
 
   async function handleDelete() {
     if (!confirmId) return
-    setDeleting(confirmId)
+    const id = confirmId
+    setDeleting(id)
     setConfirmId(null)
-    await fetch('/api/review', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: confirmId }) })
-    setReviews(prev => prev.filter(r => r.id !== confirmId))
+    try {
+      await fetch('/api/review', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
+      setReviews(prev => prev.filter(r => r.id !== id))
+    } catch {
+      // silently ignore network errors
+    }
     setDeleting(null)
   }
 

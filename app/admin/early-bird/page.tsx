@@ -58,7 +58,11 @@ export default function EarlyBirdPage() {
 
   async function handleReset() {
     setResetting(true)
-    await fetch('/api/admin/early-bird/reset', { method: 'POST' })
+    try {
+      await fetch('/api/admin/early-bird/reset', { method: 'POST' })
+    } catch {
+      // silently ignore network errors
+    }
     setResetting(false)
     load()
   }

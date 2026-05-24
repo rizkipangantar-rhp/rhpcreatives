@@ -51,6 +51,7 @@ export default function PromoDetailPage() {
     fetch(`/api/admin/promos/${promo_id}`)
       .then(r => r.json())
       .then(d => {
+        if (!d.promo) { setLoading(false); return }
         setPromo(d.promo)
         setClaims(d.claims ?? [])
         setEditName(d.promo.name)
@@ -90,19 +91,23 @@ export default function PromoDetailPage() {
 
   async function handleSaveSettings() {
     setEditSaving(true)
-    await fetch(`/api/admin/promos/${promo_id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: editName,
-        end_date: editEndDate || null,
-        quota: parseInt(editQuota) || 0,
-      }),
-    })
+    try {
+      await fetch(`/api/admin/promos/${promo_id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: editName,
+          end_date: editEndDate || null,
+          quota: parseInt(editQuota) || 0,
+        }),
+      })
+      setEditSaved(true)
+      setTimeout(() => setEditSaved(false), 2000)
+      load()
+    } catch {
+      // silently ignore network errors
+    }
     setEditSaving(false)
-    setEditSaved(true)
-    setTimeout(() => setEditSaved(false), 2000)
-    load()
   }
 
   if (loading || !promo) return <AdminLoading />

@@ -67,14 +67,19 @@ export default function OrderDetailPage() {
     if (!reviewText.trim()) { setReviewError(lang === 'id' ? 'Tulis ulasanmu dulu' : 'Please write your review'); return }
     setReviewState('submitting')
     setReviewError('')
-    const res = await fetch('/api/review', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ orderId: order_id, rating: reviewRating, text: reviewText, role: reviewRole }),
-    })
-    if (res.status === 409) { setReviewState('already'); return }
-    if (!res.ok) { setReviewState('idle'); setReviewError(lang === 'id' ? 'Gagal mengirim ulasan' : 'Failed to submit'); return }
-    setReviewState('done')
+    try {
+      const res = await fetch('/api/review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: order_id, rating: reviewRating, text: reviewText, role: reviewRole }),
+      })
+      if (res.status === 409) { setReviewState('already'); return }
+      if (!res.ok) { setReviewState('idle'); setReviewError(lang === 'id' ? 'Gagal mengirim ulasan' : 'Failed to submit'); return }
+      setReviewState('done')
+    } catch {
+      setReviewState('idle')
+      setReviewError(lang === 'id' ? 'Gagal mengirim ulasan' : 'Failed to submit')
+    }
   }
 
   useEffect(() => {
@@ -86,19 +91,19 @@ export default function OrderDetailPage() {
 
   useEffect(() => {
     if (authStatus !== 'authenticated') return
-    fetch('/api/payment/my-orders')
+    const p1 = fetch('/api/payment/my-orders')
       .then(r => r.ok ? r.json() : [])
       .then((orders: Order[]) => {
         const found = orders.find(o => o.orderId === order_id)
         if (found) setOrder(found)
         else setNotFound(true)
       })
-    fetch(`/api/review?orderId=${order_id}`)
+      .catch(() => setNotFound(true))
+    const p2 = fetch(`/api/review?orderId=${order_id}`)
       .then(r => r.ok ? r.json() : null)
       .then(data => { if (data?.exists) setReviewState('already') })
       .catch(() => {})
-      .catch(() => setNotFound(true))
-      .finally(() => setLoading(false))
+    Promise.all([p1, p2]).finally(() => setLoading(false))
   }, [authStatus, order_id])
 
   if (authStatus === 'loading' || loading) {
