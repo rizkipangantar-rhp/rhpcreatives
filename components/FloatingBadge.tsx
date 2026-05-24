@@ -7,14 +7,19 @@ import type { PromoBarInfo } from './AnnouncementBar'
 
 export default function FloatingBadge({ initialPromo }: { initialPromo: PromoBarInfo | null }) {
   const { lang } = useLanguage()
-  const [promo, setPromo] = useState<PromoBarInfo | null>(initialPromo)
+  const [promo, setPromo] = useState<PromoBarInfo | null>(null)
 
-  // Background refresh
   useEffect(() => {
-    fetch('/api/promos')
-      .then(r => r.json())
-      .then(data => setPromo(data.promos?.[0] ?? null))
-      .catch(() => {})
+    function fetchPromo() {
+      fetch('/api/promos')
+        .then(r => r.json())
+        .then(data => setPromo(data.promos?.[0] ?? null))
+        .catch(() => { if (!promo) setPromo(initialPromo) })
+    }
+    fetchPromo()
+    const id = setInterval(fetchPromo, 60_000)
+    return () => clearInterval(id)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   if (!promo) return null

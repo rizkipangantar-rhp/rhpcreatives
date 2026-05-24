@@ -52,15 +52,20 @@ export default function AnnouncementBar({ initialPromo }: { initialPromo: PromoB
     return () => ro.disconnect()
   }, [dismissed, promo])
 
-  // Background refresh — keeps data fresh after SSR
+  // Background refresh — keeps slot count fresh
   useEffect(() => {
-    fetch('/api/promos')
-      .then(r => r.json())
-      .then(data => {
-        const first: PromoBarInfo | null = data.promos?.[0] ?? null
-        setPromo(first)
-      })
-      .catch(() => {})
+    function fetchPromo() {
+      fetch('/api/promos')
+        .then(r => r.json())
+        .then(data => {
+          const first: PromoBarInfo | null = data.promos?.[0] ?? null
+          setPromo(first)
+        })
+        .catch(() => {})
+    }
+    fetchPromo()
+    const id = setInterval(fetchPromo, 60_000)
+    return () => clearInterval(id)
   }, [])
 
   useEffect(() => {
