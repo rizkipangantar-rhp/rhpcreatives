@@ -175,9 +175,9 @@
 }
 
 .input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(1) brightness(1.5);
+  filter: invert(1) brightness(2);
   cursor: pointer;
-  opacity: 0.6;
+  opacity: 1;
 }
 .input[type="date"]::-webkit-calendar-picker-indicator:hover {
   opacity: 1;
