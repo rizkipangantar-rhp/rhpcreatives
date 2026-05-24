@@ -48,3 +48,12 @@ export async function createReview(data: Omit<Review, 'id' | 'created_at'>): Pro
   await write(db)
   return review
 }
+
+export async function deleteReview(id: string): Promise<boolean> {
+  const db = await read()
+  const before = db.reviews.length
+  db.reviews = db.reviews.filter(r => r.id !== id)
+  if (db.reviews.length === before) return false
+  await write(db)
+  return true
+}

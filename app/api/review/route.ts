@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { getOrderById } from '@/lib/orders'
-import { createReview, getReviewByOrderId, getAllReviews } from '@/lib/reviews'
+import { createReview, getReviewByOrderId, getAllReviews, deleteReview } from '@/lib/reviews'
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
@@ -46,4 +46,12 @@ export async function POST(req: Request) {
 
   const review = await createReview({ orderId, userId: session.user.id, name, initials, role: role?.trim() || undefined, service, rating, text: text.trim() })
   return NextResponse.json({ review })
+}
+
+export async function DELETE(req: Request) {
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  const { id } = await req.json() as { id: string }
+  const ok = await deleteReview(id)
+  return ok ? NextResponse.json({ ok: true }) : NextResponse.json({ error: 'Not found' }, { status: 404 })
 }
