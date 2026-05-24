@@ -105,7 +105,7 @@ export default function AdminCustomOrderDetailPage() {
 
   const basePriceNum = parseFloat(basePrice.replace(/\D/g, '')) || 0
 
-  async function sendPrice(overridePrice?: number) {
+  async function sendPrice(overridePrice?: number, approve?: boolean) {
     const price = overridePrice ?? basePriceNum
     if (!price) { setError('Masukkan harga terlebih dahulu'); return }
     setSaving(true); setError('')
@@ -119,6 +119,7 @@ export default function AdminCustomOrderDetailPage() {
         estimated_days: parseInt(estimatedDays) || 0,
         for_customer: noteForCustomer || undefined,
         internal: internalNote || undefined,
+        approve: approve ?? false,
       }),
     })
     setSaving(false)
@@ -244,7 +245,7 @@ export default function AdminCustomOrderDetailPage() {
                 </div>
                 <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                   <button
-                    onClick={() => sendPrice(counterPrice)}
+                    onClick={() => sendPrice(counterPrice, true)}
                     disabled={saving}
                     style={{
                       background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.4)',

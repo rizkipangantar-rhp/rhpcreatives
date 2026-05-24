@@ -21,6 +21,7 @@ export async function PUT(
     estimated_days: number
     for_customer?: string
     internal?: string
+    approve?: boolean
   }
 
   const { base_price, discount_type, discount_value, estimated_days } = body
@@ -57,7 +58,10 @@ export async function PUT(
     offer_expires_at,
     status: 'price_sent',
   })
-  await pushStatusHistory(request_id, 'price_sent', wasNegotiating ? 'Admin membalas negosiasi dengan penawaran baru' : 'Admin sent price offer')
+  const historyNote = wasNegotiating
+    ? (body.approve ? 'Admin menyetujui harga negosiasi' : 'Admin membalas negosiasi dengan penawaran baru')
+    : 'Admin sent price offer'
+  await pushStatusHistory(request_id, 'price_sent', historyNote)
 
   if (wasNegotiating) {
     await pushNegotiationEntry(request_id, {
