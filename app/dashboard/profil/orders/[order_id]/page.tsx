@@ -78,6 +78,13 @@ export default function OrderDetailPage() {
   }
 
   useEffect(() => {
+    if (window.location.hash === '#review') {
+      const el = document.getElementById('review')
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [loading])
+
+  useEffect(() => {
     if (authStatus !== 'authenticated') return
     fetch('/api/payment/my-orders')
       .then(r => r.ok ? r.json() : [])
@@ -271,7 +278,7 @@ export default function OrderDetailPage() {
             </div>
           )
           return (
-            <div className={styles.card}>
+            <div className={styles.card} id="review">
               <div className={styles.cardLabel}>{lang === 'id' ? 'Beri Ulasan' : 'Leave a Review'}</div>
               <div style={{ marginBottom: '0.75rem' }}>
                 <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginBottom: '0.4rem' }}>{lang === 'id' ? 'Rating' : 'Rating'}</div>
