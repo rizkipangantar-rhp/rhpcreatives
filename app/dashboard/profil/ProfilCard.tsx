@@ -140,6 +140,11 @@ export default function ProfilCard({ session }: { session: Session }) {
   const [customLoaded, setCustomLoaded] = useState(false)
   const [referralStats, setReferralStats] = useState<ReferralStatsData | null>(null)
   const [ebirdStatus, setEbirdStatus] = useState<{ available: boolean; used: boolean } | null>(null)
+  const [fullDiscountStatus, setFullDiscountStatus] = useState<{
+    earlyBird: { available: boolean; used: boolean; percent: number }
+    referrerReward: { available: boolean; count: number; percent: number }
+    inviteeDiscount: { available: boolean; percent: number }
+  } | null>(null)
   const [userWa, setUserWa] = useState<string | null>(null)
   const [waEditing, setWaEditing] = useState(false)
   const [waInput, setWaInput] = useState('')
@@ -153,7 +158,7 @@ export default function ProfilCard({ session }: { session: Session }) {
   const [negoError, setNegoError] = useState('')
   const [negoSuccessId, setNegoSuccessId] = useState<string | null>(null)
   const [voucherModalId, setVoucherModalId] = useState<string | null>(null)
-  const [voucherInput, setVoucherInput] = useState('')
+  const [selectedDiscount, setSelectedDiscount] = useState<'none' | 'early_bird' | 'referrer_reward' | 'invitee'>('none')
   const [voucherError, setVoucherError] = useState('')
 
   useEffect(() => {
@@ -163,7 +168,11 @@ export default function ProfilCard({ session }: { session: Session }) {
       .catch(() => {})
     fetch('/api/referral/discount-status')
       .then(r => r.ok ? r.json() : null)
-      .then(data => { if (data?.earlyBird) setEbirdStatus(data.earlyBird) })
+      .then(data => {
+        if (!data) return
+        if (data.earlyBird) setEbirdStatus(data.earlyBird)
+        setFullDiscountStatus(data)
+      })
       .catch(() => {})
     fetch('/api/user/profile')
       .then(r => r.ok ? r.json() : null)
@@ -247,21 +256,19 @@ export default function ProfilCard({ session }: { session: Session }) {
     }
   }
 
-  async function acceptOffer(requestId: string, voucherCode?: string) {
+  async function acceptOffer(requestId: string, discountMode: 'none' | 'early_bird' | 'referrer_reward' | 'invitee' = 'none') {
     setActionLoading(requestId + '-accept')
     setVoucherError('')
     try {
       const res = await fetch(`/api/custom-order/${requestId}/accept`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ voucher_code: voucherCode?.trim().toUpperCase() || undefined }),
+        body: JSON.stringify({ discount_mode: discountMode }),
       })
-      const data = await res.json() as { order_id?: string; error?: string; voucher_error?: boolean }
+      const data = await res.json() as { order_id?: string; error?: string }
       if (res.ok && data.order_id) {
         setVoucherModalId(null)
         router.push(`/order/payment/${data.order_id}`)
-      } else if (data.voucher_error) {
-        setVoucherError(data.error ?? (lang === 'id' ? 'Voucher tidak valid.' : 'Invalid voucher.'))
       } else {
         setVoucherError(data.error ?? (lang === 'id' ? 'Gagal memproses. Coba lagi.' : 'Failed to process. Try again.'))
       }
@@ -654,7 +661,7 @@ export default function ProfilCard({ session }: { session: Session }) {
                           )}
                           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                             <button
-                              onClick={() => { setVoucherModalId(req.request_id); setVoucherInput(''); setVoucherError('') }}
+                              onClick={() => { setVoucherModalId(req.request_id); setSelectedDiscount('none'); setVoucherError('') }}
                               disabled={!!actionLoading}
                               style={{
                                 flex: 1, minWidth: 120, background: 'linear-gradient(135deg, #7c3aed, #be185d)', color: '#fff',
@@ -857,49 +864,59 @@ export default function ProfilCard({ session }: { session: Session }) {
         )}
       </div>
 
-      {/* Voucher modal */}
+      {/* Voucher / discount modal */}
       {voucherModalId && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 20 }}>
           <div style={{ background: '#1e293b', border: '1px solid rgba(139,92,246,0.3)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 420 }}>
             <div style={{ fontWeight: 700, color: '#f1f5f9', marginBottom: 6, fontSize: '1rem' }}>
-              {lang === 'id' ? 'Punya voucher?' : 'Got a voucher?'}
+              {lang === 'id' ? 'Pilih Diskon' : 'Select Discount'}
             </div>
             <p style={{ color: '#94a3b8', fontSize: '0.83rem', marginBottom: 16, lineHeight: 1.6 }}>
-              {lang === 'id'
-                ? 'Masukkan kode voucher kalau ada. Kalau nggak punya, langsung lanjut aja.'
-                : "Enter your voucher code if you have one. Otherwise just continue."}
+              {lang === 'id' ? 'Pilih diskon yang mau dipakai, atau lanjut tanpa diskon.' : 'Pick a discount to apply, or continue without one.'}
             </p>
-            <input
-              type="text"
-              value={voucherInput}
-              onChange={e => { setVoucherInput(e.target.value.toUpperCase()); setVoucherError('') }}
-              placeholder={lang === 'id' ? 'Kode voucher (opsional)' : 'Voucher code (optional)'}
-              style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: '#f1f5f9', fontSize: '0.88rem', padding: '10px 14px', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', marginBottom: 8, letterSpacing: '0.05em' }}
-            />
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
+              {/* No discount */}
+              {(['none', 'early_bird', 'referrer_reward', 'invitee'] as const).map(opt => {
+                if (opt === 'early_bird' && !fullDiscountStatus?.earlyBird?.available) return null
+                if (opt === 'referrer_reward' && !fullDiscountStatus?.referrerReward?.available) return null
+                if (opt === 'invitee' && !fullDiscountStatus?.inviteeDiscount?.available) return null
+                const labels: Record<string, { id: string; en: string; badge?: string }> = {
+                  none: { id: 'Tanpa Diskon', en: 'No Discount' },
+                  early_bird: { id: 'Early Bird 25% OFF', en: 'Early Bird 25% OFF', badge: '🔥' },
+                  referrer_reward: { id: `Referral Reward ${fullDiscountStatus?.referrerReward?.percent ?? 15}% OFF`, en: `Referral Reward ${fullDiscountStatus?.referrerReward?.percent ?? 15}% OFF`, badge: '🎁' },
+                  invitee: { id: `Diskon Referral ${fullDiscountStatus?.inviteeDiscount?.percent ?? 10}% OFF`, en: `Referral Discount ${fullDiscountStatus?.inviteeDiscount?.percent ?? 10}% OFF`, badge: '🤝' },
+                }
+                const item = labels[opt]
+                const active = selectedDiscount === opt
+                return (
+                  <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 10, border: `1px solid ${active ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.08)'}`, background: active ? 'rgba(139,92,246,0.1)' : 'rgba(255,255,255,0.02)', cursor: 'pointer' }}>
+                    <input type="radio" name="discount" checked={active} onChange={() => setSelectedDiscount(opt)} style={{ accentColor: '#7c3aed' }} />
+                    <span style={{ fontSize: '0.85rem', color: active ? '#e2e8f0' : '#94a3b8', fontWeight: active ? 600 : 400 }}>
+                      {item.badge && <span style={{ marginRight: 4 }}>{item.badge}</span>}
+                      {lang === 'id' ? item.id : item.en}
+                    </span>
+                  </label>
+                )
+              })}
+            </div>
+
             {voucherError && (
               <div style={{ color: '#f87171', fontSize: '0.8rem', marginBottom: 10 }}>{voucherError}</div>
             )}
-            <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
-              <button
-                onClick={() => acceptOffer(voucherModalId)}
-                disabled={!!actionLoading}
-                style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', borderRadius: 8, padding: '10px 0', fontSize: '0.84rem', fontWeight: 600, cursor: 'pointer' }}
-              >
-                {lang === 'id' ? 'Bayar Tanpa Voucher' : 'Pay Without Voucher'}
-              </button>
-              <button
-                onClick={() => acceptOffer(voucherModalId, voucherInput)}
-                disabled={!!actionLoading || !voucherInput.trim()}
-                style={{ flex: 1, background: 'linear-gradient(135deg,#7c3aed,#be185d)', border: 'none', color: '#fff', borderRadius: 8, padding: '10px 0', fontSize: '0.84rem', fontWeight: 700, cursor: voucherInput.trim() ? 'pointer' : 'not-allowed', opacity: voucherInput.trim() ? 1 : 0.5 }}
-              >
-                {actionLoading === voucherModalId + '-accept'
-                  ? (lang === 'id' ? 'Memproses...' : 'Processing...')
-                  : (lang === 'id' ? 'Pakai Voucher' : 'Use Voucher')}
-              </button>
-            </div>
+
             <button
-              onClick={() => { setVoucherModalId(null); setVoucherInput(''); setVoucherError('') }}
-              style={{ width: '100%', marginTop: 10, background: 'transparent', border: 'none', color: '#475569', fontSize: '0.8rem', cursor: 'pointer', padding: '6px 0' }}
+              onClick={() => acceptOffer(voucherModalId, selectedDiscount)}
+              disabled={!!actionLoading}
+              style={{ width: '100%', background: 'linear-gradient(135deg,#7c3aed,#be185d)', border: 'none', color: '#fff', borderRadius: 8, padding: '11px 0', fontSize: '0.9rem', fontWeight: 700, cursor: 'pointer', opacity: actionLoading ? 0.6 : 1 }}
+            >
+              {actionLoading === voucherModalId + '-accept'
+                ? (lang === 'id' ? 'Memproses...' : 'Processing...')
+                : (lang === 'id' ? 'Lanjut Bayar' : 'Continue to Payment')}
+            </button>
+            <button
+              onClick={() => { setVoucherModalId(null); setVoucherError('') }}
+              style={{ width: '100%', marginTop: 8, background: 'transparent', border: 'none', color: '#475569', fontSize: '0.8rem', cursor: 'pointer', padding: '6px 0' }}
             >
               {lang === 'id' ? 'Batal' : 'Cancel'}
             </button>
