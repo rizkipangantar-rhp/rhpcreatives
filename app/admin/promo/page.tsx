@@ -38,19 +38,27 @@ export default function AdminPromoPage() {
   useEffect(() => { load() }, [])
 
   async function handleToggle(id: string, current: boolean) {
-    await fetch(`/api/admin/promos/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ is_active: !current }),
-    })
-    load()
+    try {
+      await fetch(`/api/admin/promos/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_active: !current }),
+      })
+      load()
+    } catch {
+      // silently ignore network errors
+    }
   }
 
   async function handleDelete(id: string) {
     setDeleting(id)
-    await fetch(`/api/admin/promos/${id}`, { method: 'DELETE' })
+    try {
+      await fetch(`/api/admin/promos/${id}`, { method: 'DELETE' })
+      load()
+    } catch {
+      // silently ignore network errors
+    }
     setDeleting(null)
-    load()
   }
 
   if (loading) return <AdminLoading />

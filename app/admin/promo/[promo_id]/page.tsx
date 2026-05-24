@@ -65,17 +65,25 @@ export default function PromoDetailPage() {
 
   async function handleToggle() {
     if (!promo) return
-    await fetch(`/api/admin/promos/${promo_id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ is_active: !promo.is_active }),
-    })
-    load()
+    try {
+      await fetch(`/api/admin/promos/${promo_id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_active: !promo.is_active }),
+      })
+      load()
+    } catch {
+      // silently ignore network errors; promo state unchanged
+    }
   }
 
   async function handleResetClaims() {
     setResetting(true)
-    await fetch(`/api/admin/promos/${promo_id}/reset-claims`, { method: 'POST' })
+    try {
+      await fetch(`/api/admin/promos/${promo_id}/reset-claims`, { method: 'POST' })
+    } catch {
+      // silently ignore network errors
+    }
     setResetting(false)
     load()
   }
