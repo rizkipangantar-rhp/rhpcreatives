@@ -946,7 +946,7 @@ export const t: Record<Lang, Tr> = {
         {
           num: '04',
           name: 'Edit Foto',
-          desc: 'Foto KTP panik? Background foto asal-asalan? Tenang, kita beresin semuanya. Hasilnya foto kamu bakal keliatan profesional beneran.',
+          desc: 'Background foto asal-asalan? Tampilan kurang profesional? Tenang, kita beresin semuanya. Hasilnya foto kamu bakal keliatan profesional beneran.',
           features: ['Ganti background foto', 'Rapikan & poles tampilan', 'Output resolusi tinggi'],
         },
       ],
@@ -1084,7 +1084,7 @@ export const t: Record<Lang, Tr> = {
               features: ['10 foto sekaligus', 'Background removal', 'Retouch & color grading lengkap', 'Resolusi tinggi', 'Revisi 1x/foto'],
             },
           ],
-          revisiNote: 'Cocok banget buat foto formal, KTP, LinkedIn, dan lamaran kerja.',
+          revisiNote: 'Cocok banget buat foto formal, LinkedIn, portofolio, dan lamaran kerja.',
         },
       ],
     },
@@ -1117,8 +1117,8 @@ export const t: Record<Lang, Tr> = {
         {
           initials: 'DA',
           name: 'Dimas Ardiansyah',
-          role: 'Mahasiswa, Edit Foto KTP',
-          text: 'foto KTP lama gue literally horor show 😭 skrg abis dipoles sama RHP jadi keliatan normal akhirnya wkwkwk. recommended buat yg mau apply kerja atau urus berkas apapun!!',
+          role: 'Mahasiswa, Edit Foto Profil',
+          text: 'foto profil lama gue literally horor show 😭 skrg abis dipoles sama RHP jadi keliatan normal akhirnya wkwkwk. recommended buat yg mau apply kerja atau urus berkas apapun!!',
           rating: 5,
         },
         {
