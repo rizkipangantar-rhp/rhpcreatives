@@ -154,7 +154,7 @@ export default function OrderPage() {
   } else if (discountOption === 'invitee') {
     discountPercent = 0.10
     discountLabel = p.discountReferral
-  } else if (discountOption === 'early_bird') {
+  } else if (discountOption === 'early_bird' && (!selectedPackage || EARLY_BIRD_ELIGIBLE.has(selectedPackage))) {
     discountPercent = 0.25
     discountLabel = p.discount
   }
@@ -235,7 +235,7 @@ export default function OrderPage() {
     ? `https://wa.me/6285179992598?text=${encodeURIComponent(`Halo RHP Creatives! Mau konsultasi dulu sebelum order:\n\nLayanan: ${lang === 'id' ? (selectedSvc?.nameId ?? '') : (selectedSvc?.nameEn ?? '')}\nPaket: ${lang === 'id' ? selectedPkg.nameId : selectedPkg.nameEn}\nTotal: ${fmt(totalPrice)}`)}`
     : 'https://wa.me/6285179992598?text=Halo%20RHP%20Creatives!%20Mau%20konsultasi%20dulu%20nih'
 
-  const canPay = selectedService && selectedPackage && name.trim() && email.trim() && wa.trim() && !isSubmitting
+  const canPay = selectedService && selectedPackage && name.trim() && email.trim() && wa.trim() && !isSubmitting && !earlyBirdIneligible
 
   const hasAutoDiscount = !!(discountStatus?.earlyBird?.available || discountStatus?.inviteeDiscount?.available || discountStatus?.referrerReward?.available)
 
