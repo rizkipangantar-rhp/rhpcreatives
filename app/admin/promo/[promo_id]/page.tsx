@@ -41,6 +41,8 @@ export default function PromoDetailPage() {
   const [editName, setEditName] = useState('')
   const [editEndDate, setEditEndDate] = useState('')
   const [editQuota, setEditQuota] = useState('')
+  const [editDiscountType, setEditDiscountType] = useState<'percent' | 'nominal'>('percent')
+  const [editDiscountValue, setEditDiscountValue] = useState('')
   const [editSaving, setEditSaving] = useState(false)
   const [editSaved, setEditSaved] = useState(false)
   const [resetting, setResetting] = useState(false)
@@ -54,9 +56,11 @@ export default function PromoDetailPage() {
         if (!d.promo) { setLoading(false); return }
         setPromo(d.promo)
         setClaims(d.claims ?? [])
-        setEditName(d.promo.name)
+        setEditName(d.promo.name ?? '')
         setEditEndDate(d.promo.end_date ? d.promo.end_date.slice(0, 10) : '')
-        setEditQuota(String(d.promo.quota))
+        setEditQuota(String(d.promo.quota ?? 0))
+        setEditDiscountType(d.promo.discount_type ?? 'percent')
+        setEditDiscountValue(String(d.promo.discount_value ?? ''))
         setLoading(false)
       })
       .catch(() => setLoading(false))
@@ -99,6 +103,8 @@ export default function PromoDetailPage() {
           name: editName,
           end_date: editEndDate || null,
           quota: parseInt(editQuota) || 0,
+          discount_type: editDiscountType,
+          discount_value: parseFloat(editDiscountValue) || 0,
         }),
       })
       setEditSaved(true)
@@ -188,6 +194,19 @@ export default function PromoDetailPage() {
           <div>
             <label style={{ display: 'block', fontSize: '0.78rem', color: '#64748b', marginBottom: 6 }}>Nama Promo</label>
             <input style={inputStyle} value={editName} onChange={e => setEditName(e.target.value)} />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.78rem', color: '#64748b', marginBottom: 6 }}>Tipe Diskon</label>
+            <select style={inputStyle} value={editDiscountType} onChange={e => setEditDiscountType(e.target.value as 'percent' | 'nominal')}>
+              <option value="percent">Persentase (%)</option>
+              <option value="nominal">Nominal (Rp)</option>
+            </select>
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.78rem', color: '#64748b', marginBottom: 6 }}>
+              Nilai Diskon ({editDiscountType === 'percent' ? '%' : 'Rp'})
+            </label>
+            <input style={inputStyle} type="number" min={0} value={editDiscountValue} onChange={e => setEditDiscountValue(e.target.value)} placeholder={editDiscountType === 'percent' ? '25' : '50000'} />
           </div>
           <div>
             <label style={{ display: 'block', fontSize: '0.78rem', color: '#64748b', marginBottom: 6 }}>Tanggal Berakhir</label>

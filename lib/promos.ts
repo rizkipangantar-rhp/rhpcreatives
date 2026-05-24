@@ -212,7 +212,9 @@ export async function updatePromo(id: string, data: Partial<Omit<Promo, 'id' | '
   const promos = await getAllPromos()
   const idx = promos.findIndex(p => p.id === id)
   if (idx === -1) return null
-  promos[idx] = { ...promos[idx], ...data }
+  // Only apply fields that are explicitly defined — undefined values must not overwrite existing data
+  const patch = Object.fromEntries(Object.entries(data).filter(([, v]) => v !== undefined)) as typeof data
+  promos[idx] = { ...promos[idx], ...patch }
   await writePromos(promos)
   return promos[idx]
 }
