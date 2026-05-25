@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { getOrderById, updateOrderStatus, addOrderStatusHistory, updateOrderAdminData, type OrderStatus } from '@/lib/orders'
+import { getRequestByOrderId, pushStatusHistory } from '@/lib/custom-orders'
 
 const VALID_STATUSES: OrderStatus[] = ['pending', 'paid', 'processing', 'completed', 'cancelled']
 
@@ -40,6 +41,19 @@ export async function PATCH(
       await addOrderStatusHistory(order_id, body.status, body.note ?? '')
     } else {
       await updateOrderStatus(order_id, body.status)
+    }
+
+    // Sync linked custom order status on processing/completed
+    if (body.status === 'processing' || body.status === 'completed') {
+      const customReq = await getRequestByOrderId(order_id)
+      if (customReq) {
+        const terminal = ['done', 'rejected_by_admin', 'rejected_by_customer']
+        if (body.status === 'completed' && !terminal.includes(customReq.status)) {
+          await pushStatusHistory(customReq.request_id, 'done', 'Auto: order selesai')
+        } else if (body.status === 'processing' && customReq.status === 'paid') {
+          await pushStatusHistory(customReq.request_id, 'in_progress', 'Auto: proses pengerjaan dimulai')
+        }
+      }
     }
   }
 
