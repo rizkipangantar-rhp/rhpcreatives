@@ -40,6 +40,15 @@ type Order = {
 
 const STEP_LABELS = ['Pembayaran Diterima', 'Proses Pengerjaan', 'Revisi', 'Finalisasi', 'Selesai & Dikirim']
 
+type StepConfig = { statuses: ProgressStepStatus[]; labels: Record<ProgressStepStatus, string> }
+const STEP_CONFIGS: StepConfig[] = [
+  { statuses: ['pending', 'done'],                    labels: { pending: 'Pending', in_progress: 'Diterima',         done: 'Diterima' } },
+  { statuses: ['pending', 'in_progress', 'done'],     labels: { pending: 'Pending', in_progress: 'Sedang Dikerjakan', done: 'Selesai' } },
+  { statuses: ['pending', 'in_progress', 'done'],     labels: { pending: 'Pending', in_progress: 'Sedang Direvisi',   done: 'Selesai' } },
+  { statuses: ['pending', 'in_progress', 'done'],     labels: { pending: 'Pending', in_progress: 'Difinalisasi',      done: 'Selesai' } },
+  { statuses: ['pending', 'in_progress', 'done'],     labels: { pending: 'Pending', in_progress: 'Sedang Dikirim',    done: 'Dikirim' } },
+]
+
 const STATUS_OPTIONS: OrderStatus[] = ['pending', 'paid', 'processing', 'completed', 'cancelled']
 const STATUS_LABELS: Record<string, string> = {
   pending: 'Menunggu', paid: 'Dibayar', processing: 'Diproses',
@@ -302,7 +311,7 @@ export default function OrderDetailPage() {
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '0.84rem', fontWeight: 600, color: '#f1f5f9', marginBottom: 8 }}>{STEP_LABELS[i]}</div>
                 <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-                  {(['pending', 'in_progress', 'done'] as ProgressStepStatus[]).map(st => (
+                  {STEP_CONFIGS[i].statuses.map(st => (
                     <button
                       key={st}
                       onClick={() => updateStep(i, 'status', st)}
@@ -313,7 +322,7 @@ export default function OrderDetailPage() {
                         color: step.status === st ? '#fff' : '#64748b',
                       }}
                     >
-                      {st === 'pending' ? 'Pending' : st === 'in_progress' ? 'Sedang Dikerjakan' : 'Selesai'}
+                      {STEP_CONFIGS[i].labels[st]}
                     </button>
                   ))}
                 </div>
