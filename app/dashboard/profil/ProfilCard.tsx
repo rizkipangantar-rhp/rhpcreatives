@@ -143,6 +143,7 @@ export default function ProfilCard({ session }: { session: Session }) {
   const [customRequests, setCustomRequests] = useState<CustomRequest[]>([])
   const [customLoading, setCustomLoading] = useState(initialTab === 'custom')
   const [customLoaded, setCustomLoaded] = useState(false)
+  const [referralLoading, setReferralLoading] = useState(true)
   const [referralStats, setReferralStats] = useState<ReferralStatsData | null>(null)
   const [ebirdStatus, setEbirdStatus] = useState<{ available: boolean; used: boolean } | null>(null)
   const [fullDiscountStatus, setFullDiscountStatus] = useState<{
@@ -168,22 +169,19 @@ export default function ProfilCard({ session }: { session: Session }) {
   const [voucherError, setVoucherError] = useState('')
 
   useEffect(() => {
-    fetch('/api/referral/stats')
-      .then(r => r.ok ? r.json() : null)
-      .then(data => { if (data) setReferralStats(data) })
-      .catch(() => {})
-    fetch('/api/referral/discount-status')
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        if (!data) return
-        if (data.earlyBird) setEbirdStatus(data.earlyBird)
-        setFullDiscountStatus(data)
-      })
-      .catch(() => {})
-    fetch('/api/user/profile')
-      .then(r => r.ok ? r.json() : null)
-      .then(data => { if (data?.whatsapp) setUserWa(data.whatsapp) })
-      .catch(() => {})
+    Promise.allSettled([
+      fetch('/api/referral/stats').then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch('/api/referral/discount-status').then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch('/api/user/profile').then(r => r.ok ? r.json() : null).catch(() => null),
+    ]).then(([statsRes, discountRes, profileRes]) => {
+      if (statsRes.status === 'fulfilled' && statsRes.value) setReferralStats(statsRes.value)
+      if (discountRes.status === 'fulfilled' && discountRes.value) {
+        if (discountRes.value.earlyBird) setEbirdStatus(discountRes.value.earlyBird)
+        setFullDiscountStatus(discountRes.value)
+      }
+      if (profileRes.status === 'fulfilled' && profileRes.value?.whatsapp) setUserWa(profileRes.value.whatsapp)
+      setReferralLoading(false)
+    })
   }, [])
 
   useEffect(() => {
@@ -439,7 +437,10 @@ export default function ProfilCard({ session }: { session: Session }) {
         </div>
 
         {/* Referral tab */}
-        {activeTab === 'referral' && (
+        {activeTab === 'referral' && referralLoading && (
+          <div className={styles.ordersLoading}><div className={styles.spinner} /></div>
+        )}
+        {activeTab === 'referral' && !referralLoading && (
           <div className={styles.grid}>
             {/* My code card */}
             <div className={styles.card}>
