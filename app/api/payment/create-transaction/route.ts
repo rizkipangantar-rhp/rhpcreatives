@@ -135,7 +135,7 @@ export async function POST(req: Request) {
 
     const addon = addonId ? GUEST_ADDONS.find(a => a.id === addonId) : undefined
     const addonPrice = addon?.price ?? 0
-    const totalPrice = pkg.price + addonPrice - discountAmount
+    const totalPrice = Math.max(0, pkg.price + addonPrice - discountAmount)
 
     const order = await createOrder({
       userId: session.user.id,

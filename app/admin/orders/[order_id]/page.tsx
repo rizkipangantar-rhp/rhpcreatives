@@ -80,9 +80,11 @@ export default function OrderDetailPage() {
   const [resultUrl, setResultUrl] = useState('')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState('')
   const [progressSteps, setProgressSteps] = useState<ProgressStep[]>([])
   const [progressSaving, setProgressSaving] = useState(false)
   const [progressSaved, setProgressSaved] = useState(false)
+  const [progressError, setProgressError] = useState('')
 
   useEffect(() => {
     fetch(`/api/admin/orders/${order_id}`)
@@ -107,15 +109,18 @@ export default function OrderDetailPage() {
   async function saveProgress() {
     if (!order) return
     setProgressSaving(true)
+    setProgressError('')
     const stepsWithTimestamps = progressSteps.map(s => ({
       ...s,
       timestamp: s.status !== 'pending' && !s.timestamp ? new Date().toISOString() : s.timestamp,
     }))
-    await fetch(`/api/admin/orders/${order_id}/progress`, {
+    const res = await fetch(`/api/admin/orders/${order_id}/progress`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ steps: stepsWithTimestamps }),
     })
+    setProgressSaving(false)
+    if (!res.ok) { setProgressError('Gagal menyimpan progress. Coba lagi.'); return }
     setProgressSteps(stepsWithTimestamps)
 
     // Mirror the auto-sync logic from lib/orders.ts so UI updates immediately
@@ -129,7 +134,6 @@ export default function OrderDetailPage() {
       setNewStatus(autoStatus)
     }
 
-    setProgressSaving(false)
     setProgressSaved(true)
     setTimeout(() => setProgressSaved(false), 2000)
   }
@@ -137,13 +141,16 @@ export default function OrderDetailPage() {
   async function saveStatus() {
     if (!order) return
     setSaving(true)
+    setSaveError('')
     const body: Record<string, string> = { status: newStatus }
     if (statusNote.trim()) body.note = statusNote.trim()
-    await fetch(`/api/admin/orders/${order_id}`, {
+    const res = await fetch(`/api/admin/orders/${order_id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     })
+    setSaving(false)
+    if (!res.ok) { setSaveError('Gagal update status. Coba lagi.'); return }
     setOrder(prev => prev ? {
       ...prev,
       status: newStatus,
@@ -152,19 +159,20 @@ export default function OrderDetailPage() {
         : prev.statusHistory,
     } : prev)
     setStatusNote('')
-    setSaving(false)
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
 
   async function saveAdminData() {
     setSaving(true)
-    await fetch(`/api/admin/orders/${order_id}`, {
+    setSaveError('')
+    const res = await fetch(`/api/admin/orders/${order_id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ adminNotes, resultUrl }),
     })
     setSaving(false)
+    if (!res.ok) { setSaveError('Gagal menyimpan. Coba lagi.'); return }
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
@@ -249,6 +257,7 @@ export default function OrderDetailPage() {
           <button className={s.btnPrimary} onClick={saveStatus} disabled={saving || newStatus === order.status}>
             {saving ? 'Menyimpan...' : saved ? 'Tersimpan ✓' : 'Simpan Status'}
           </button>
+          {saveError && <p style={{ color: '#f87171', fontSize: '0.8rem', marginTop: 6 }}>{saveError}</p>}
         </div>
       </div>
 
@@ -290,6 +299,7 @@ export default function OrderDetailPage() {
         <button className={s.btnPrimary} style={{ marginTop: 12 }} onClick={saveAdminData} disabled={saving}>
           {saving ? 'Menyimpan...' : saved ? 'Tersimpan ✓' : 'Simpan'}
         </button>
+        {saveError && <p style={{ color: '#f87171', fontSize: '0.8rem', marginTop: 6 }}>{saveError}</p>}
       </div>
 
       {/* Progress tracking */}
@@ -349,6 +359,7 @@ export default function OrderDetailPage() {
         <button className={s.btnPrimary} style={{ marginTop: 16 }} onClick={saveProgress} disabled={progressSaving}>
           {progressSaving ? 'Menyimpan...' : progressSaved ? 'Progress Tersimpan ✓' : 'Simpan Progress'}
         </button>
+        {progressError && <p style={{ color: '#f87171', fontSize: '0.8rem', marginTop: 6 }}>{progressError}</p>}
       </div>
 
       {/* Status history */}

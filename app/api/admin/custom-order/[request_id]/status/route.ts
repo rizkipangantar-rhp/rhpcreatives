@@ -19,8 +19,6 @@ export async function PUT(
   const { status, note, result_url } = await req.json() as { status: RequestStatus; note?: string; result_url?: string }
   if (!ALLOWED_TRANSITIONS.includes(status)) return NextResponse.json({ error: 'Invalid status' }, { status: 400 })
 
-  const updates: Parameters<typeof updateRequest>[1] = { status }
-  if (result_url) updates.order_id = request.order_id // keep order_id
   await pushStatusHistory(request_id, status, note)
   if (result_url) await updateRequest(request_id, { notes: { ...request.notes, for_customer: result_url } })
 

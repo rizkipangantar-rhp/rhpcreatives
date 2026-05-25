@@ -132,24 +132,26 @@ export default function AdminCustomOrderDetailPage() {
   async function rejectRequest() {
     if (!rejectReason.trim()) { setError('Masukkan alasan penolakan'); return }
     setSaving(true); setError('')
-    await fetch(`/api/admin/custom-order/${request_id}/reject`, {
+    const res = await fetch(`/api/admin/custom-order/${request_id}/reject`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ reason: rejectReason }),
     })
     setSaving(false)
+    if (!res.ok) { setError('Gagal menolak request. Coba lagi.'); return }
     setShowRejectModal(false)
     fetch(`/api/custom-order/${request_id}`).then(r => r.json()).then(setRequest)
   }
 
   async function advanceStatus(status: RequestStatus) {
     setSaving(true); setError('')
-    await fetch(`/api/admin/custom-order/${request_id}/status`, {
+    const res = await fetch(`/api/admin/custom-order/${request_id}/status`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status, note: advanceNote || undefined }),
     })
     setSaving(false)
+    if (!res.ok) { setError('Gagal update status. Coba lagi.'); return }
     setAdvanceNote('')
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)

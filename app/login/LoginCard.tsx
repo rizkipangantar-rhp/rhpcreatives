@@ -62,7 +62,11 @@ export default function LoginCard() {
 
   async function handleGoogle() {
     setGoogleLoading(true)
-    await signIn('google', { callbackUrl })
+    try {
+      await signIn('google', { callbackUrl })
+    } catch {
+      setGoogleLoading(false)
+    }
   }
 
   return (

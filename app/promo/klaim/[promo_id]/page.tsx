@@ -139,21 +139,32 @@ export default function KlaimPromoPage() {
   async function handleWaitlist(e: React.FormEvent) {
     e.preventDefault()
     setWlSubmitting(true)
-    await fetch(`/api/promos/${promo_id}/claim`, {
+    setFormError('')
+
+    const res = await fetch(`/api/promos/${promo_id}/claim`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ waitlist: true, email: wlEmail, whatsapp: wlWa }),
-    }).catch(() => {})
+    }).catch(() => null)
+
+    let ok = res?.ok ?? false
+
     // fallback: use early-bird waitlist endpoint for promo_early_bird
     if (promo_id === 'promo_early_bird') {
-      await fetch('/api/early-bird/waitlist', {
+      const res2 = await fetch('/api/early-bird/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: wlEmail, wa: wlWa }),
-      }).catch(() => {})
+      }).catch(() => null)
+      ok = ok || (res2?.ok ?? false)
     }
+
     setWlSubmitting(false)
-    setWlDone(true)
+    if (ok) {
+      setWlDone(true)
+    } else {
+      setFormError(lang === 'id' ? 'Gagal masuk waitlist, coba lagi ya.' : 'Failed to join waitlist, please try again.')
+    }
   }
 
   const discountDisplay = promo
