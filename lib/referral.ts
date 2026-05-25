@@ -1,6 +1,9 @@
 import { dbGet, dbSet } from '@/lib/store'
 import { addReferralReward, findUserByReferralCode } from '@/lib/users'
 
+// Serializes referral writes within a single server instance to prevent double-grant
+let referralWriteLock = Promise.resolve()
+
 export type ReferralUsage = {
   userId: string        // who used the code (invitee)
   referralCode: string  // the code that was used
@@ -27,20 +30,24 @@ export async function hasUserUsedReferral(userId: string): Promise<boolean> {
 }
 
 // Records that userId used referralCode on orderId, and issues a reward to the code owner.
+// Uses a write lock so concurrent requests for the same user can't grant double rewards.
 export async function recordReferralUsage(userId: string, referralCode: string, orderId: string): Promise<void> {
   const referrer = await findUserByReferralCode(referralCode)
   if (!referrer) return
-  const data = await read()
-  data.usages.push({
-    userId,
-    referralCode,
-    referrerId: referrer.id,
-    orderId,
-    usedAt: new Date().toISOString(),
-  })
-  await write(data)
-  // Give the referrer a 15% discount reward
-  await addReferralReward(referrer.id)
+
+  await (referralWriteLock = referralWriteLock.catch(() => {}).then(async () => {
+    const data = await read()
+    if (data.usages.some(u => u.userId === userId)) return // already recorded in a concurrent request
+    data.usages.push({
+      userId,
+      referralCode,
+      referrerId: referrer.id,
+      orderId,
+      usedAt: new Date().toISOString(),
+    })
+    await write(data)
+    await addReferralReward(referrer.id)
+  }))
 }
 
 export type ReferralStats = {

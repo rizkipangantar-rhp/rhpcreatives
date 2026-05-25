@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
+import { cookies } from 'next/headers'
 import './globals.css'
 import AuthProvider from '@/components/AuthProvider'
 import { LanguageProvider } from '@/context/LanguageContext'
+import type { Lang } from '@/lib/i18n'
 import MainSiteLayout from '@/components/MainSiteLayout'
 import TextareaAutoResize from '@/components/TextareaAutoResize'
 import { getActivePublicPromos } from '@/lib/promos'
@@ -13,6 +15,9 @@ export const metadata: Metadata = {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const rawLang = cookies().get('rhp-lang')?.value
+  const initialLang: Lang = rawLang === 'en' ? 'en' : 'id'
+
   let initialPromo: PromoBarInfo | null = null
   try {
     const promos = await getActivePublicPromos()
@@ -39,7 +44,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const barScript = `document.documentElement.style.setProperty('--bar-h','44px')`
 
   return (
-    <html lang="id" data-theme="dark">
+    <html lang={initialLang} data-theme="dark">
       <head>
         <meta name="color-scheme" content="dark" />
         <meta name="theme-color" content="#06060f" />
@@ -48,7 +53,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         <AuthProvider>
-          <LanguageProvider>
+          <LanguageProvider initialLang={initialLang}>
             <TextareaAutoResize />
             <MainSiteLayout initialPromo={initialPromo}>{children}</MainSiteLayout>
           </LanguageProvider>

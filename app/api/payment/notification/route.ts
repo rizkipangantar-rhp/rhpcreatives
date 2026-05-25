@@ -1,10 +1,35 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { updateOrderStatus, getOrderById, type OrderStatus } from '@/lib/orders'
 import { getRequestByOrderId, updateRequest, pushStatusHistory } from '@/lib/custom-orders'
 
-export async function POST(req: Request) {
+// Midtrans notification server IPs (production)
+const MIDTRANS_IPS = new Set([
+  '103.208.23.6', '103.208.23.7', '103.208.23.14', '103.208.23.15',
+])
+
+function getClientIp(req: NextRequest): string | null {
+  return (
+    req.headers.get('x-forwarded-for')?.split(',')[0].trim() ??
+    req.headers.get('x-real-ip') ??
+    null
+  )
+}
+
+function isAllowedIp(ip: string | null): boolean {
+  if (!ip) return false
+  if (process.env.MIDTRANS_IS_PRODUCTION !== 'true') return true // allow all in sandbox/dev
+  return MIDTRANS_IPS.has(ip)
+}
+
+export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req)
+    if (!isAllowedIp(ip)) {
+      console.warn('[notification] rejected from IP:', ip)
+      return NextResponse.json({ message: 'Forbidden' }, { status: 403 })
+    }
+
     const body = await req.json()
     const { order_id, status_code, gross_amount, signature_key, transaction_status, fraud_status } = body as {
       order_id: string
