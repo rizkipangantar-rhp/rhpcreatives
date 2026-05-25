@@ -170,6 +170,21 @@ export async function updateProgressSteps(orderId: string, steps: ProgressStep[]
   db.orders[idx].progressSteps = steps
   db.orders[idx].progressUpdatedAt = new Date().toISOString()
   db.orders[idx].updatedAt = new Date().toISOString()
+
+  // Auto-sync order status from progress steps
+  const allDone = steps.length === 5 && steps.every(s => s.status === 'done')
+  const anyActive = steps.some(s => s.status === 'done' || s.status === 'in_progress')
+  const cur = db.orders[idx].status
+  if (!db.orders[idx].statusHistory) db.orders[idx].statusHistory = []
+
+  if (allDone && cur !== 'completed') {
+    db.orders[idx].status = 'completed'
+    db.orders[idx].statusHistory!.push({ status: 'completed', note: 'Auto: semua langkah progress selesai', changedAt: new Date().toISOString() })
+  } else if (anyActive && !allDone && cur === 'paid') {
+    db.orders[idx].status = 'processing'
+    db.orders[idx].statusHistory!.push({ status: 'processing', note: 'Auto: proses pengerjaan dimulai', changedAt: new Date().toISOString() })
+  }
+
   await write(db)
   return true
 }

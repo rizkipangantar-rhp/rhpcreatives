@@ -96,6 +96,7 @@ export default function OrderDetailPage() {
   }
 
   async function saveProgress() {
+    if (!order) return
     setProgressSaving(true)
     const stepsWithTimestamps = progressSteps.map(s => ({
       ...s,
@@ -107,6 +108,18 @@ export default function OrderDetailPage() {
       body: JSON.stringify({ steps: stepsWithTimestamps }),
     })
     setProgressSteps(stepsWithTimestamps)
+
+    // Mirror the auto-sync logic from lib/orders.ts so UI updates immediately
+    const allDone = stepsWithTimestamps.length === 5 && stepsWithTimestamps.every(s => s.status === 'done')
+    const anyActive = stepsWithTimestamps.some(s => s.status === 'done' || s.status === 'in_progress')
+    let autoStatus: OrderStatus | null = null
+    if (allDone && order.status !== 'completed') autoStatus = 'completed'
+    else if (anyActive && !allDone && order.status === 'paid') autoStatus = 'processing'
+    if (autoStatus) {
+      setOrder(prev => prev ? { ...prev, status: autoStatus! } : prev)
+      setNewStatus(autoStatus)
+    }
+
     setProgressSaving(false)
     setProgressSaved(true)
     setTimeout(() => setProgressSaved(false), 2000)
