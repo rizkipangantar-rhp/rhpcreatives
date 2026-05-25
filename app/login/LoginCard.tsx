@@ -9,7 +9,9 @@ import styles from './login.module.css'
 export default function LoginCard() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') ?? '/'
+  const rawCallback = searchParams.get('callbackUrl') ?? '/'
+  // Only allow same-origin relative paths — reject absolute URLs and protocol-relative URLs
+  const callbackUrl = rawCallback.startsWith('/') && !rawCallback.startsWith('//') ? rawCallback : '/'
   const { tr } = useLanguage()
   const a = tr.auth
 
