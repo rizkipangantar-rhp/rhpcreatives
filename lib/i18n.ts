@@ -848,7 +848,7 @@ export const t: Record<Lang, Tr> = {
       titleBefore: 'Tampil ',
       titleEm: 'Keren',
       titleAfter: ' di Dunia Digital? Gas!',
-      sub: 'RHP Creatives siap bantu kamu dari nol: undangan online, landing page, feed IG aesthetic, sampai edit foto buat lamaran. Gasken!',
+      sub: 'RHP Creatives siap bantu kamu dari nol. Undangan online, landing page, feed IG aesthetic, sampai edit foto lamaran. Gasken!',
       cta1: 'Mulai Sekarang',
       cta2: 'Lihat Harga',
       stat1Label: 'Layanan Tersedia',
@@ -878,7 +878,7 @@ export const t: Record<Lang, Tr> = {
       promo: {
         label: 'Promo & Penawaran',
         title: 'Penawaran yang Sayang Banget Dilewatin',
-        sub: 'Hemat lebih banyak dengan Early Bird, Paket Bundling, dan Program Referral kami.',
+        sub: 'Lebih hemat lewat Early Bird, Paket Bundling, dan Program Referral. Sayang banget kalau dilewatin!',
       },
       about: {
         label: 'Tentang Kami',
@@ -918,7 +918,7 @@ export const t: Record<Lang, Tr> = {
     services: {
       label: 'Apa yang Kami Kerjain',
       title: 'Layanan RHP Creatives',
-      sub: 'Dari digital sampai desain, semua ada, semua kece, semua worth it.',
+      sub: 'Dari digital sampai desain, semua ada. Semua kece, semua worth it, no cap.',
       headerCta: 'Konsultasi Gratis',
       digitalLabel: '✦ Layanan Digital',
       designLabel: '✦ Layanan Desain',
@@ -1688,7 +1688,7 @@ export const t: Record<Lang, Tr> = {
       titleBefore: 'Look ',
       titleEm: 'Amazing',
       titleAfter: " Online? Let's Go!",
-      sub: "RHP Creatives gets you from zero to polished: online invitations, landing pages, aesthetic IG feeds, and photo edits. Let's get it!",
+      sub: "RHP Creatives takes you from zero to polished. Online invitations, landing pages, aesthetic IG feeds, photo edits. Let's get it!",
       cta1: 'Start Now',
       cta2: 'See Pricing',
       stat1Label: 'Services Available',
@@ -1718,7 +1718,7 @@ export const t: Record<Lang, Tr> = {
       promo: {
         label: 'Promos & Deals',
         title: 'Deals Too Good to Pass Up',
-        sub: 'Save more with our Early Bird discount, Bundle Packages, and Referral Program.',
+        sub: 'Score bigger savings with Early Bird, Bundle Packages, and our Referral Program. Too good to pass up!',
       },
       about: {
         label: 'About Us',
@@ -1797,7 +1797,7 @@ export const t: Record<Lang, Tr> = {
       sub: "Prices shown are final and ready to order. Need something outside the packages? Check out our custom order!",
       digitalLabel: '✦ Digital Services',
       designLabel: '✦ Design Services',
-      note: '* Prices are fixed and final. Custom orders only are priced based on your specific needs.',
+      note: '* Prices are fixed and final. Custom orders are priced based on your specific needs.',
       popularBadge: 'Most Popular ⚡',
       orderCta: 'Order Now',
       consultCta: "Let's Chat",
@@ -2021,13 +2021,13 @@ export const t: Record<Lang, Tr> = {
       profileLabel: 'Profile',
       profileTitle: 'RHP Creatives',
       profileText:
-        "RHP Creatives is a digital creative service focused on design and digital solutions. We help individuals, SMEs, and businesses look professional and memorable in the digital world, with a personal approach, easy communication, and pricing that won't break the bank.",
+        "RHP Creatives is a digital creative studio built for design and digital. We help individuals, SMEs, and growing businesses look polished and memorable online. Personal approach, easy communication, and prices that actually make sense.",
       visionTitle: 'Vision',
       visionText:
         'To be a trusted digital creative partner that helps Indonesian businesses and individuals look professional and competitive in the digital era.',
       missionTitle: 'Mission',
       missionText:
-        "Deliver high-quality digital and design services at affordable prices, with fast turnaround and friendly communication so every client feels genuinely satisfied.",
+        "Deliver top-notch digital and design at prices that don't hurt, turn things around fast, and keep communication so easy every client actually enjoys the process.",
       whyLabel: 'Our Edge',
       whyTitle: 'Why Choose Us?',
       whyItems: [
@@ -2150,7 +2150,7 @@ export const t: Record<Lang, Tr> = {
       bundling: {
         label: 'Too Good to Pass Up',
         title: 'Bundle Packages',
-        sub: 'Stack multiple services and save more. Literally the smarter choice, why pay full price?',
+        sub: 'Stack multiple services and save way more. Smarter move bestie, why pay full price?',
         savingsLabel: 'save',
         items: [
           {
