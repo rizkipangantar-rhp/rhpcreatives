@@ -11,6 +11,16 @@
         "/layanan-desain": 1,
         "/promo": 22
       }
+    },
+    "2026-05-26": {
+      "views": 3,
+      "paths": {
+        "/": 2,
+        "/order": 1
+      },
+      "devices": {
+        "desktop": 3
+      }
     }
   }
 }

@@ -1,7 +1,7 @@
 {
   "daily": {
     "2026-05-22": {
-      "views": 38,
+      "views": 39,
       "paths": {
         "/": 3,
         "/privacy": 8,
@@ -9,7 +9,16 @@
         "/terms": 3,
         "/layanan-digital": 1,
         "/layanan-desain": 1,
-        "/promo": 21
+        "/promo": 22
+      }
+    },
+    "2026-05-26": {
+      "views": 2,
+      "paths": {
+        "/": 2
+      },
+      "devices": {
+        "desktop": 2
       }
     }
   }

@@ -51,11 +51,11 @@ type BankKey = 'cimb' | 'bni' | 'bri' | 'mandiri' | 'permata'
 type EWalletKey = 'gopay' | 'shopeepay'
 
 const BANKS: { key: BankKey; label: string; logo: string }[] = [
-  { key: 'bni',     label: 'BNI',        logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/BNI_logo.svg/120px-BNI_logo.svg.png' },
-  { key: 'bri',     label: 'BRI',        logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Bank_Rakyat_Indonesia_2020.svg/120px-Bank_Rakyat_Indonesia_2020.svg.png' },
-  { key: 'mandiri', label: 'Mandiri',    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Bank_Mandiri_logo_2008.svg/120px-Bank_Mandiri_logo_2008.svg.png' },
-  { key: 'permata', label: 'Permata',    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Bank_Permata_logo_%282020%29.svg/120px-Bank_Permata_logo_%282020%29.svg.png' },
-  { key: 'cimb',    label: 'CIMB Niaga', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/CIMB_Niaga_logo.svg/120px-CIMB_Niaga_logo.svg.png' },
+  { key: 'bni',     label: 'BNI',        logo: '/payment-logos/bni.svg' },
+  { key: 'bri',     label: 'BRI',        logo: '/payment-logos/bri.svg' },
+  { key: 'mandiri', label: 'Mandiri',    logo: '/payment-logos/mandiri.svg' },
+  { key: 'permata', label: 'Permata',    logo: '/payment-logos/permata.svg' },
+  { key: 'cimb',    label: 'CIMB Niaga', logo: '/payment-logos/cimb.svg' },
 ]
 
 const EWALLETS: { key: EWalletKey; label: string; logo: string }[] = [
@@ -598,7 +598,7 @@ export default function PaymentPage() {
                         ))}
                         <button className={styles.ewalletBtn} style={{ opacity: 0.4, cursor: 'not-allowed' }} disabled>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/ShopeePay_Logo.svg/120px-ShopeePay_Logo.svg.png" alt="ShopeePay" className={styles.ewalletIcon} />
+                          <img src="/payment-logos/shopeepay.svg" alt="ShopeePay" className={styles.ewalletIcon} />
                           ShopeePay
                         </button>
                         <button className={styles.ewalletBtn} style={{ opacity: 0.4, cursor: 'not-allowed' }} disabled>
