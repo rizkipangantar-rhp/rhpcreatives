@@ -47,20 +47,19 @@ type ChargeResult = {
 }
 
 type TabKey = 'bank_transfer' | 'ewallet' | 'qris' | 'credit_card'
-type BankKey = 'bca' | 'bni' | 'bri' | 'mandiri' | 'permata'
+type BankKey = 'cimb' | 'bni' | 'bri' | 'mandiri' | 'permata'
 type EWalletKey = 'gopay' | 'shopeepay'
 
-const BANKS: { key: BankKey; label: string; icon: string }[] = [
-  { key: 'bca', label: 'BCA', icon: '🏦' },
-  { key: 'bni', label: 'BNI', icon: '🏦' },
-  { key: 'bri', label: 'BRI', icon: '🏦' },
-  { key: 'mandiri', label: 'Mandiri', icon: '🏦' },
-  { key: 'permata', label: 'Permata', icon: '🏦' },
+const BANKS: { key: BankKey; label: string; logo: string }[] = [
+  { key: 'bni',     label: 'BNI',        logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/BNI_logo.svg/120px-BNI_logo.svg.png' },
+  { key: 'bri',     label: 'BRI',        logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Bank_Rakyat_Indonesia_2020.svg/120px-Bank_Rakyat_Indonesia_2020.svg.png' },
+  { key: 'mandiri', label: 'Mandiri',    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Bank_Mandiri_logo_2008.svg/120px-Bank_Mandiri_logo_2008.svg.png' },
+  { key: 'permata', label: 'Permata',    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Bank_Permata_logo_%282020%29.svg/120px-Bank_Permata_logo_%282020%29.svg.png' },
+  { key: 'cimb',    label: 'CIMB Niaga', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/CIMB_Niaga_logo.svg/120px-CIMB_Niaga_logo.svg.png' },
 ]
 
-const EWALLETS: { key: EWalletKey; label: string; icon: string }[] = [
-  { key: 'gopay', label: 'GoPay', icon: '💚' },
-  { key: 'shopeepay', label: 'ShopeePay', icon: '🧡' },
+const EWALLETS: { key: EWalletKey; label: string; logo: string }[] = [
+  { key: 'gopay', label: 'GoPay', logo: '/payment-logos/gopay.svg' },
 ]
 
 function fmt(price: number) {
@@ -361,7 +360,7 @@ export default function PaymentPage() {
 
   function getBankInstructions(bank: BankKey): string[] {
     const map: Record<BankKey, string[]> = {
-      bca: p.bankInstructionsBCA,
+      cimb: p.bankInstructionsCIMB,
       bni: p.bankInstructionsBNI,
       bri: p.bankInstructionsBRI,
       mandiri: p.bankInstructionsMandiri,
@@ -517,7 +516,8 @@ export default function PaymentPage() {
                             onClick={() => handleBankSelect(b.key)}
                             disabled={charging}
                           >
-                            <span className={styles.bankLogo}>{b.icon}</span>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={b.logo} alt={b.label} className={styles.bankLogo} />
                             {b.label}
                           </button>
                         ))}
@@ -591,16 +591,24 @@ export default function PaymentPage() {
                             onClick={() => handleEWalletSelect(w.key)}
                             disabled={charging}
                           >
-                            <span className={styles.ewalletIcon}>{w.icon}</span>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={w.logo} alt={w.label} className={styles.ewalletIcon} />
                             {w.label}
                           </button>
                         ))}
-                        <button className={styles.ewalletBtn} style={{ opacity: 0.4, cursor: 'not-allowed' }}>
-                          <span className={styles.ewalletIcon}>🔵</span>
+                        <button className={styles.ewalletBtn} style={{ opacity: 0.4, cursor: 'not-allowed' }} disabled>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/ShopeePay_Logo.svg/120px-ShopeePay_Logo.svg.png" alt="ShopeePay" className={styles.ewalletIcon} />
+                          ShopeePay
+                        </button>
+                        <button className={styles.ewalletBtn} style={{ opacity: 0.4, cursor: 'not-allowed' }} disabled>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src="/payment-logos/ovo.svg" alt="OVO" className={styles.ewalletIcon} />
                           OVO
                         </button>
-                        <button className={styles.ewalletBtn} style={{ opacity: 0.4, cursor: 'not-allowed' }}>
-                          <span className={styles.ewalletIcon}>💙</span>
+                        <button className={styles.ewalletBtn} style={{ opacity: 0.4, cursor: 'not-allowed' }} disabled>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src="/payment-logos/dana.svg" alt="DANA" className={styles.ewalletIcon} />
                           DANA
                         </button>
                       </div>

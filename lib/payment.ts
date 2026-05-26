@@ -162,7 +162,7 @@ export async function createCCSnapToken(params: SnapTransactionParams): Promise<
 }
 
 export async function chargeBankTransfer(
-  params: ChargeBase & { bank: 'bca' | 'bni' | 'bri' | 'mandiri' | 'permata' }
+  params: ChargeBase & { bank: 'cimb' | 'bni' | 'bri' | 'mandiri' | 'permata' }
 ): Promise<BankTransferResult> {
   const core = getCoreApi()
   const base = buildItemDetails(params)

@@ -248,7 +248,7 @@ export type Tr = {
     copyBtn: string
     copied: string
     instructionsTitle: string
-    bankInstructionsBCA: string[]
+    bankInstructionsCIMB: string[]
     bankInstructionsBNI: string[]
     bankInstructionsBRI: string[]
     bankInstructionsMandiri: string[]
@@ -763,9 +763,9 @@ export const t: Record<Lang, Tr> = {
       copyBtn: 'Salin',
       copied: 'Tersalin!',
       instructionsTitle: 'Cara Bayar',
-      bankInstructionsBCA: [
-        'Buka aplikasi BCA mobile atau ATM BCA',
-        'Pilih menu Transfer → ke BCA Virtual Account',
+      bankInstructionsCIMB: [
+        'Buka aplikasi OCTO Mobile (CIMB Niaga) atau ATM CIMB Niaga',
+        'Pilih Transfer → ke Virtual Account',
         'Masukkan nomor Virtual Account di atas',
         'Konfirmasi jumlah dan selesaikan pembayaran',
       ],
@@ -1603,9 +1603,9 @@ export const t: Record<Lang, Tr> = {
       copyBtn: 'Copy',
       copied: 'Copied!',
       instructionsTitle: 'How to Pay',
-      bankInstructionsBCA: [
-        'Open BCA mobile app or go to an ATM',
-        'Select Transfer → BCA Virtual Account',
+      bankInstructionsCIMB: [
+        'Open OCTO Mobile (CIMB Niaga) app or go to a CIMB Niaga ATM',
+        'Select Transfer → Virtual Account',
         'Enter the Virtual Account number above',
         'Confirm the amount and complete payment',
       ],

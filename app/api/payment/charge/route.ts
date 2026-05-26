@@ -13,7 +13,7 @@ import { findPackageById, findServiceById } from '@/lib/packages'
 type ChargeBody = {
   orderId: string
   method: 'bank_transfer' | 'qris' | 'gopay' | 'shopeepay'
-  bank?: 'bca' | 'bni' | 'bri' | 'mandiri' | 'permata'
+  bank?: 'cimb' | 'bni' | 'bri' | 'mandiri' | 'permata'
 }
 
 export async function POST(req: Request) {
