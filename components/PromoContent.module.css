@@ -221,6 +221,10 @@
   box-shadow: 0 12px 40px rgba(139,92,246,0.1);
 }
 
+.bundleCardOrphan {
+  grid-column: 1 / -1;
+}
+
 .bundleCardFeatured {
   background: linear-gradient(145deg, rgba(139,92,246,0.12), rgba(236,72,153,0.12));
   border-color: rgba(139,92,246,0.35);

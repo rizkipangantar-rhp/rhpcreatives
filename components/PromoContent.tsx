@@ -144,8 +144,14 @@ export default function PromoContent({ initialPromos }: { initialPromos?: PromoI
         <p className={styles.sectionSub}>{promo.bundling.sub}</p>
 
         <div className={styles.bundleGrid}>
-          {promo.bundling.items.map((item, i) => (
-            <div key={item.name} className={`${styles.bundleCard} ${i === promo.bundling.items.length - 1 ? styles.bundleCardFeatured : ''}`}>
+          {promo.bundling.items.map((item, i) => {
+            const total = promo.bundling.items.length
+            const isFeatured = i === total - 1
+            const regularCount = total - 1
+            // Last regular card is alone if there's an odd number of regular cards
+            const isOrphan = !isFeatured && i === total - 2 && regularCount % 2 === 1
+            return (
+            <div key={item.name} className={`${styles.bundleCard} ${isFeatured ? styles.bundleCardFeatured : ''} ${isOrphan ? styles.bundleCardOrphan : ''}`}>
               <div className={styles.bundleName}>{item.name}</div>
               <div className={styles.bundleIncludes}>{item.includes}</div>
               <div className={styles.bundlePriceRow}>
@@ -162,7 +168,8 @@ export default function PromoContent({ initialPromos }: { initialPromos?: PromoI
                 {promo.bundling.cta}
               </a>
             </div>
-          ))}
+            )
+          })}
         </div>
       </section>
 
