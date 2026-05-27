@@ -592,23 +592,19 @@ export default function PaymentPage() {
                           >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={w.logo} alt={w.label} className={styles.ewalletIcon} />
-                            {w.label}
                           </button>
                         ))}
                         <button className={styles.ewalletBtn} style={{ opacity: 0.4, cursor: 'not-allowed' }} disabled>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src="/payment-logos/shopeepay.svg" alt="ShopeePay" className={styles.ewalletIcon} />
-                          ShopeePay
                         </button>
                         <button className={styles.ewalletBtn} style={{ opacity: 0.4, cursor: 'not-allowed' }} disabled>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src="/payment-logos/ovo.svg" alt="OVO" className={styles.ewalletIcon} />
-                          OVO
                         </button>
                         <button className={styles.ewalletBtn} style={{ opacity: 0.4, cursor: 'not-allowed' }} disabled>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src="/payment-logos/dana.svg" alt="DANA" className={styles.ewalletIcon} />
-                          DANA
                         </button>
                       </div>
 
