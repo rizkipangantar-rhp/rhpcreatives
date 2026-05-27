@@ -35,30 +35,49 @@ export default function EarlyBirdPopup() {
     }
 
     // Check via API (authoritative)
+    // Only ACTIVE (non-expired, non-used) claims count — expired claims allow re-claim + re-popup
     fetch('/api/promos/my-claims')
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(data => {
-        const claimed = (data.claims ?? []).length > 0
-        if (claimed && uid) localStorage.setItem(`eb-claimed:${uid}`, '1')
-        setHasClaim(claimed)
+        const hasActiveClaim = (data.claims ?? []).some(
+          (c: { status: string }) => c.status === 'active'
+        )
+        if (uid) {
+          // Sync localStorage with authoritative API result
+          if (hasActiveClaim) localStorage.setItem(`eb-claimed:${uid}`, '1')
+          else localStorage.removeItem(`eb-claimed:${uid}`) // expired/used → allow popup again
+        }
+        setHasClaim(hasActiveClaim)
       })
       .catch(() => setHasClaim(false))
   }, [status, session?.user?.email, session?.user?.id])
+
+  // Don't show while FirstLoginModal is active (new users who haven't completed onboarding)
+  const onboardingDone = status !== 'authenticated' || session?.user?.onboardingDone !== false
 
   useEffect(() => {
     if (pathname !== '/') return
     if (hasClaim === null) return
     if (hasClaim) return
+    if (!onboardingDone) return  // wait until FirstLoginModal is dismissed
     const timer = setTimeout(() => setVisible(true), 600)
     return () => clearTimeout(timer)
-  }, [pathname, hasClaim])
+  }, [pathname, hasClaim, onboardingDone])
 
   useEffect(() => {
     if (!visible) return
-    fetch('/api/promos')
-      .then(r => r.json())
-      .then(data => { setPromo(data.promos?.[0] ?? null) })
-      .catch(() => {})
+    let cancelled = false
+    const load = (attempt = 0) => {
+      fetch('/api/promos')
+        .then(r => r.json())
+        .then(data => { if (!cancelled) setPromo(data.promos?.[0] ?? null) })
+        .catch(() => {
+          // Retry once after 2 s if the first attempt fails
+          if (!cancelled && attempt === 0) setTimeout(() => load(1), 2000)
+        })
+    }
+    load()
+    return () => { cancelled = true }
   }, [visible])
 
   function close() { setVisible(false) }
