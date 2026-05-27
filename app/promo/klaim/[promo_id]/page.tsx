@@ -15,9 +15,10 @@ type PromoInfo = {
 
 type ClaimInfo = {
   voucher_code: string; status: string; claimed_at: string; order_id: string | null
+  expires_at: string | null
 }
 
-type View = 'loading' | 'form' | 'success' | 'already' | 'used' | 'full' | 'unavailable'
+type View = 'loading' | 'form' | 'success' | 'already' | 'used' | 'full' | 'unavailable' | 'expired'
 
 const SERVICES = {
   id: ['Undangan Online', 'Landing Page', 'Desain Instagram', 'Edit Foto', 'Layanan Lainnya'],
@@ -26,6 +27,19 @@ const SERVICES = {
 
 const CONFETTI_COLORS = ['#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#f43f5e', '#ffffff']
 type Piece = { id: number; left: string; delay: string; duration: string; color: string; size: number; shape: string }
+
+function formatTimeLeft(expiresAt: string, lang: 'id' | 'en'): string {
+  const diff = new Date(expiresAt).getTime() - Date.now()
+  if (diff <= 0) return lang === 'id' ? 'sebentar lagi' : 'very soon'
+  const hours = Math.floor(diff / 3_600_000)
+  const minutes = Math.floor((diff % 3_600_000) / 60_000)
+  if (lang === 'id') {
+    if (hours >= 1) return `dalam ${hours} jam ${minutes} menit`
+    return `dalam ${minutes} menit`
+  }
+  if (hours >= 1) return `in ${hours}h ${minutes}m`
+  return `in ${minutes}m`
+}
 
 function Confetti() {
   const [pieces, setPieces] = useState<Piece[]>([])
@@ -97,6 +111,11 @@ export default function KlaimPromoPage() {
       if (userClaim) {
         setClaim(userClaim)
         if (userClaim.status === 'used') { setView('used'); return }
+        if (userClaim.status === 'expired') { setView('expired'); return }
+        // Client-side expiry check (in case server hasn't processed yet)
+        if (userClaim.expires_at && new Date(userClaim.expires_at) < new Date()) {
+          setView('expired'); return
+        }
         setView('already')
         return
       }
@@ -202,6 +221,11 @@ export default function KlaimPromoPage() {
           <div className={styles.successIcon}>🎉</div>
           <h1 className={styles.title}>{lang === 'id' ? `Yeay, diskon ${discountDisplay} aktif!` : `Discount ${discountDisplay} activated!`}</h1>
           <p className={styles.sub}>{lang === 'id' ? `Diskon ${discountDisplay} kamu otomatis aktif pas checkout nanti. Gasken order sekarang bestie!` : `Your ${discountDisplay} discount kicks in automatically at checkout. Let's go bestie!`}</p>
+          <p className={styles.expiryWarning}>
+            {lang === 'id'
+              ? '⏰ Psst — voucher ini cuma berlaku 24 jam dari sekarang. Jangan sampe hangus ya bestie!'
+              : '⏰ Psst — this voucher is only valid for 24 hours. Don\'t let it expire bestie!'}
+          </p>
           <div className={styles.ctaGroup}>
             <Link href="/order" className={styles.primaryCta}>{lang === 'id' ? 'Gasken Order Sekarang' : 'Order Now'}</Link>
             <Link href="/dashboard/profil?tab=orders" className={styles.secondaryCta}>{lang === 'id' ? 'Riwayat Order' : 'Order History'}</Link>
@@ -212,12 +236,20 @@ export default function KlaimPromoPage() {
   }
 
   if (view === 'already' && claim) {
+    const timeLeft = claim.expires_at ? formatTimeLeft(claim.expires_at, lang) : null
     return (
       <main className={styles.page}>
         <div className={styles.card}>
           <div className={styles.topBadge}>✅ {promo?.name}</div>
           <h1 className={styles.title}>{lang === 'id' ? `Diskon ${discountDisplay} kamu masih aktif! 🔥` : `Your ${discountDisplay} discount is still live! 🔥`}</h1>
           <p className={styles.sub}>{lang === 'id' ? `Tenang, diskon ${discountDisplay} kamu otomatis aktif pas checkout. Tinggal order aja!` : `Chill, your ${discountDisplay} discount applies automatically at checkout. Just order!`}</p>
+          {timeLeft && (
+            <p className={styles.expiryWarning}>
+              {lang === 'id'
+                ? `⏰ Voucher ini hangus ${timeLeft}. Jangan ditunda-tunda bestie!`
+                : `⏰ This voucher expires ${timeLeft}. Don't sleep on it bestie!`}
+            </p>
+          )}
           <div className={styles.ctaGroup}>
             <Link href="/order" className={styles.primaryCta}>{lang === 'id' ? 'Gasken Order Sekarang' : 'Order Now'}</Link>
           </div>
@@ -235,6 +267,31 @@ export default function KlaimPromoPage() {
           <p className={styles.sub}>{lang === 'id' ? `Diskon ${discountDisplay} kamu udah berhasil dipake di order sebelumnya. Hasilnya pasti worth it banget!` : `Your ${discountDisplay} discount was used in a previous order. Bet the results are totally worth it!`}</p>
           <div className={styles.ctaGroup}>
             <Link href="/dashboard/profil?tab=orders" className={styles.primaryCta}>{lang === 'id' ? 'Lihat Order Kamu' : 'View Your Orders'}</Link>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  if (view === 'expired') {
+    return (
+      <main className={styles.page}>
+        <div className={styles.card}>
+          <div className={styles.sadIcon}>⌛</div>
+          <h1 className={styles.title}>{lang === 'id' ? `Voucher ${discountDisplay} kamu hangus` : `Your ${discountDisplay} voucher expired`}</h1>
+          <p className={styles.sub}>
+            {lang === 'id'
+              ? `Sayang banget, voucher kamu udah kedaluwarsa karena melewati batas 24 jam. Tapi tenang — kamu bisa klaim lagi kok!`
+              : `Yikes, your voucher expired after the 24-hour window. No stress though — you can claim a new one!`}
+          </p>
+          <div className={styles.ctaGroup}>
+            <button
+              className={styles.primaryCta}
+              style={{ border: 'none', cursor: 'pointer', width: '100%' }}
+              onClick={() => { setClaim(null); setView('form') }}
+            >
+              {lang === 'id' ? 'Klaim Lagi Sekarang 🚀' : 'Claim Again Now 🚀'}
+            </button>
           </div>
         </div>
       </main>

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { getActiveClaimsForUser } from '@/lib/promos'
+import { getActiveClaimsForUser, expireStaleClaimsForPromo } from '@/lib/promos'
 import { findUserById, getUserReferralCode } from '@/lib/users'
 import { hasUserUsedReferral } from '@/lib/referral'
 
@@ -12,6 +12,9 @@ export async function GET() {
   }
 
   try {
+    // Expire stale claims first so discount eligibility is accurate
+    await expireStaleClaimsForPromo()
+
     const [user, isFirstOrder, promoDiscounts] = await Promise.all([
       findUserById(session.user.id),
       hasUserUsedReferral(session.user.id).then(used => !used),

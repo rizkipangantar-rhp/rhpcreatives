@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { getClaimsByUser, getAllPromos } from '@/lib/promos'
+import { getClaimsByUser, getAllPromos, expireStaleClaimsForPromo } from '@/lib/promos'
 
 export async function GET() {
   const session = await getServerSession(authOptions)
@@ -10,6 +10,9 @@ export async function GET() {
   }
 
   try {
+    // Expire stale claims before returning so expired vouchers are visible in UI
+    await expireStaleClaimsForPromo()
+
     const [claims, promos] = await Promise.all([
       getClaimsByUser(session.user.id),
       getAllPromos(),

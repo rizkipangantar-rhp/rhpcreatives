@@ -3,7 +3,7 @@ import { dbGet, dbSet } from '@/lib/store'
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type DiscountType = 'percent' | 'nominal'
-export type ClaimStatus = 'active' | 'used'
+export type ClaimStatus = 'active' | 'used' | 'expired'
 
 export interface Promo {
   id: string
@@ -41,6 +41,7 @@ export interface PromoClaim {
   order_id: string | null
   claimed_at: string
   used_at: string | null
+  expires_at: string | null
 }
 
 export interface WaitlistEntry {
@@ -48,6 +49,10 @@ export interface WaitlistEntry {
   whatsapp: string
   added_at: string
 }
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const CLAIM_EXPIRY_MS = 24 * 60 * 60 * 1000 // 24 hours
 
 // ─── Redis keys ───────────────────────────────────────────────────────────────
 
@@ -134,6 +139,7 @@ async function runMigrationIfNeeded(): Promise<void> {
     order_id: c.usedOrderId ?? null,
     claimed_at: c.claimedAt,
     used_at: c.usedAt ?? null,
+    expires_at: null, // migrated claims don't have expiry
   }))
 
   await writePromos([earlyBird])
@@ -159,6 +165,11 @@ function generateCode(prefix: string, existingCodes: string[]): string {
   return code
 }
 
+export function isClaimExpired(claim: PromoClaim): boolean {
+  if (!claim.expires_at) return false
+  return new Date(claim.expires_at) < new Date()
+}
+
 export function isPromoExpired(promo: Promo): boolean {
   if (!promo.end_date) return false
   return new Date(promo.end_date) < new Date()
@@ -171,6 +182,47 @@ export function isPromoFull(promo: Promo): boolean {
 
 export function isPromoAvailable(promo: Promo): boolean {
   return promo.is_active && !isPromoExpired(promo) && !isPromoFull(promo)
+}
+
+// ─── Expiry ───────────────────────────────────────────────────────────────────
+
+/**
+ * Finds all active claims past their expires_at, marks them 'expired',
+ * and restores each slot to the promo's claimed count.
+ * Call this before quota checks or claim lookups to keep data fresh.
+ */
+export async function expireStaleClaimsForPromo(promoId?: string): Promise<number> {
+  const [claims, promos] = await Promise.all([readClaims(), readPromos()])
+  const now = new Date()
+
+  const toExpire = claims.filter(
+    c => c.status === 'active' &&
+         c.expires_at !== null &&
+         new Date(c.expires_at!) < now &&
+         (promoId ? c.promo_id === promoId : true)
+  )
+
+  if (toExpire.length === 0) return 0
+
+  // Count expired per promo for quota restoration
+  const expiredByPromo = new Map<string, number>()
+  for (const c of toExpire) {
+    expiredByPromo.set(c.promo_id, (expiredByPromo.get(c.promo_id) ?? 0) + 1)
+  }
+
+  const expireIds = new Set(toExpire.map(c => c.claim_id))
+  const updatedClaims = claims.map(c =>
+    expireIds.has(c.claim_id) ? { ...c, status: 'expired' as ClaimStatus } : c
+  )
+
+  const updatedPromos = promos.map(p => {
+    const count = expiredByPromo.get(p.id) ?? 0
+    if (count === 0) return p
+    return { ...p, claimed: Math.max(0, (p.claimed ?? 0) - count) }
+  })
+
+  await Promise.all([writeClaims(updatedClaims), writePromos(updatedPromos)])
+  return toExpire.length
 }
 
 // ─── Promo CRUD ───────────────────────────────────────────────────────────────
@@ -250,7 +302,7 @@ export async function getActiveClaimsForUser(userId: string): Promise<Array<Prom
   const [claims, promos] = await Promise.all([getClaimsByUser(userId), getAllPromos()])
   const promoMap = new Map(promos.map(p => [p.id, p]))
   return claims
-    .filter(c => c.status === 'active')
+    .filter(c => c.status === 'active' && !isClaimExpired(c))
     .map(c => {
       const promo = promoMap.get(c.promo_id)
       if (!promo || !promo.is_active || isPromoExpired(promo)) return null
@@ -273,17 +325,23 @@ export async function claimPromo(
   if (!promo) throw new Error('promo_not_found')
   if (!isPromoAvailable(promo)) throw new Error('promo_unavailable')
 
-  // Check by userId
-  const existingByUser = claims.find(c => c.promo_id === promoId && c.user_id === userId)
+  // Check by userId — skip if expired (allows re-claim after expiry)
+  const existingByUser = claims.find(
+    c => c.promo_id === promoId && c.user_id === userId && c.status !== 'expired' && !isClaimExpired(c)
+  )
   if (existingByUser) throw new Error('already_claimed')
 
-  // Check by email (prevent multi-account abuse)
+  // Check by email (prevent multi-account abuse) — skip if expired
   const existingByEmail = claims.find(
-    c => c.promo_id === promoId && c.email.toLowerCase() === email.toLowerCase() && c.status === 'active'
+    c => c.promo_id === promoId &&
+         c.email.toLowerCase() === email.toLowerCase() &&
+         c.status === 'active' &&
+         !isClaimExpired(c)
   )
   if (existingByEmail) throw new Error('already_claimed')
 
   const existingCodes = claims.map(c => c.voucher_code)
+  const now = new Date()
   const claim: PromoClaim = {
     claim_id: `claim_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
     promo_id: promoId,
@@ -295,8 +353,9 @@ export async function claimPromo(
     voucher_code: generateCode(promo.prefix, existingCodes),
     status: 'active',
     order_id: null,
-    claimed_at: new Date().toISOString(),
+    claimed_at: now.toISOString(),
     used_at: null,
+    expires_at: new Date(now.getTime() + CLAIM_EXPIRY_MS).toISOString(),
   }
 
   claims.push(claim)

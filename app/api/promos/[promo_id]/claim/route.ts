@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { claimPromo, getPromoById, isPromoAvailable } from '@/lib/promos'
+import { claimPromo, getPromoById, isPromoAvailable, expireStaleClaimsForPromo } from '@/lib/promos'
 import { normalizeWa } from '@/lib/wa'
 
 export async function POST(
@@ -20,6 +20,9 @@ export async function POST(
     if (!name?.trim()) {
       return NextResponse.json({ error: 'Nama harus diisi' }, { status: 400 })
     }
+
+    // Expire stale claims first so quota is accurate before we check
+    await expireStaleClaimsForPromo(params.promo_id)
 
     const promo = await getPromoById(params.promo_id)
     if (!promo) {
