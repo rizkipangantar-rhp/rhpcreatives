@@ -127,9 +127,6 @@ export default function PaymentPage() {
   const [retryAt, setRetryAt] = useState<string | null>(null)
   const [copiedKey, setCopiedKey] = useState('')
   const [ccLoading, setCcLoading] = useState(false)
-  const [notes, setNotes] = useState('')
-  const [notesSaveStatus, setNotesSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
-  const notesSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   // 15-min expiry: use retryAt when customer retries, else Midtrans expiry, else createdAt+15min
@@ -161,7 +158,6 @@ export default function PaymentPage() {
         if (!res.ok) throw new Error('Not found')
         const data: Order = await res.json()
         setOrder(data)
-        if (data.notes) setNotes(data.notes)
 
         // If already paid, redirect immediately
         if (data.status === 'paid' || data.status === 'completed') {
@@ -312,25 +308,6 @@ export default function PaymentPage() {
     }
   }
 
-  function handleNotesChange(value: string) {
-    setNotes(value)
-    setNotesSaveStatus('saving')
-    if (notesSaveTimer.current) clearTimeout(notesSaveTimer.current)
-    notesSaveTimer.current = setTimeout(async () => {
-      try {
-        await fetch(`/api/payment/order-notes/${order_id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ notes: value }),
-        })
-        setNotesSaveStatus('saved')
-        setTimeout(() => setNotesSaveStatus('idle'), 2000)
-      } catch {
-        setNotesSaveStatus('idle')
-      }
-    }, 600)
-  }
-
   async function handleRetry() {
     setRetrying(true)
     setChargeError('')
@@ -450,21 +427,7 @@ export default function PaymentPage() {
                 )}
               </div>
 
-              {/* Notes */}
-              <div className={styles.notesWrap}>
-                <label className={styles.notesLabel}>
-                  {p.notesLabel}
-                  {notesSaveStatus === 'saving' && <span className={styles.notesSaveStatus}> {p.notesSaving}</span>}
-                  {notesSaveStatus === 'saved' && <span className={styles.notesSaveStatus}> {p.notesSaved}</span>}
-                </label>
-                <textarea
-                  className={styles.notesTextarea}
-                  value={notes}
-                  onChange={e => handleNotesChange(e.target.value)}
-                  placeholder={p.notesPlaceholder}
-                  rows={3}
-                />
-              </div>
+
             </div>
           </aside>
 
