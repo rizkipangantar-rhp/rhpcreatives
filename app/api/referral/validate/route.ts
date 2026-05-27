@@ -12,7 +12,13 @@ export async function GET(req: Request) {
     return NextResponse.json({ valid: false })
   }
 
+  // Unauthenticated users cannot validate referral codes
+  // (they have no ID to check against, so any code would appear valid — security bug)
+  if (!session?.user?.id) {
+    return NextResponse.json({ valid: false })
+  }
+
   const referrer = await findUserByReferralCode(code)
-  const valid = !!referrer && referrer.id !== session?.user?.id
+  const valid = !!referrer && referrer.id !== session.user.id
   return NextResponse.json({ valid })
 }

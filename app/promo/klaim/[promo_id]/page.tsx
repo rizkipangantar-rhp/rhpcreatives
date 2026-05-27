@@ -84,6 +84,15 @@ export default function KlaimPromoPage() {
   const [wlSubmitting, setWlSubmitting] = useState(false)
   const [wlDone, setWlDone] = useState(false)
 
+  // Auto-transition 'already' → 'expired' when the countdown hits zero
+  useEffect(() => {
+    if (view !== 'already' || !claim?.expires_at) return
+    const msLeft = new Date(claim.expires_at).getTime() - Date.now()
+    if (msLeft <= 0) { setView('expired'); return }
+    const t = setTimeout(() => setView('expired'), msLeft)
+    return () => clearTimeout(t)
+  }, [view, claim?.expires_at])
+
   useEffect(() => {
     if (authStatus === 'unauthenticated') {
       router.push(`/login?callbackUrl=%2Fpromo%2Fklaim%2F${promo_id}`)

@@ -56,7 +56,7 @@ function fmt(price: number) {
 type DiscountStatus = {
   inviteeDiscount: { available: boolean; code: string | null; percent: number }
   referrerReward: { available: boolean; count: number; percent: number; code: string }
-  earlyBird: { available: boolean; used: boolean; percent: number }
+  earlyBird: { available: boolean; used: boolean; percent: number; voucher_code?: string }
 }
 
 type DiscountOption = 'none' | 'referrer_reward' | 'invitee' | 'early_bird'
@@ -188,7 +188,8 @@ export default function OrderPage() {
     } else if (discountOption === 'invitee') {
       discountMode = 'invitee'
     } else if (discountOption === 'early_bird') {
-      discountMode = 'ebird'
+      // Use new promo system if a voucher code exists; fall back to legacy ebird mode
+      discountMode = discountStatus?.earlyBird?.voucher_code ? 'promo' : 'ebird'
     } else {
       discountMode = 'none'
     }
@@ -204,6 +205,8 @@ export default function OrderPage() {
           wa: wa.trim(),
           notes: notes.trim() || undefined,
           discountMode,
+          // Pass voucher code when using new promo early-bird path
+          voucherCode: discountMode === 'promo' ? discountStatus?.earlyBird?.voucher_code : undefined,
           addonId: guestAddon || undefined,
         }),
       })
@@ -324,7 +327,7 @@ export default function OrderPage() {
                   <button
                     key={svc.id}
                     className={`${styles.serviceCard} ${selectedService === svc.id ? styles.selected : ''}`}
-                    onClick={() => { setSelectedService(svc.id); setSelectedPackage(''); setGuestAddon('') }}
+                    onClick={() => { setSelectedService(svc.id); setSelectedPackage(''); setGuestAddon(''); setDiscountOption('none') }}
                   >
                     <span className={styles.serviceIcon}>{svc.icon}</span>
                     <span className={styles.serviceName}>{lang === 'id' ? svc.nameId : svc.nameEn}</span>
