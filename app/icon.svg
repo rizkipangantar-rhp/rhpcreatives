@@ -5,22 +5,22 @@
       <stop offset="100%" stop-color="#ec4899"/>
     </linearGradient>
   </defs>
-  <!-- Background rounded square -->
-  <rect width="32" height="32" rx="6" fill="url(#g)"/>
-  <!-- Inner dark area -->
-  <rect x="2" y="2" width="28" height="28" rx="5" fill="#06060f"/>
-  <!-- "R" as paths: pixel-art 8×9 grid scaled to fit -->
-  <!-- Row 0: full top bar -->
-  <rect x="8"  y="7"  width="12" height="2" fill="url(#g)"/>
-  <!-- Row 0-4: right vertical of top loop -->
-  <rect x="18" y="7"  width="2" height="8" fill="url(#g)"/>
-  <!-- Left vertical spine (full height) -->
-  <rect x="8"  y="7"  width="2" height="18" fill="url(#g)"/>
-  <!-- Middle bar (closes the loop) -->
-  <rect x="8"  y="13" width="12" height="2" fill="url(#g)"/>
-  <!-- Diagonal leg of R going down-right -->
-  <rect x="14" y="15" width="2" height="3" fill="url(#g)"/>
-  <rect x="16" y="18" width="2" height="2" fill="url(#g)"/>
-  <rect x="18" y="20" width="2" height="2" fill="url(#g)"/>
-  <rect x="20" y="22" width="2" height="3" fill="url(#g)"/>
+  <!-- Dark background -->
+  <rect width="32" height="32" rx="5" fill="#06060f"/>
+  <!-- "RHP" in white, bold, upper portion -->
+  <text x="16" y="14"
+    text-anchor="middle"
+    font-family="system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"
+    font-weight="800"
+    font-size="13"
+    fill="white"
+    letter-spacing="-0.5">RHP</text>
+  <!-- "creatives" in gradient, smaller, lower portion -->
+  <text x="16" y="26"
+    text-anchor="middle"
+    font-family="system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"
+    font-weight="600"
+    font-size="7.5"
+    fill="url(#g)"
+    letter-spacing="-0.3">creatives</text>
 </svg>
