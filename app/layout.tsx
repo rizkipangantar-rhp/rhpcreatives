@@ -10,7 +10,7 @@ import { getActivePublicPromos } from '@/lib/promos'
 import type { PromoBarInfo } from '@/components/AnnouncementBar'
 
 export const metadata: Metadata = {
-  title: 'RHP Creatives — Jasa Digital & Desain Kreatif',
+  title: 'RHP Creatives - Jasa Digital & Desain Kreatif',
   description: 'Layanan digital profesional: Undangan Online, Landing Page, Website, dan Desain Grafis. Hubungi kami untuk konsultasi gratis.',
 }
 
