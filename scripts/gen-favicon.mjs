@@ -59,40 +59,22 @@ function encodePNG(width, height, rgba) {
 
 // ─── Pixel font glyphs ────────────────────────────────────────────────────────
 
-// 5×7 uppercase — R, H, P
-const UPPER = {
-  R: [
-    [1,1,1,1,0],
-    [1,0,0,0,1],
-    [1,0,0,0,1],
-    [1,1,1,1,0],
-    [1,0,1,0,0],
-    [1,0,0,1,0],
-    [1,0,0,0,1],
-  ],
-  H: [
-    [1,0,0,0,1],
-    [1,0,0,0,1],
-    [1,0,0,0,1],
-    [1,1,1,1,1],
-    [1,0,0,0,1],
-    [1,0,0,0,1],
-    [1,0,0,0,1],
-  ],
-  P: [
-    [1,1,1,1,0],
-    [1,0,0,0,1],
-    [1,0,0,0,1],
-    [1,1,1,1,0],
-    [1,0,0,0,0],
-    [1,0,0,0,0],
-    [1,0,0,0,0],
-  ],
+// 5×7 uppercase — used for R, H, P at base scale
+const UPPER_5x7 = {
+  R: [[1,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,0],[1,0,1,0,0],[1,0,0,1,0],[1,0,0,0,1]],
+  H: [[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
+  P: [[1,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0]],
 }
-const UW = 5, UH = 7  // glyph cell size
 
-// 3×5 lowercase — letters in "creatives": c r e a t i v e s
-const LOWER = {
+// 3×5 mini uppercase — R, H, P for the 16px icon
+const MINI_3x5 = {
+  R: [[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,1]],
+  H: [[1,0,1],[1,0,1],[1,1,1],[1,0,1],[1,0,1]],
+  P: [[1,1,0],[1,0,1],[1,1,0],[1,0,0],[1,0,0]],
+}
+
+// 3×5 lowercase — for 32px "creatives" (compact fit: 9×3 = 27px wide)
+const LOWER_3x5 = {
   c: [[0,1,1],[1,0,0],[1,0,0],[1,0,0],[0,1,1]],
   r: [[1,1,0],[1,0,1],[1,0,0],[1,0,0],[1,0,0]],
   e: [[0,1,1],[1,0,0],[1,1,0],[1,0,0],[0,1,1]],
@@ -102,15 +84,18 @@ const LOWER = {
   v: [[1,0,1],[1,0,1],[1,0,1],[0,1,0],[0,1,0]],
   s: [[0,1,1],[1,0,0],[0,1,0],[0,0,1],[1,1,0]],
 }
-const LW = 3, LH = 5  // glyph cell size
 
-// 3×5 mini uppercase for 16px icon (fits: 3+1+3+1+3 = 11px wide)
-const MINI = {
-  R: [[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,1]],
-  H: [[1,0,1],[1,0,1],[1,1,1],[1,0,1],[1,0,1]],
-  P: [[1,1,0],[1,0,1],[1,1,0],[1,0,0],[1,0,0]],
+// 4×6 lowercase — for 48px "creatives" (9×4 + 8×1 gap = 44px wide, more readable)
+const LOWER_4x6 = {
+  c: [[0,1,1,1],[1,0,0,0],[1,0,0,0],[1,0,0,0],[1,0,0,0],[0,1,1,1]],
+  r: [[1,1,1,0],[1,0,0,1],[1,0,0,0],[1,0,0,0],[1,0,0,0],[1,0,0,0]],
+  e: [[0,1,1,0],[1,0,0,1],[1,1,1,0],[1,0,0,0],[1,0,0,1],[0,1,1,0]],
+  a: [[0,1,1,0],[1,0,0,0],[0,1,1,0],[1,0,0,1],[1,0,0,1],[0,1,1,1]],
+  t: [[0,1,0,0],[1,1,1,0],[0,1,0,0],[0,1,0,0],[0,1,0,0],[0,0,1,1]],
+  i: [[0,1,1,0],[0,0,0,0],[0,1,1,0],[0,0,1,0],[0,0,1,0],[0,1,1,1]],
+  v: [[1,0,0,1],[1,0,0,1],[1,0,0,1],[0,1,0,1],[0,1,1,0],[0,0,0,0]],
+  s: [[0,1,1,0],[1,0,0,1],[0,1,1,0],[0,0,0,1],[1,0,0,1],[0,1,1,0]],
 }
-const MW = 3, MH = 5
 
 function lerp(a, b, t) { return Math.round(a + (b - a) * t) }
 
@@ -131,15 +116,13 @@ function renderIcon(size) {
     }
   }
 
-  // Paint a pixel in white
   function white(px, py) {
     if (px < 0 || px >= size || py < 0 || py >= size) return
     const i = (py * size + px) * 4
-    if (rgba[i+3] === 0) return  // skip transparent corners
+    if (rgba[i+3] === 0) return
     rgba[i] = 255; rgba[i+1] = 255; rgba[i+2] = 255; rgba[i+3] = 255
   }
 
-  // Paint a pixel in gradient (purple→pink) based on x position
   function grad(px, py, xStart, xTotal) {
     if (px < 0 || px >= size || py < 0 || py >= size) return
     const i = (py * size + px) * 4
@@ -151,52 +134,75 @@ function renderIcon(size) {
     rgba[i+3] = 255
   }
 
-  if (size <= 16) {
-    // 16px: "RHP" in mini 3×5 glyphs, white, centered
-    const word = ['R', 'H', 'P']
-    const totalW = word.length * MW + (word.length - 1) * 1  // 11px
-    const x0 = Math.round((size - totalW) / 2)
-    const y0 = Math.round((size - MH) / 2)
-    for (let ci = 0; ci < word.length; ci++) {
-      const glyph = MINI[word[ci]]
-      const ox = x0 + ci * (MW + 1)
-      for (let gy = 0; gy < MH; gy++)
-        for (let gx = 0; gx < MW; gx++)
-          if (glyph[gy][gx]) white(ox + gx, y0 + gy)
+  // Draw a glyph with specified scale (supports fractional via 2x block painting)
+  function drawGlyph(glyph, gW, gH, ox, oy, scale, paintFn) {
+    for (let gy = 0; gy < gH; gy++) {
+      for (let gx = 0; gx < gW; gx++) {
+        if (!glyph[gy][gx]) continue
+        for (let dy = 0; dy < scale; dy++)
+          for (let dx = 0; dx < scale; dx++)
+            paintFn(ox + gx * scale + dx, oy + gy * scale + dy)
+      }
     }
-  } else {
-    // 32px+: "RHP" (white 5×7) on top, "creatives" (gradient 3×5) below
-    const word1 = ['R', 'H', 'P']
-    const word2 = ['c', 'r', 'e', 'a', 't', 'i', 'v', 'e', 's']
+  }
 
-    // RHP: 3*(5) + 2*1 gap = 17px wide
-    const w1 = word1.length * UW + (word1.length - 1) * 1
-    // creatives: 9*(3) = 27px wide (no gap — tight fit)
-    const w2 = word2.length * LW
+  if (size <= 16) {
+    // ── 16px: "RHP" only, mini 3×5 glyphs ─────────────────────────────────
+    const word = ['R','H','P']
+    const w = word.length * 3 + (word.length - 1)  // 11px
+    const x0 = Math.round((size - w) / 2)
+    const y0 = Math.round((size - 5) / 2)
+    word.forEach((ch, ci) => {
+      drawGlyph(MINI_3x5[ch], 3, 5, x0 + ci * 4, y0, 1, white)
+    })
 
-    const totalH = UH + 2 + LH  // 7 + 2 + 5 = 14px
+  } else if (size === 32) {
+    // ── 32px: "RHP" 5×7 (1×) + "creatives" 3×5 (1×) ──────────────────────
+    const word1 = ['R','H','P']
+    const word2 = ['c','r','e','a','t','i','v','e','s']
+    const w1 = 3 * 5 + 2 * 1   // 17px
+    const w2 = 9 * 3            // 27px (no gap, tight fit)
+    const totalH = 7 + 2 + 5   // 14px
     const y1 = Math.round((size - totalH) / 2)
-    const y2 = y1 + UH + 2
+    const y2 = y1 + 7 + 2
     const x1 = Math.round((size - w1) / 2)
     const x2 = Math.max(1, Math.round((size - w2) / 2))
 
-    // Draw "RHP" in white
-    for (let ci = 0; ci < word1.length; ci++) {
-      const glyph = UPPER[word1[ci]]
-      const ox = x1 + ci * (UW + 1)
-      for (let gy = 0; gy < UH; gy++)
-        for (let gx = 0; gx < UW; gx++)
-          if (glyph[gy][gx]) white(ox + gx, y1 + gy)
-    }
+    word1.forEach((ch, ci) => {
+      drawGlyph(UPPER_5x7[ch], 5, 7, x1 + ci * 6, y1, 1, white)
+    })
+    word2.forEach((ch, ci) => {
+      drawGlyph(LOWER_3x5[ch], 3, 5, x2 + ci * 3, y2, 1,
+        (px, py) => grad(px, py, x2, w2))
+    })
 
-    // Draw "creatives" in gradient
-    for (let ci = 0; ci < word2.length; ci++) {
-      const glyph = LOWER[word2[ci]]
-      const ox = x2 + ci * LW
-      for (let gy = 0; gy < LH; gy++)
-        for (let gx = 0; gx < LW; gx++)
-          if (glyph[gy][gx]) grad(ox + gx, y2 + gy, x2, w2)
-    }
+  } else {
+    // ── 48px: "RHP" 5×7 at 2× scale + "creatives" 4×6 at 1× (with 1px gap) ─
+    const scale = 2
+    const word1 = ['R','H','P']
+    const word2 = ['c','r','e','a','t','i','v','e','s']
+
+    // RHP: 3 letters × (5×2=10px) + 2 gaps × 2px = 34px wide, 14px tall
+    const w1 = word1.length * (5 * scale) + (word1.length - 1) * scale
+    const h1 = 7 * scale   // 14px
+
+    // creatives: 9 letters × 4px + 8 gaps × 1px = 44px wide, 6px tall
+    const w2 = word2.length * 4 + (word2.length - 1) * 1
+    const h2 = 6
+
+    const totalH = h1 + 3 + h2  // 14+3+6 = 23px
+    const y1 = Math.round((size - totalH) / 2)   // ~12px
+    const y2 = y1 + h1 + 3
+    const x1 = Math.round((size - w1) / 2)        // ~7px
+    const x2 = Math.round((size - w2) / 2)        // ~2px
+
+    word1.forEach((ch, ci) => {
+      drawGlyph(UPPER_5x7[ch], 5, 7, x1 + ci * (5 * scale + scale), y1, scale, white)
+    })
+    word2.forEach((ch, ci) => {
+      drawGlyph(LOWER_4x6[ch], 4, 6, x2 + ci * 5, y2, 1,
+        (px, py) => grad(px, py, x2, w2))
+    })
   }
 
   return rgba
