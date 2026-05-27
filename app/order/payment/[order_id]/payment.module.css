@@ -235,6 +235,18 @@
 @media (max-width: 600px) {
   .bankGrid {
     grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .bankLogo {
+    width: 52px;
+    height: 26px;
+    padding: 4px 6px;
+  }
+  .bankBtn {
+    padding: 0.6rem 0.25rem;
   }
 }
 
@@ -382,6 +394,18 @@
 @media (max-width: 500px) {
   .ewalletGrid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .ewalletIcon {
+    width: 52px;
+    height: 26px;
+    padding: 4px 6px;
+  }
+  .ewalletBtn {
+    padding: 0.6rem 0.25rem;
   }
 }
 
