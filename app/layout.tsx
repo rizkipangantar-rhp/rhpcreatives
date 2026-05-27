@@ -12,6 +12,16 @@ import type { PromoBarInfo } from '@/components/AnnouncementBar'
 export const metadata: Metadata = {
   title: 'RHP Creatives - Jasa Digital & Desain Kreatif',
   description: 'Layanan digital profesional: Undangan Online, Landing Page, Website, dan Desain Grafis. Hubungi kami untuk konsultasi gratis.',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '48x48 32x32 16x16', type: 'image/x-icon' },
+      { url: '/favicon-32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-48.png', sizes: '48x48', type: 'image/png' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/favicon-48.png',
+  },
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
