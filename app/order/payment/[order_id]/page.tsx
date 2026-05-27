@@ -518,7 +518,6 @@ export default function PaymentPage() {
                           >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={b.logo} alt={b.label} className={styles.bankLogo} />
-                            {b.label}
                           </button>
                         ))}
                       </div>

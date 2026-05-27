@@ -267,10 +267,14 @@
 }
 
 .bankLogo {
-  width: 56px;
-  height: 28px;
+  width: 72px;
+  height: 36px;
   object-fit: contain;
   object-position: center;
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 5px 8px;
+  box-sizing: content-box;
 }
 
 /* ── VA number display ── */
