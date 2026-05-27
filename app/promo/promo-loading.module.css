@@ -1,0 +1,143 @@
+/* Shimmer animation */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+
+.skel {
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.09) 50%,
+    rgba(255,255,255,0.04) 75%
+  );
+  background-size: 600px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.wrap {
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+/* ── Hero ── */
+.hero {
+  padding: calc(var(--bar-h) + 5.75rem) clamp(1.5rem, 5vw, 6rem) 5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.skelLabel {
+  width: 120px;
+  height: 14px;
+}
+
+.skelTitle {
+  width: clamp(240px, 45vw, 480px);
+  height: clamp(36px, 5vw, 56px);
+  border-radius: 12px;
+}
+
+.skelSub {
+  width: clamp(200px, 40vw, 400px);
+  height: 18px;
+}
+
+/* ── Sections ── */
+.section {
+  padding: 5rem clamp(1.5rem, 5vw, 6rem);
+  background: var(--surface);
+  display: flex;
+  justify-content: center;
+}
+
+.sectionAlt {
+  padding: 6rem clamp(1.5rem, 5vw, 6rem);
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* ── Promo card ── */
+.promoCard {
+  max-width: 720px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.skelBadge {
+  width: 120px;
+  height: 28px;
+  border-radius: 999px;
+}
+
+.skelH2 {
+  width: clamp(180px, 35vw, 340px);
+  height: clamp(40px, 5vw, 60px);
+  border-radius: 12px;
+}
+
+.skelDesc {
+  width: clamp(260px, 50vw, 480px);
+  height: 16px;
+}
+
+.skelDescShort {
+  width: clamp(160px, 30vw, 280px);
+}
+
+.statsRow {
+  display: flex;
+  gap: 3rem;
+  margin: 0.5rem 0;
+}
+
+.skelStat {
+  width: 80px;
+  height: 56px;
+  border-radius: 10px;
+}
+
+.skelBtn {
+  width: 200px;
+  height: 52px;
+  border-radius: 999px;
+  margin-top: 0.5rem;
+}
+
+/* ── Bundle ── */
+.bundleGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  max-width: 900px;
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+.skelCard {
+  height: 180px;
+  border-radius: 16px;
+}
+
+.skelCardWide {
+  grid-column: 1 / -1;
+  height: 120px;
+  border-radius: 16px;
+}
+
+@media (max-width: 768px) {
+  .hero { padding: calc(var(--bar-h) + 5rem) 1.5rem 3.5rem; }
+  .section { padding: 4rem 1.5rem; }
+  .sectionAlt { padding: 4rem 1.5rem; }
+  .bundleGrid { grid-template-columns: 1fr; }
+  .skelCardWide { grid-column: auto; }
+}

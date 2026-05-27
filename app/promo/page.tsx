@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic'
+export const revalidate = 30 // ISR: cache page for 30s, rebuild in background
 
 import PageHero from '@/components/PageHero'
 import PromoContent from '@/components/PromoContent'
