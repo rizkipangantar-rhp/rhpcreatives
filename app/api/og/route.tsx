@@ -13,7 +13,7 @@ export function GET() {
           flexDirection: 'column',
           justifyContent: 'center',
           padding: '0 100px',
-          background: 'linear-gradient(135deg, #1e0b4a 0%, #06060f 50%, #2e0b1e 100%)',
+          background: '#06060f',
           position: 'relative',
           overflow: 'hidden',
         }}
@@ -27,7 +27,7 @@ export function GET() {
             width: 600,
             height: 600,
             borderRadius: '50%',
-            background: 'rgba(139,92,246,0.18)',
+            background: 'linear-gradient(135deg, #4c1d95, #7c3aed)',
             display: 'flex',
           }}
         />
@@ -40,7 +40,7 @@ export function GET() {
             width: 550,
             height: 550,
             borderRadius: '50%',
-            background: 'rgba(236,72,153,0.12)',
+            background: 'linear-gradient(135deg, #831843, #be185d)',
             display: 'flex',
           }}
         />
