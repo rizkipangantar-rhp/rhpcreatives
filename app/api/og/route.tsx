@@ -1,8 +1,15 @@
 import { ImageResponse } from 'next/og'
+import type { NextRequest } from 'next/server'
 
 export const runtime = 'edge'
 
-export function GET() {
+export async function GET(req: NextRequest) {
+  let fontData: ArrayBuffer | null = null
+  try {
+    const origin = new URL(req.url).origin
+    fontData = await fetch(`${origin}/fonts/SpaceGrotesk-Bold.woff2`).then(r => r.arrayBuffer())
+  } catch { /* system font fallback */ }
+
   return new ImageResponse(
     (
       <div
@@ -16,6 +23,7 @@ export function GET() {
           background: '#06060f',
           position: 'relative',
           overflow: 'hidden',
+          fontFamily: '"Space Grotesk", system-ui, sans-serif',
         }}
       >
         <div
@@ -86,6 +94,10 @@ export function GET() {
         </div>
       </div>
     ),
-    { width: 1200, height: 630 },
+    {
+      width: 1200,
+      height: 630,
+      ...(fontData ? { fonts: [{ name: 'Space Grotesk', data: fontData, weight: 700 as const, style: 'normal' as const }] } : {}),
+    },
   )
 }
