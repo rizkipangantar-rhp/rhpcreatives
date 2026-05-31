@@ -1,26 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <defs>
-    <linearGradient id="g" gradientUnits="userSpaceOnUse" x1="2" y1="0" x2="30" y2="0">
+    <linearGradient id="g" gradientUnits="userSpaceOnUse" x1="3" y1="0" x2="29" y2="0">
       <stop offset="0%" stop-color="#8b5cf6"/>
       <stop offset="100%" stop-color="#ec4899"/>
     </linearGradient>
   </defs>
   <rect width="32" height="32" rx="5" fill="#06060f"/>
-  <!-- textLength forces text to fit exactly — no overflow, visible at tiny sizes -->
-  <text x="16" y="15"
+  <text x="16" y="21"
     text-anchor="middle"
     font-family="system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"
     font-weight="900"
-    font-size="15"
-    fill="white"
-    textLength="22"
-    lengthAdjust="spacingAndGlyphs">RHP</text>
-  <text x="16" y="28"
-    text-anchor="middle"
-    font-family="system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"
-    font-weight="700"
-    font-size="11"
+    font-size="18"
     fill="url(#g)"
-    textLength="28"
-    lengthAdjust="spacingAndGlyphs">creatives</text>
+    textLength="26"
+    lengthAdjust="spacingAndGlyphs">RHP</text>
 </svg>

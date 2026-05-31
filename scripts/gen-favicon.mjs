@@ -1,6 +1,6 @@
 /**
  * Generates favicon.ico (48x48 + 32x32 + 16x16) + favicon PNGs from pure Node.js.
- * Design: dark bg (#06060f), white "RHP" on top, purple→pink "creatives" below.
+ * Design: dark bg (#06060f), "RHP" in purple→pink gradient, centered.
  * Run: node scripts/gen-favicon.mjs
  */
 import { deflateSync } from 'zlib'
@@ -59,42 +59,49 @@ function encodePNG(width, height, rgba) {
 
 // ─── Pixel font glyphs ────────────────────────────────────────────────────────
 
-// 5×7 uppercase — used for R, H, P at base scale
-const UPPER_5x7 = {
-  R: [[1,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,0],[1,0,1,0,0],[1,0,0,1,0],[1,0,0,0,1]],
-  H: [[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
-  P: [[1,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0]],
+// 6×9 — R, H, P — for 32px (1×) and 48px (2×)
+const GLYPH_6x9 = {
+  R: [
+    [1,1,1,1,0,0],
+    [1,0,0,0,1,0],
+    [1,0,0,0,1,0],
+    [1,0,0,0,1,0],
+    [1,1,1,1,0,0],
+    [1,0,0,1,0,0],
+    [1,0,0,0,1,0],
+    [1,0,0,0,0,1],
+    [1,0,0,0,0,1],
+  ],
+  H: [
+    [1,0,0,0,0,1],
+    [1,0,0,0,0,1],
+    [1,0,0,0,0,1],
+    [1,0,0,0,0,1],
+    [1,1,1,1,1,1],
+    [1,0,0,0,0,1],
+    [1,0,0,0,0,1],
+    [1,0,0,0,0,1],
+    [1,0,0,0,0,1],
+  ],
+  P: [
+    [1,1,1,1,0,0],
+    [1,0,0,0,1,0],
+    [1,0,0,0,1,0],
+    [1,0,0,0,1,0],
+    [1,1,1,1,0,0],
+    [1,0,0,0,0,0],
+    [1,0,0,0,0,0],
+    [1,0,0,0,0,0],
+    [1,0,0,0,0,0],
+  ],
 }
+const GW = 6, GH = 9
 
-// 3×5 mini uppercase — R, H, P for the 16px icon
-const MINI_3x5 = {
+// 3×5 mini — for 16px
+const MINI = {
   R: [[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,1]],
   H: [[1,0,1],[1,0,1],[1,1,1],[1,0,1],[1,0,1]],
   P: [[1,1,0],[1,0,1],[1,1,0],[1,0,0],[1,0,0]],
-}
-
-// 3×5 lowercase — for 32px "creatives" (compact fit: 9×3 = 27px wide)
-const LOWER_3x5 = {
-  c: [[0,1,1],[1,0,0],[1,0,0],[1,0,0],[0,1,1]],
-  r: [[1,1,0],[1,0,1],[1,0,0],[1,0,0],[1,0,0]],
-  e: [[0,1,1],[1,0,0],[1,1,0],[1,0,0],[0,1,1]],
-  a: [[0,1,0],[0,0,1],[0,1,1],[1,0,1],[0,1,1]],
-  t: [[1,1,1],[0,1,0],[0,1,0],[0,1,0],[0,1,1]],
-  i: [[0,1,0],[0,0,0],[0,1,0],[0,1,0],[0,1,0]],
-  v: [[1,0,1],[1,0,1],[1,0,1],[0,1,0],[0,1,0]],
-  s: [[0,1,1],[1,0,0],[0,1,0],[0,0,1],[1,1,0]],
-}
-
-// 4×6 lowercase — for 48px "creatives" (9×4 + 8×1 gap = 44px wide, more readable)
-const LOWER_4x6 = {
-  c: [[0,1,1,1],[1,0,0,0],[1,0,0,0],[1,0,0,0],[1,0,0,0],[0,1,1,1]],
-  r: [[1,1,1,0],[1,0,0,1],[1,0,0,0],[1,0,0,0],[1,0,0,0],[1,0,0,0]],
-  e: [[0,1,1,0],[1,0,0,1],[1,1,1,0],[1,0,0,0],[1,0,0,1],[0,1,1,0]],
-  a: [[0,1,1,0],[1,0,0,0],[0,1,1,0],[1,0,0,1],[1,0,0,1],[0,1,1,1]],
-  t: [[0,1,0,0],[1,1,1,0],[0,1,0,0],[0,1,0,0],[0,1,0,0],[0,0,1,1]],
-  i: [[0,1,1,0],[0,0,0,0],[0,1,1,0],[0,0,1,0],[0,0,1,0],[0,1,1,1]],
-  v: [[1,0,0,1],[1,0,0,1],[1,0,0,1],[0,1,0,1],[0,1,1,0],[0,0,0,0]],
-  s: [[0,1,1,0],[1,0,0,1],[0,1,1,0],[0,0,0,1],[1,0,0,1],[0,1,1,0]],
 }
 
 function lerp(a, b, t) { return Math.round(a + (b - a) * t) }
@@ -116,92 +123,53 @@ function renderIcon(size) {
     }
   }
 
-  function white(px, py) {
+  // Paint a pixel in purple→pink gradient based on x position within the text block
+  function grad(px, py, xStart, totalW) {
     if (px < 0 || px >= size || py < 0 || py >= size) return
     const i = (py * size + px) * 4
     if (rgba[i+3] === 0) return
-    rgba[i] = 255; rgba[i+1] = 255; rgba[i+2] = 255; rgba[i+3] = 255
-  }
-
-  function grad(px, py, xStart, xTotal) {
-    if (px < 0 || px >= size || py < 0 || py >= size) return
-    const i = (py * size + px) * 4
-    if (rgba[i+3] === 0) return
-    const t = Math.max(0, Math.min(1, (px - xStart) / Math.max(1, xTotal - 1)))
+    const t = Math.max(0, Math.min(1, (px - xStart) / Math.max(1, totalW - 1)))
     rgba[i]   = lerp(0x8b, 0xec, t)
     rgba[i+1] = lerp(0x5c, 0x48, t)
     rgba[i+2] = lerp(0xf6, 0x99, t)
     rgba[i+3] = 255
   }
 
-  // Draw a glyph with specified scale (supports fractional via 2x block painting)
-  function drawGlyph(glyph, gW, gH, ox, oy, scale, paintFn) {
-    for (let gy = 0; gy < gH; gy++) {
-      for (let gx = 0; gx < gW; gx++) {
-        if (!glyph[gy][gx]) continue
-        for (let dy = 0; dy < scale; dy++)
-          for (let dx = 0; dx < scale; dx++)
-            paintFn(ox + gx * scale + dx, oy + gy * scale + dy)
-      }
-    }
-  }
+  const word = ['R', 'H', 'P']
 
   if (size <= 16) {
-    // ── 16px: "RHP" only, mini 3×5 glyphs ─────────────────────────────────
-    const word = ['R','H','P']
-    const w = word.length * 3 + (word.length - 1)  // 11px
-    const x0 = Math.round((size - w) / 2)
+    // ── 16px: 3×5 mini glyphs, 1× scale ──────────────────────────────────────
+    const totalW = word.length * 3 + (word.length - 1) * 1  // 11px
+    const x0 = Math.round((size - totalW) / 2)
     const y0 = Math.round((size - 5) / 2)
     word.forEach((ch, ci) => {
-      drawGlyph(MINI_3x5[ch], 3, 5, x0 + ci * 4, y0, 1, white)
-    })
-
-  } else if (size === 32) {
-    // ── 32px: "RHP" 5×7 (1×) + "creatives" 3×5 (1×) ──────────────────────
-    const word1 = ['R','H','P']
-    const word2 = ['c','r','e','a','t','i','v','e','s']
-    const w1 = 3 * 5 + 2 * 1   // 17px
-    const w2 = 9 * 3            // 27px (no gap, tight fit)
-    const totalH = 7 + 2 + 5   // 14px
-    const y1 = Math.round((size - totalH) / 2)
-    const y2 = y1 + 7 + 2
-    const x1 = Math.round((size - w1) / 2)
-    const x2 = Math.max(1, Math.round((size - w2) / 2))
-
-    word1.forEach((ch, ci) => {
-      drawGlyph(UPPER_5x7[ch], 5, 7, x1 + ci * 6, y1, 1, white)
-    })
-    word2.forEach((ch, ci) => {
-      drawGlyph(LOWER_3x5[ch], 3, 5, x2 + ci * 3, y2, 1,
-        (px, py) => grad(px, py, x2, w2))
+      const glyph = MINI[ch]
+      const ox = x0 + ci * 4
+      for (let gy = 0; gy < 5; gy++)
+        for (let gx = 0; gx < 3; gx++)
+          if (glyph[gy][gx]) grad(ox + gx, y0 + gy, x0, totalW)
     })
 
   } else {
-    // ── 48px: "RHP" 5×7 at 2× scale + "creatives" 4×6 at 1× (with 1px gap) ─
-    const scale = 2
-    const word1 = ['R','H','P']
-    const word2 = ['c','r','e','a','t','i','v','e','s']
+    // ── 32px: 6×9 glyphs at 1×   |   48px: 6×9 glyphs at 2× ────────────────
+    const scale = size <= 32 ? 1 : 2
+    const gap = scale  // 1px gap at 1×, 2px gap at 2×
+    const totalW = word.length * GW * scale + (word.length - 1) * gap
+    const totalH = GH * scale
+    const x0 = Math.round((size - totalW) / 2)
+    const y0 = Math.round((size - totalH) / 2)
 
-    // RHP: 3 letters × (5×2=10px) + 2 gaps × 2px = 34px wide, 14px tall
-    const w1 = word1.length * (5 * scale) + (word1.length - 1) * scale
-    const h1 = 7 * scale   // 14px
-
-    // creatives: 9 letters × 4px + 8 gaps × 1px = 44px wide, 6px tall
-    const w2 = word2.length * 4 + (word2.length - 1) * 1
-    const h2 = 6
-
-    const totalH = h1 + 3 + h2  // 14+3+6 = 23px
-    const y1 = Math.round((size - totalH) / 2)   // ~12px
-    const y2 = y1 + h1 + 3
-    const x1 = Math.round((size - w1) / 2)        // ~7px
-    const x2 = Math.round((size - w2) / 2)        // ~2px
-
-    word1.forEach((ch, ci) => {
-      drawGlyph(UPPER_5x7[ch], 5, 7, x1 + ci * (5 * scale + scale), y1, scale, white)
-    })
-    word2.forEach((ch, ci) => {
-      drawGlyph(LOWER_4x6[ch], 4, 6, x2 + ci * 5, y2, 1,
-        (px, py) => grad(px, py, x2, w2))
+    word.forEach((ch, ci) => {
+      const glyph = GLYPH_6x9[ch]
+      const ox = x0 + ci * (GW * scale + gap)
+      for (let gy = 0; gy < GH; gy++) {
+        for (let gx = 0; gx < GW; gx++) {
+          if (!glyph[gy][gx]) continue
+          for (let dy = 0; dy < scale; dy++)
+            for (let dx = 0; dx < scale; dx++)
+              grad(ox + gx * scale + dx, y0 + gy * scale + dy, x0, totalW)
+        }
+      }
     })
   }
 
@@ -242,4 +210,4 @@ console.log('✓  public/favicon-32.png')
 const ico = makeICO(pngBufs, sizes)
 writeFileSync(resolve(ROOT, 'app/favicon.ico'), ico)
 console.log(`✓  app/favicon.ico (${ico.length} bytes, sizes: ${sizes.join(', ')}px)`)
-console.log('\nDone! Commit and push. Then re-crawl via Google Search Console.')
+console.log('\nDone!')
