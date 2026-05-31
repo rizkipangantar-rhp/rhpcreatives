@@ -1,6 +1,10 @@
 import { ImageResponse } from 'next/og'
+import { readFileSync } from 'fs'
+import { resolve } from 'path'
 
-export const runtime = 'edge'
+export const runtime = 'nodejs'
+
+const fontData = readFileSync(resolve(process.cwd(), 'public/fonts/SpaceGrotesk-Bold.woff2'))
 
 export function GET() {
   return new ImageResponse(
@@ -16,6 +20,7 @@ export function GET() {
           background: '#06060f',
           position: 'relative',
           overflow: 'hidden',
+          fontFamily: '"Space Grotesk"',
         }}
       >
         {/* purple blob top-right */}
@@ -58,9 +63,10 @@ export function GET() {
             <span
               style={{
                 fontSize: 108,
-                fontWeight: 800,
+                fontWeight: 700,
                 color: '#ffffff',
                 letterSpacing: '-3px',
+                fontFamily: '"Space Grotesk"',
               }}
             >
               RHP
@@ -68,8 +74,9 @@ export function GET() {
             <span
               style={{
                 fontSize: 108,
-                fontWeight: 800,
+                fontWeight: 700,
                 letterSpacing: '-3px',
+                fontFamily: '"Space Grotesk"',
                 background: 'linear-gradient(90deg, #8b5cf6, #ec4899)',
                 backgroundClip: 'text',
                 color: 'transparent',
@@ -97,6 +104,7 @@ export function GET() {
               color: 'rgba(255,255,255,0.5)',
               fontWeight: 400,
               letterSpacing: '-0.5px',
+              fontFamily: '"Space Grotesk"',
             }}
           >
             Jasa Digital & Desain Kreatif
@@ -115,6 +123,7 @@ export function GET() {
                   fontSize: 22,
                   display: 'flex',
                   background: 'rgba(139,92,246,0.06)',
+                  fontFamily: '"Space Grotesk"',
                 }}
               >
                 {s}
@@ -124,6 +133,17 @@ export function GET() {
         </div>
       </div>
     ),
-    { width: 1200, height: 630 },
+    {
+      width: 1200,
+      height: 630,
+      fonts: [
+        {
+          name: 'Space Grotesk',
+          data: fontData,
+          weight: 700,
+          style: 'normal',
+        },
+      ],
+    },
   )
 }
