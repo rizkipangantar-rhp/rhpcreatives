@@ -31,13 +31,13 @@ export const metadata: Metadata = {
     siteName: 'RHP Creatives',
     title: 'RHP Creatives - Jasa Digital & Desain Kreatif',
     description: 'Layanan digital profesional: Undangan Online, Landing Page, Website, dan Desain Grafis. Hubungi kami untuk konsultasi gratis.',
-    images: [{ url: '/api/og', width: 1200, height: 630, alt: 'RHP Creatives' }],
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'RHP Creatives' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'RHP Creatives - Jasa Digital & Desain Kreatif',
     description: 'Layanan digital profesional: Undangan Online, Landing Page, Website, dan Desain Grafis.',
-    images: ['/api/og'],
+    images: ['/og-image.png'],
   },
   icons: {
     icon: [
