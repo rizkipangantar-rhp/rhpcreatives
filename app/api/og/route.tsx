@@ -22,12 +22,12 @@ export function GET() {
         <div
           style={{
             position: 'absolute',
-            top: -160,
-            right: -160,
-            width: 600,
-            height: 600,
+            top: -200,
+            right: -200,
+            width: 750,
+            height: 750,
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(139,92,246,0.6) 0%, rgba(236,72,153,0.3) 45%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(139,92,246,0.5) 0%, rgba(139,92,246,0.3) 20%, rgba(236,72,153,0.2) 40%, rgba(236,72,153,0.07) 60%, transparent 75%)',
             display: 'flex',
           }}
         />
@@ -35,12 +35,12 @@ export function GET() {
         <div
           style={{
             position: 'absolute',
-            bottom: -160,
-            left: -160,
-            width: 550,
-            height: 550,
+            bottom: -200,
+            left: -200,
+            width: 700,
+            height: 700,
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(236,72,153,0.55) 0%, rgba(139,92,246,0.25) 45%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(236,72,153,0.45) 0%, rgba(236,72,153,0.25) 20%, rgba(139,92,246,0.15) 40%, rgba(139,92,246,0.05) 60%, transparent 75%)',
             display: 'flex',
           }}
         />
