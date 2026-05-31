@@ -1,12 +1,12 @@
 import { ImageResponse } from 'next/og'
-import { readFileSync } from 'fs'
-import { resolve } from 'path'
+import type { NextRequest } from 'next/server'
 
-export const runtime = 'nodejs'
+export const runtime = 'edge'
 
-const fontData = readFileSync(resolve(process.cwd(), 'public/fonts/SpaceGrotesk-Bold.woff2'))
+export async function GET(req: NextRequest) {
+  const origin = new URL(req.url).origin
+  const fontData = await fetch(`${origin}/fonts/SpaceGrotesk-Bold.woff2`).then(r => r.arrayBuffer())
 
-export function GET() {
   return new ImageResponse(
     (
       <div
