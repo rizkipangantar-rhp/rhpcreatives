@@ -13,7 +13,7 @@ export function GET() {
           flexDirection: 'column',
           justifyContent: 'center',
           padding: '0 100px',
-          background: '#06060f',
+          background: 'linear-gradient(135deg, #0d0520 0%, #06060f 50%, #130614 100%)',
           position: 'relative',
           overflow: 'hidden',
         }}
