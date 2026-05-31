@@ -101,15 +101,18 @@ function OGImage() {
 }
 
 export async function GET(req: NextRequest) {
-  let fonts: ConstructorParameters<typeof ImageResponse>[1]['fonts'] = []
+  let fontData: ArrayBuffer | null = null
 
   try {
     const origin = new URL(req.url).origin
-    const fontData = await fetch(`${origin}/fonts/SpaceGrotesk-Bold.woff2`).then(r => r.arrayBuffer())
-    fonts = [{ name: 'Space Grotesk', data: fontData, weight: 700, style: 'normal' }]
+    fontData = await fetch(`${origin}/fonts/SpaceGrotesk-Bold.woff2`).then(r => r.arrayBuffer())
   } catch {
     // font unavailable — renders with system font
   }
 
-  return new ImageResponse(<OGImage />, { width: 1200, height: 630, fonts })
+  return new ImageResponse(<OGImage />, {
+    width: 1200,
+    height: 630,
+    ...(fontData ? { fonts: [{ name: 'Space Grotesk', data: fontData, weight: 700 as const, style: 'normal' as const }] } : {}),
+  })
 }
