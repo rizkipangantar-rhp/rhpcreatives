@@ -27,7 +27,7 @@ export function GET() {
             width: 600,
             height: 600,
             borderRadius: '50%',
-            background: 'linear-gradient(135deg, #4c1d95, #7c3aed)',
+            background: 'radial-gradient(circle, rgba(139,92,246,0.55) 0%, rgba(139,92,246,0.1) 50%, transparent 70%)',
             display: 'flex',
           }}
         />
@@ -40,7 +40,7 @@ export function GET() {
             width: 550,
             height: 550,
             borderRadius: '50%',
-            background: 'linear-gradient(135deg, #831843, #be185d)',
+            background: 'radial-gradient(circle, rgba(236,72,153,0.5) 0%, rgba(236,72,153,0.1) 50%, transparent 70%)',
             display: 'flex',
           }}
         />
