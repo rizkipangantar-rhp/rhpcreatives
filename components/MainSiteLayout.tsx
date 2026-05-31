@@ -18,6 +18,8 @@ export default function MainSiteLayout({
 }) {
   const pathname = usePathname()
   if (pathname?.startsWith('/admin')) return <>{children}</>
+  // Invitation pages (/undangan/[template]/[slug]) are standalone — no site nav
+  if (pathname?.match(/^\/undangan\/[^/]+\/[^/]+/)) return <>{children}</>
   return (
     <>
       <AnnouncementBar initialPromo={initialPromo} />
