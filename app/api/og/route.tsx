@@ -18,7 +18,7 @@ export function GET() {
           overflow: 'hidden',
         }}
       >
-        {/* purple blob top-right */}
+        {/* purple→pink blob top-right */}
         <div
           style={{
             position: 'absolute',
@@ -27,11 +27,11 @@ export function GET() {
             width: 600,
             height: 600,
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(139,92,246,0.5) 0%, transparent 65%)',
+            background: 'radial-gradient(circle, rgba(139,92,246,0.6) 0%, rgba(236,72,153,0.3) 45%, transparent 70%)',
             display: 'flex',
           }}
         />
-        {/* pink blob bottom-left */}
+        {/* pink→purple blob bottom-left */}
         <div
           style={{
             position: 'absolute',
@@ -40,7 +40,7 @@ export function GET() {
             width: 550,
             height: 550,
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(236,72,153,0.45) 0%, transparent 65%)',
+            background: 'radial-gradient(circle, rgba(236,72,153,0.55) 0%, rgba(139,92,246,0.25) 45%, transparent 70%)',
             display: 'flex',
           }}
         />
@@ -77,7 +77,8 @@ export function GET() {
           style={{
             display: 'flex',
             fontSize: 36,
-            color: 'rgba(255,255,255,0.55)',
+            fontWeight: 700,
+            color: '#ffffff',
             marginBottom: '40px',
             letterSpacing: '-0.5px',
           }}
@@ -95,8 +96,9 @@ export function GET() {
                 padding: '10px 24px',
                 borderRadius: '100px',
                 border: '1px solid rgba(139,92,246,0.5)',
-                color: 'rgba(255,255,255,0.65)',
+                color: '#ffffff',
                 fontSize: 22,
+                fontWeight: 600,
               }}
             >
               {s}
