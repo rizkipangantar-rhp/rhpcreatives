@@ -10,133 +10,108 @@ export function GET() {
           width: '1200px',
           height: '630px',
           display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          padding: '0 100px',
           background: '#06060f',
           position: 'relative',
           overflow: 'hidden',
         }}
       >
-        {/* Left content */}
+        {/* purple blob top-right */}
+        <div
+          style={{
+            position: 'absolute',
+            top: -160,
+            right: -160,
+            width: 600,
+            height: 600,
+            borderRadius: '50%',
+            background: 'rgba(139,92,246,0.18)',
+            display: 'flex',
+          }}
+        />
+        {/* pink blob bottom-left */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: -160,
+            left: -160,
+            width: 550,
+            height: 550,
+            borderRadius: '50%',
+            background: 'rgba(236,72,153,0.12)',
+            display: 'flex',
+          }}
+        />
+
+        {/* Brand */}
         <div
           style={{
             display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            padding: '0 72px',
-            width: '700px',
-            zIndex: 1,
+            fontSize: 96,
+            fontWeight: 800,
+            color: '#ffffff',
+            letterSpacing: '-3px',
+            lineHeight: 1,
+            marginBottom: '20px',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'baseline', marginBottom: '8px' }}>
-            <div style={{ display: 'flex', fontSize: 80, fontWeight: 800, color: '#ffffff', letterSpacing: '-2px' }}>
-              RHP
-            </div>
-            <div style={{ display: 'flex', fontSize: 80, fontWeight: 800, color: '#a78bfa', letterSpacing: '-2px' }}>
-              Creatives
-            </div>
-          </div>
-
-          <div
-            style={{
-              display: 'flex',
-              width: 64,
-              height: 4,
-              background: 'linear-gradient(90deg, #8b5cf6, #ec4899)',
-              borderRadius: '2px',
-              marginBottom: '28px',
-            }}
-          />
-
-          <div style={{ display: 'flex', fontSize: 30, color: 'rgba(255,255,255,0.55)', marginBottom: '36px' }}>
-            Jasa Digital & Desain Kreatif
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '40px' }}>
-            {['Undangan Online', 'Landing Page', 'Website', 'Desain Grafis'].map((s, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div
-                  style={{
-                    display: 'flex',
-                    width: 8,
-                    height: 8,
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
-                  }}
-                />
-                <div style={{ display: 'flex', fontSize: 22, color: 'rgba(255,255,255,0.7)' }}>{s}</div>
-              </div>
-            ))}
-          </div>
-
-          <div
-            style={{
-              display: 'flex',
-              padding: '8px 18px',
-              borderRadius: '100px',
-              border: '1px solid rgba(139,92,246,0.4)',
-              color: 'rgba(255,255,255,0.4)',
-              fontSize: 18,
-            }}
-          >
-            rhpcreatives.com
-          </div>
+          RHP Creatives
         </div>
 
-        {/* Right decorative */}
+        {/* Gradient line */}
         <div
           style={{
             display: 'flex',
-            width: '500px',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
+            width: 80,
+            height: 5,
+            background: 'linear-gradient(90deg, #8b5cf6, #ec4899)',
+            borderRadius: '3px',
+            marginBottom: '28px',
+          }}
+        />
+
+        {/* Tagline */}
+        <div
+          style={{
+            display: 'flex',
+            fontSize: 36,
+            color: 'rgba(255,255,255,0.55)',
+            marginBottom: '40px',
+            letterSpacing: '-0.5px',
           }}
         >
-          <div
-            style={{
-              position: 'absolute',
-              width: 480,
-              height: 480,
-              borderRadius: '50%',
-              background: 'rgba(139,92,246,0.1)',
-              display: 'flex',
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              width: 340,
-              height: 340,
-              borderRadius: '50%',
-              background: 'rgba(139,92,246,0.15)',
-              display: 'flex',
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              width: 220,
-              height: 220,
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, rgba(139,92,246,0.7), rgba(236,72,153,0.6))',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <div style={{ display: 'flex', fontSize: 64, fontWeight: 800, color: 'white', letterSpacing: '-2px' }}>
-              RHP
-            </div>
-          </div>
+          Jasa Digital & Desain Kreatif
         </div>
 
-        {/* Bottom gradient bar */}
+        {/* Service tags */}
+        <div style={{ display: 'flex', gap: '12px' }}>
+          {['Undangan Online', 'Landing Page', 'Website', 'Desain Grafis'].map((s, i) => (
+            <div
+              key={i}
+              style={{
+                display: 'flex',
+                padding: '10px 24px',
+                borderRadius: '100px',
+                border: '1px solid rgba(139,92,246,0.5)',
+                color: 'rgba(255,255,255,0.65)',
+                fontSize: 22,
+              }}
+            >
+              {s}
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom bar */}
         <div
           style={{
             position: 'absolute',
             bottom: 0,
             left: 0,
             right: 0,
-            height: 3,
+            height: 4,
             background: 'linear-gradient(90deg, #8b5cf6, #ec4899)',
             display: 'flex',
           }}
