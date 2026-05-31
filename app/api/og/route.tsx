@@ -22,11 +22,10 @@ export function GET() {
             flexDirection: 'column',
             justifyContent: 'center',
             padding: '0 72px',
-            flex: 1,
+            width: '700px',
             zIndex: 1,
           }}
         >
-          {/* Brand */}
           <div style={{ display: 'flex', alignItems: 'baseline', marginBottom: '8px' }}>
             <div style={{ display: 'flex', fontSize: 80, fontWeight: 800, color: '#ffffff', letterSpacing: '-2px' }}>
               RHP
@@ -36,7 +35,6 @@ export function GET() {
             </div>
           </div>
 
-          {/* Gradient divider */}
           <div
             style={{
               display: 'flex',
@@ -48,20 +46,10 @@ export function GET() {
             }}
           />
 
-          {/* Tagline */}
-          <div
-            style={{
-              display: 'flex',
-              fontSize: 30,
-              color: 'rgba(255,255,255,0.55)',
-              marginBottom: '36px',
-              letterSpacing: '-0.3px',
-            }}
-          >
+          <div style={{ display: 'flex', fontSize: 30, color: 'rgba(255,255,255,0.55)', marginBottom: '36px' }}>
             Jasa Digital & Desain Kreatif
           </div>
 
-          {/* Services */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '40px' }}>
             {['Undangan Online', 'Landing Page', 'Website', 'Desain Grafis'].map((s, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -79,7 +67,6 @@ export function GET() {
             ))}
           </div>
 
-          {/* Domain badge */}
           <div
             style={{
               display: 'flex',
@@ -88,7 +75,6 @@ export function GET() {
               border: '1px solid rgba(139,92,246,0.4)',
               color: 'rgba(255,255,255,0.4)',
               fontSize: 18,
-              width: 'fit-content',
             }}
           >
             rhpcreatives.com
@@ -99,66 +85,49 @@ export function GET() {
         <div
           style={{
             display: 'flex',
-            width: '420px',
+            width: '500px',
             alignItems: 'center',
             justifyContent: 'center',
             position: 'relative',
-            overflow: 'hidden',
           }}
         >
-          {/* outer glow */}
           <div
             style={{
               position: 'absolute',
               width: 480,
               height: 480,
               borderRadius: '50%',
-              background: 'rgba(139,92,246,0.12)',
+              background: 'rgba(139,92,246,0.1)',
               display: 'flex',
             }}
           />
-          {/* mid ring */}
           <div
             style={{
               position: 'absolute',
-              width: 360,
-              height: 360,
+              width: 340,
+              height: 340,
               borderRadius: '50%',
-              border: '1px solid rgba(139,92,246,0.25)',
+              background: 'rgba(139,92,246,0.15)',
               display: 'flex',
             }}
           />
-          {/* inner circle */}
           <div
             style={{
               position: 'absolute',
-              width: 260,
-              height: 260,
+              width: 220,
+              height: 220,
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, rgba(139,92,246,0.55), rgba(236,72,153,0.45))',
+              background: 'linear-gradient(135deg, rgba(139,92,246,0.7), rgba(236,72,153,0.6))',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <div style={{ display: 'flex', fontSize: 72, fontWeight: 800, color: 'white', letterSpacing: '-2px' }}>
+            <div style={{ display: 'flex', fontSize: 64, fontWeight: 800, color: 'white', letterSpacing: '-2px' }}>
               RHP
             </div>
           </div>
         </div>
-
-        {/* Vertical divider */}
-        <div
-          style={{
-            position: 'absolute',
-            left: 700,
-            top: 60,
-            bottom: 60,
-            width: 1,
-            background: 'linear-gradient(180deg, transparent, rgba(139,92,246,0.4), transparent)',
-            display: 'flex',
-          }}
-        />
 
         {/* Bottom gradient bar */}
         <div
