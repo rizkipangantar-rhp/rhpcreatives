@@ -1,6 +1,18 @@
 export const revalidate = 30 // ISR: cache page for 30s, rebuild in background
 
+import type { Metadata } from 'next'
 import PageHero from '@/components/PageHero'
+
+export const metadata: Metadata = {
+  title: 'Promo',
+  description: 'Cek promo dan diskon terbaru dari RHP Creatives. Dapatkan penawaran terbaik untuk layanan digital dan desain grafis.',
+  openGraph: {
+    url: 'https://rhpcreatives.com/promo',
+    title: 'Promo | RHP Creatives',
+    description: 'Cek promo dan diskon terbaru dari RHP Creatives. Dapatkan penawaran terbaik untuk layanan digital dan desain grafis.',
+  },
+  alternates: { canonical: 'https://rhpcreatives.com/promo' },
+}
 import PromoContent from '@/components/PromoContent'
 import { getActivePublicPromos, isPromoFull } from '@/lib/promos'
 

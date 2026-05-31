@@ -9,9 +9,36 @@ import TextareaAutoResize from '@/components/TextareaAutoResize'
 import { getActivePublicPromos } from '@/lib/promos'
 import type { PromoBarInfo } from '@/components/AnnouncementBar'
 
+const SITE_URL = process.env.NEXTAUTH_URL?.startsWith('http://localhost')
+  ? 'https://rhpcreatives.com'
+  : (process.env.NEXTAUTH_URL ?? 'https://rhpcreatives.com')
+
 export const metadata: Metadata = {
-  title: 'RHP Creatives - Jasa Digital & Desain Kreatif',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'RHP Creatives - Jasa Digital & Desain Kreatif',
+    template: '%s | RHP Creatives',
+  },
   description: 'Layanan digital profesional: Undangan Online, Landing Page, Website, dan Desain Grafis. Hubungi kami untuk konsultasi gratis.',
+  keywords: ['jasa digital', 'desain grafis', 'undangan online', 'landing page', 'website', 'RHP Creatives'],
+  authors: [{ name: 'RHP Creatives', url: SITE_URL }],
+  creator: 'RHP Creatives',
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: 'website',
+    locale: 'id_ID',
+    url: SITE_URL,
+    siteName: 'RHP Creatives',
+    title: 'RHP Creatives - Jasa Digital & Desain Kreatif',
+    description: 'Layanan digital profesional: Undangan Online, Landing Page, Website, dan Desain Grafis. Hubungi kami untuk konsultasi gratis.',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'RHP Creatives' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'RHP Creatives - Jasa Digital & Desain Kreatif',
+    description: 'Layanan digital profesional: Undangan Online, Landing Page, Website, dan Desain Grafis.',
+    images: ['/og-image.png'],
+  },
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: '48x48 32x32 16x16', type: 'image/x-icon' },
@@ -53,6 +80,21 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // AnnouncementBar's useLayoutEffect corrects this once the client fetch confirms promo state.
   const barScript = `document.documentElement.style.setProperty('--bar-h','44px')`
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'RHP Creatives',
+    url: SITE_URL,
+    logo: `${SITE_URL}/favicon-48.png`,
+    description: 'Layanan digital profesional: Undangan Online, Landing Page, Website, dan Desain Grafis.',
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer service',
+      availableLanguage: ['Indonesian', 'English'],
+    },
+    sameAs: [],
+  }
+
   return (
     <html lang={initialLang} data-theme="dark">
       <head>
@@ -60,6 +102,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="theme-color" content="#06060f" />
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
         <script dangerouslySetInnerHTML={{ __html: barScript }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </head>
       <body>
         <AuthProvider>
