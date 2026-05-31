@@ -83,7 +83,7 @@ export default function RegisterPage() {
           {error && <p className={styles.error}>{error}</p>}
 
           <div className={styles.field}>
-            <label htmlFor="name">{a.nameLabel}</label>
+            <label htmlFor="name">{a.nameLabel}<span className={styles.required}>*</span></label>
             <input
               id="name"
               type="text"
@@ -96,7 +96,7 @@ export default function RegisterPage() {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="email">{a.emailLabel}</label>
+            <label htmlFor="email">{a.emailLabel}<span className={styles.required}>*</span></label>
             <input
               id="email"
               type="email"
@@ -109,7 +109,7 @@ export default function RegisterPage() {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="password">{a.passwordLabel}</label>
+            <label htmlFor="password">{a.passwordLabel}<span className={styles.required}>*</span></label>
             <input
               id="password"
               type="password"
@@ -123,7 +123,7 @@ export default function RegisterPage() {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="confirm">{a.confirmLabel}</label>
+            <label htmlFor="confirm">{a.confirmLabel}<span className={styles.required}>*</span></label>
             <input
               id="confirm"
               type="password"

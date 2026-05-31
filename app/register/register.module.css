@@ -115,6 +115,11 @@
   gap: 0.4rem;
 }
 
+.required {
+  color: #f87171;
+  margin-left: 2px;
+}
+
 .field label {
   font-family: var(--font-body);
   font-size: 0.8rem;
