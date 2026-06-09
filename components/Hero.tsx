@@ -47,7 +47,7 @@ export default function Hero() {
           <div className={`${styles.card} ${styles.cardMain}`}>
             <div className={styles.cardIcon}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
               </svg>
             </div>
             <div className={styles.cardTitle}>RHP Creatives</div>

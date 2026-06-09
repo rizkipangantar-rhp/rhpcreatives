@@ -25,12 +25,7 @@
 }
 
 .pulse {
-  position: absolute;
-  inset: 0;
-  border-radius: var(--r);
-  background: var(--grad);
-  animation: pulse 2s ease-out infinite;
-  z-index: -1;
+  display: none;
 }
 
 @keyframes pulse {
