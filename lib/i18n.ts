@@ -668,7 +668,7 @@ export const t: Record<Lang, Tr> = {
       },
     },
     orderPage: {
-      tag: '✦ Pesan Layanan',
+      tag: 'Pesan Layanan',
       title: 'Pesan Layanan RHP Creatives',
       sub: 'Pilih layanan, isi data, dan bayar langsung. Gampang banget!',
       step1: 'Pilih Layanan',
@@ -844,7 +844,7 @@ export const t: Record<Lang, Tr> = {
       totalRevenue: 'Total Pendapatan',
     },
     hero: {
-      tag: '✦ Jasa Digital & Desain Kreatif',
+      tag: 'Jasa Digital & Desain Kreatif',
       titleBefore: 'Tampil ',
       titleEm: 'Keren',
       titleAfter: ' di Dunia Digital? Gas!',
@@ -920,8 +920,8 @@ export const t: Record<Lang, Tr> = {
       title: 'Layanan RHP Creatives',
       sub: 'Dari digital sampai desain, semua ada. Semua kece, semua worth it, no cap.',
       headerCta: 'Konsultasi Gratis',
-      digitalLabel: '✦ Layanan Digital',
-      designLabel: '✦ Layanan Desain',
+      digitalLabel: 'Layanan Digital',
+      designLabel: 'Layanan Desain',
       digital: [
         {
           num: '01',
@@ -955,8 +955,8 @@ export const t: Record<Lang, Tr> = {
       label: 'Harga Transparan',
       title: 'Paket & Harga Layanan',
       sub: 'Harga yang tertera udah final dan langsung bisa di-order. Butuh sesuatu di luar paket? Cek custom order kita!',
-      digitalLabel: '✦ Layanan Digital',
-      designLabel: '✦ Layanan Desain',
+      digitalLabel: 'Layanan Digital',
+      designLabel: 'Layanan Desain',
       note: '* Harga sudah fix dan final. Khusus custom order, harga dibahas sesuai kebutuhan kamu.',
       popularBadge: 'Paling Laku ⚡',
       orderCta: 'Pesan Sekarang',
@@ -1508,7 +1508,7 @@ export const t: Record<Lang, Tr> = {
       },
     },
     orderPage: {
-      tag: '✦ Place an Order',
+      tag: 'Place an Order',
       title: 'Order RHP Creatives Services',
       sub: 'Pick a service, fill in your details, and pay instantly. Super easy!',
       step1: 'Choose Service',
@@ -1684,7 +1684,7 @@ export const t: Record<Lang, Tr> = {
       totalRevenue: 'Total Revenue',
     },
     hero: {
-      tag: '✦ Digital & Creative Design Services',
+      tag: 'Digital & Creative Design Services',
       titleBefore: 'Look ',
       titleEm: 'Amazing',
       titleAfter: " Online? Let's Go!",
@@ -1760,8 +1760,8 @@ export const t: Record<Lang, Tr> = {
       title: 'RHP Creatives Services',
       sub: 'From digital to design, we got you, we got quality, we got vibes.',
       headerCta: 'Free Consultation',
-      digitalLabel: '✦ Digital Services',
-      designLabel: '✦ Design Services',
+      digitalLabel: 'Digital Services',
+      designLabel: 'Design Services',
       digital: [
         {
           num: '01',
@@ -1795,8 +1795,8 @@ export const t: Record<Lang, Tr> = {
       label: 'Transparent Pricing',
       title: 'Service Packages & Pricing',
       sub: "Prices shown are final and ready to order. Need something outside the packages? Check out our custom order!",
-      digitalLabel: '✦ Digital Services',
-      designLabel: '✦ Design Services',
+      digitalLabel: 'Digital Services',
+      designLabel: 'Design Services',
       note: '* Prices are fixed and final. Custom orders are priced based on your specific needs.',
       popularBadge: 'Most Popular ⚡',
       orderCta: 'Order Now',
