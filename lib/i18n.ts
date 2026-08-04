@@ -258,6 +258,7 @@ export type Tr = {
     ewalletOpenApp: string
     qrisTitle: string
     qrisSub: string
+    qrisSaveBtn: string
     ccTitle: string
     ccSub: string
     ccPayBtn: string
@@ -799,6 +800,7 @@ export const t: Record<Lang, Tr> = {
       ewalletOpenApp: 'Buka di Aplikasi',
       qrisTitle: 'Scan QRIS',
       qrisSub: 'Scan dengan aplikasi dompet digital apapun yang mendukung QRIS',
+      qrisSaveBtn: 'Simpan Gambar QRIS',
       ccTitle: 'Kartu Kredit / Debit',
       ccSub: 'Bayar dengan kartu kredit atau debit visa/mastercard',
       ccPayBtn: 'Bayar dengan Kartu',
@@ -1639,6 +1641,7 @@ export const t: Record<Lang, Tr> = {
       ewalletOpenApp: 'Open in App',
       qrisTitle: 'Scan QRIS',
       qrisSub: 'Scan with any digital wallet app that supports QRIS',
+      qrisSaveBtn: 'Save QRIS Image',
       ccTitle: 'Credit / Debit Card',
       ccSub: 'Pay with your Visa or Mastercard credit or debit card',
       ccPayBtn: 'Pay with Card',

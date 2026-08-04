@@ -623,8 +623,17 @@ export default function PaymentPage() {
                         <div className={styles.qrWrap}>
                           <p className={styles.qrSub}>{p.qrisSub}</p>
                           {chargeResult.qrUrl && (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={chargeResult.qrUrl} alt="QRIS" className={styles.qrImage} />
+                            <>
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={chargeResult.qrUrl} alt="QRIS" className={styles.qrImage} />
+                              <a
+                                href={`/api/payment/qr-download?url=${encodeURIComponent(chargeResult.qrUrl)}`}
+                                download={`QRIS-${order.orderId}.png`}
+                                className={styles.qrSaveBtn}
+                              >
+                                {p.qrisSaveBtn}
+                              </a>
+                            </>
                           )}
                         </div>
                       )}
