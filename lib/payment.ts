@@ -24,6 +24,11 @@ type ChargeBase = {
 
 type MidtransAction = { name: string; url: string; method?: string }
 
+function wibOrderTime(): string {
+  const wib = new Date(Date.now() + 7 * 60 * 60 * 1000)
+  return wib.toISOString().replace('T', ' ').slice(0, 19) + ' +0700'
+}
+
 export type BankTransferResult = {
   transaction_id: string
   order_id: string
@@ -186,7 +191,7 @@ export async function chargeBankTransfer(
     transaction_details: { order_id: params.midtransOrderId, gross_amount: params.grossAmount },
     ...base,
     ...bank_transfer,
-    custom_expiry: { order_time: new Date().toISOString().replace('T', ' ').slice(0, 19) + ' +0700', expiry_duration: 15, unit: 'minute' },
+    custom_expiry: { order_time: wibOrderTime(), expiry_duration: 15, unit: 'minute' },
   }
 
   const result = await core.charge(body)
@@ -201,7 +206,7 @@ export async function chargeQRIS(params: ChargeBase): Promise<QRResult> {
     transaction_details: { order_id: params.midtransOrderId, gross_amount: params.grossAmount },
     ...base,
     qris: { acquirer: 'gopay' },
-    custom_expiry: { order_time: new Date().toISOString().replace('T', ' ').slice(0, 19) + ' +0700', expiry_duration: 15, unit: 'minute' },
+    custom_expiry: { order_time: wibOrderTime(), expiry_duration: 15, unit: 'minute' },
   })
   return result as QRResult
 }
@@ -214,7 +219,7 @@ export async function chargeGoPay(params: ChargeBase): Promise<EWalletResult> {
     transaction_details: { order_id: params.midtransOrderId, gross_amount: params.grossAmount },
     ...base,
     gopay: { enable_callback: false },
-    custom_expiry: { order_time: new Date().toISOString().replace('T', ' ').slice(0, 19) + ' +0700', expiry_duration: 15, unit: 'minute' },
+    custom_expiry: { order_time: wibOrderTime(), expiry_duration: 15, unit: 'minute' },
   })
   return result as EWalletResult
 }
@@ -227,7 +232,7 @@ export async function chargeShopeePay(params: ChargeBase): Promise<EWalletResult
     transaction_details: { order_id: params.midtransOrderId, gross_amount: params.grossAmount },
     ...base,
     shopeepay: { callback_url: 'https://rhpcreatives.com' },
-    custom_expiry: { order_time: new Date().toISOString().replace('T', ' ').slice(0, 19) + ' +0700', expiry_duration: 15, unit: 'minute' },
+    custom_expiry: { order_time: wibOrderTime(), expiry_duration: 15, unit: 'minute' },
   })
   return result as EWalletResult
 }
